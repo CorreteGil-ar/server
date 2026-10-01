@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -40,6 +41,8 @@ public class DatosJugador {
     public Location hoguera;
     public Location mancha;
     public long almasMancha = 0;
+    // Armas: accesorios elegidos en el armero, por tipo de arma (Armas.Tipo -> Accesorios.codigo()).
+    public final Map<String, String> accesorios = new HashMap<>();
 
     public DatosJugador(UUID id) {
         this.id = id;
@@ -47,6 +50,11 @@ public class DatosJugador {
 
     public int nivelRpg() {
         return 1 + vigor + aguante + fuerza;
+    }
+
+    /** Accesorios guardados para un tipo de arma, ya validados para ese arma. */
+    public Accesorios accesorios(Armas.Tipo t) {
+        return Accesorios.de(accesorios.get(t.name())).validar(t);
     }
 
     // ---------- persistencia ----------
@@ -67,6 +75,8 @@ public class DatosJugador {
         d.hoguera = leerLoc(y, "rpg.hoguera");
         d.mancha = leerLoc(y, "rpg.mancha");
         d.almasMancha = y.getLong("rpg.almasMancha");
+        ConfigurationSection acc = y.getConfigurationSection("armas.accesorios");
+        if (acc != null) for (String k : acc.getKeys(false)) d.accesorios.put(k, acc.getString(k, ""));
         ConfigurationSection est = y.getConfigurationSection("estados");
         if (est != null) {
             for (String k : est.getKeys(false)) {
@@ -105,6 +115,7 @@ public class DatosJugador {
         escribirLoc(y, "rpg.hoguera", hoguera);
         escribirLoc(y, "rpg.mancha", mancha);
         y.set("rpg.almasMancha", almasMancha);
+        for (Map.Entry<String, String> en : accesorios.entrySet()) y.set("armas.accesorios." + en.getKey(), en.getValue());
         for (Map.Entry<Modo, Estado> en : estados.entrySet()) {
             String base = "estados." + en.getKey().name().toLowerCase();
             Estado e = en.getValue();

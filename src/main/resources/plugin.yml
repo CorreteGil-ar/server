@@ -15,9 +15,12 @@ commands:
   celular:
     description: Abrir el celular en el modo GTA
     aliases: [cel, tel]
+  armero:
+    description: Poner y sacar accesorios al arma de la mano
+    aliases: [accesorios]
   tm:
     description: Comandos de administracion de TresModos
-    usage: /tm <dinero|almas|buscado|jefe|guardar|info> ...
+    usage: /tm <dinero|almas|buscado|jefe|guardar|paquete|info> ...
     permission: tresmodos.admin
 permissions:
   tresmodos.admin:

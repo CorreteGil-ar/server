@@ -396,7 +396,7 @@ public class ModoRpg implements ModoJuego, Listener {
             new ParticleBuilder(Particle.DUST).location(d.mancha.clone().add(0, 0.3, 0)).count(10).offset(0.25, 0.2, 0.25)
                     .data(new Particle.DustOptions(Color.fromRGB(150, 0, 0), 1.3f)).receivers(p).force(true).spawn();
             new ParticleBuilder(Particle.SOUL).location(d.mancha.clone().add(0, 0.6, 0)).count(2).offset(0.2, 0.3, 0.2)
-                    .extra(0.01).receivers(p).force(true).spawn();
+                    .speed(0.01).receivers(p).force(true).spawn();
             if (p.getLocation().distanceSquared(d.mancha) < 1.8 * 1.8) {
                 d.almas += d.almasMancha;
                 Util.titulo(p, "<gold><bold>ALMAS RECUPERADAS", "<gold>+" + Util.num(d.almasMancha), 200, 1800, 500);

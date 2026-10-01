@@ -4,3 +4,4 @@ paquete/
 .idea/
 .vscode/
 *.iml
+__pycache__/

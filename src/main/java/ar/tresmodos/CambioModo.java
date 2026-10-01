@@ -61,6 +61,7 @@ public class CambioModo implements Listener {
     }
 
     public void guardarEstado(Player p, Modo m) {
+        plugin.armas().sincronizar(p);
         DatosJugador d = plugin.almacen().de(p);
         DatosJugador.Estado e = new DatosJugador.Estado();
         ItemStack[] contenido = p.getInventory().getContents();
@@ -74,6 +75,7 @@ public class CambioModo implements Listener {
     }
 
     public void limpiar(Player p) {
+        plugin.armas().olvidar(p.getUniqueId());
         p.closeInventory();
         p.setItemOnCursor(null);
         p.getInventory().clear();

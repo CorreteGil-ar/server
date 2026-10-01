@@ -5,7 +5,7 @@ import org.bukkit.plugin.Plugin;
 
 /** Claves de PersistentDataContainer usadas para marcar ítems y entidades del plugin. */
 public final class Claves {
-    public static NamespacedKey ARMA, BALAS, GRANADA, CUCHILLO, BOMBARDEO, CLASE_MENU;
+    public static NamespacedKey ARMA, ARMA_ID, ACCESORIOS, BALAS, GRANADA, CUCHILLO, BOMBARDEO, CLASE_MENU;
     public static NamespacedKey SELECTOR, CELULAR, LLAVE, PAQUETE, AUTO_DUENO, POLICIA;
     public static NamespacedKey ESTUS, CAMPANA, JEFE, SIERVO, DISPLAY_LOBBY, BOTIN;
 
@@ -13,6 +13,8 @@ public final class Claves {
 
     static void init(Plugin p) {
         ARMA = new NamespacedKey(p, "arma");
+        ARMA_ID = new NamespacedKey(p, "arma_id");
+        ACCESORIOS = new NamespacedKey(p, "accesorios");
         BALAS = new NamespacedKey(p, "balas");
         GRANADA = new NamespacedKey(p, "granada");
         CUCHILLO = new NamespacedKey(p, "cuchillo");

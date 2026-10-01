@@ -6,7 +6,7 @@ import ar.tresmodos.mundo.GeneradorCiudad;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -52,7 +52,7 @@ public class Mundos {
         // ---- Lobby ----
         comunes(lobby, false);
         lobby.setDifficulty(Difficulty.PEACEFUL);
-        lobby.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        lobby.setGameRule(GameRules.ADVANCE_TIME, false);
         lobby.setTime(6000);
         lobby.setSpawnLocation(0, 65, 0);
         construirLobby(lobby);
@@ -60,8 +60,8 @@ public class Mundos {
         // ---- GTA: ciudad sin mobs naturales, se conserva el inventario ----
         comunes(gta, false);
         gta.setDifficulty(Difficulty.NORMAL);
-        gta.setGameRule(GameRule.KEEP_INVENTORY, true);
-        gta.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        gta.setGameRule(GameRules.KEEP_INVENTORY, true);
+        gta.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
         gta.setSpawnLocation(5, GeneradorCiudad.SUELO + 1, 5);
         gta.getWorldBorder().setCenter(0, 0);
         gta.getWorldBorder().setSize(2000);
@@ -69,38 +69,38 @@ public class Mundos {
         // ---- COD: arena de día fijo, regeneración propia ----
         comunes(cod, false);
         cod.setDifficulty(Difficulty.EASY);
-        cod.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        cod.setGameRule(GameRules.ADVANCE_TIME, false);
         cod.setTime(6000);
-        cod.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-        cod.setGameRule(GameRule.NATURAL_REGENERATION, false);
-        cod.setGameRule(GameRule.FALL_DAMAGE, false);
+        cod.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
+        cod.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
+        cod.setGameRule(GameRules.FALL_DAMAGE, false);
         cod.setSpawnLocation(0, GeneradorArena.SUELO + 1, 0);
         cod.getWorldBorder().setCenter(0, 0);
         cod.getWorldBorder().setSize(GeneradorArena.RADIO * 2 + 4);
 
         // ---- RPG: mundo vanilla en difícil, sin regeneración natural ----
         rpg.setDifficulty(Difficulty.HARD);
-        rpg.setGameRule(GameRule.KEEP_INVENTORY, true);
-        rpg.setGameRule(GameRule.NATURAL_REGENERATION, false);
-        rpg.setGameRule(GameRule.DO_INSOMNIA, false);
-        rpg.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        rpg.setGameRule(GameRules.KEEP_INVENTORY, true);
+        rpg.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
+        rpg.setGameRule(GameRules.SPAWN_PHANTOMS, false);
+        rpg.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
         rpg.getWorldBorder().setCenter(rpg.getSpawnLocation());
         rpg.getWorldBorder().setSize(8000);
         hogueraInicial(rpg);
     }
 
     private void comunes(World w, boolean mobs) {
-        w.setGameRule(GameRule.DO_MOB_SPAWNING, mobs);
-        w.setGameRule(GameRule.SPAWN_MONSTERS, mobs);
-        w.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
-        w.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
-        w.setGameRule(GameRule.DO_WARDEN_SPAWNING, false);
-        w.setGameRule(GameRule.DISABLE_RAIDS, true);
-        w.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        w.setGameRule(GameRule.DO_FIRE_TICK, false);
-        w.setGameRule(GameRule.MOB_GRIEFING, false);
-        w.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        w.setGameRule(GameRule.DO_INSOMNIA, false);
+        w.setGameRule(GameRules.SPAWN_MOBS, mobs);
+        w.setGameRule(GameRules.SPAWN_MONSTERS, mobs);
+        w.setGameRule(GameRules.SPAWN_PATROLS, false);
+        w.setGameRule(GameRules.SPAWN_WANDERING_TRADERS, false);
+        w.setGameRule(GameRules.SPAWN_WARDENS, false);
+        w.setGameRule(GameRules.RAIDS, false);                       // antes DISABLE_RAIDS = true
+        w.setGameRule(GameRules.ADVANCE_WEATHER, false);
+        w.setGameRule(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, 0); // antes DO_FIRE_TICK = false
+        w.setGameRule(GameRules.MOB_GRIEFING, false);
+        w.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+        w.setGameRule(GameRules.SPAWN_PHANTOMS, false);
         w.setStorm(false);
         w.setThundering(false);
         w.setClearWeatherDuration(Integer.MAX_VALUE / 2);
