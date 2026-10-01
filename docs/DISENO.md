@@ -8,10 +8,10 @@ Documento de diseño del server. Describe qué tiene cada modo, cómo se juega y
 | Formato | Todos contra todos | Captura la bandera, 2 equipos | Cooperativo, mundo abierto |
 | Jugadores | 4 (diseñado para 6) | 2 vs 2 (diseñado para 3 vs 3) | 4 (diseñado para 6) |
 | Mapa | Pueblo Atómico (inspirado en Nuketown) | Valle de Hierro: pueblo + campo, 512×512 | Las Tierras Cenicientas: 5 zonas |
-| Objetivo | Primero a N bajas o más bajas a los 10 min | 3 capturas o más capturas a los 15 min | Derrotar a los 4 Señores y al Durmiente |
-| Duración | 10 min | 15 min | Persistente (con Ciclo+) |
+| Objetivo | Primero a N bajas o más bajas a los 15 min | 3 capturas o más capturas a los 15 min | Derrotar a los 4 Señores y al Durmiente |
+| Duración | 15 min | 15 min | Persistente (con Ciclo+) |
 
-El modo GTA actual se reemplaza por Guerra. Su generador de ciudad se reaprovecha para el pueblo del mapa de guerra.
+Shooter y Guerra son de época moderna. El modo GTA actual se reemplaza por Guerra. Su generador de ciudad se reaprovecha para el pueblo del mapa de guerra.
 
 ---
 
@@ -71,11 +71,13 @@ Todos contra todos rápido, estilo Modern Warfare: muertes en menos de medio seg
 
 ### 1.2 Reglas de la partida
 
-- **Victoria**: el primero en llegar a la meta (20 bajas con 4 jugadores, 30 con 6) o el que más tenga a los 10 minutos.
+- **Victoria**: el primero en llegar a la meta (20 bajas con 4 jugadores, 30 con 6).
+- **Tiempo límite**: 15 minutos. Si nadie llega a la meta, la partida termina igual y gana el que tenga más bajas; si hay empate, el que tenga menos muertes ✅.
 - **Vida**: 100 puntos. Empieza a regenerarse 4 s después del último daño y se llena en 3 s ✅.
-- **Reaparición**: a los 3 s, en el punto más alejado de los enemigos vivos ✅ (ya existe `spawnSeguro`). Protección de 2 s, que se corta al disparar.
+- **Muerte**: pasás 5 s como espectador ✅. La cámara arranca siguiendo a quien te mató, así ves la jugada desde sus ojos; con Shift la soltás y mirás libre, sin salir del mapa.
+- **Reaparición**: en un **punto al azar** de cualquier lugar transitable del mapa (calle, patios, interiores) ✅. Única regla: nunca a menos de 8 bloques de un enemigo que te tenga a la vista, para no morir apenas aparecés (la agregué yo; se puede sacar). Protección de 2 s, que se corta al disparar.
 - **Sin daño por caída** ✅.
-- **Al terminar**: podio con los 3 primeros, la explosión nuclear (ver 1.10) y una nueva partida a los 15 s ✅.
+- **Al terminar**: podio con los 3 primeros y nueva partida a los 15 s ✅. La explosión nuclear solo pasa si alguien consigue la bomba (ver 1.9 y 1.10).
 - **Bajas**: el killfeed va en el chat con arma y headshot ✅. Kill cam ❌.
 
 ### 1.3 Movilidad
@@ -172,6 +174,8 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 
 ### 1.9 Rachas (bajas sin morir)
 
+La racha se cuenta desde tu última muerte: al morir vuelve a cero ✅.
+
 | Bajas | Racha | Efecto | |
 |---|---|---|---|
 | 3 | UAV | 30 s viendo a los enemigos en el minimapa | ✅ / ⚠️ (con minimapa) |
@@ -179,7 +183,7 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 | 5 | Misil Predator | Manejás un misil desde el cielo con tu cámara | ⚠️ La cámara se engancha al misil |
 | 7 | Bombardeo de precisión | Línea de explosiones donde apuntás | ✅ Ya existe |
 | 11 | Perros de ataque | 4 perros que cazan enemigos durante 30 s | ✅ |
-| 25 | Bomba atómica | Gana la partida en el acto y detona el pueblo | ✅ |
+| 25 | Bomba atómica | **Solo con 25 bajas seguidas sin morir**: no sale del paquete de ayuda y la ventaja Intransigente no la abarata. Gana la partida en el acto y detona el pueblo | ✅ |
 
 ### 1.10 Mapa: Pueblo Atómico
 
@@ -197,9 +201,9 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 - **Cartel "Población"** a la entrada, con un contador que muestra las bajas de la partida ✅.
 - **Maniquíes** de la familia nuclear en las casas y la calle. Si matás a todos de un headshot, suena una canción y ganás un bonus de XP (easter egg) ✅.
 
-**Puntos de aparición**: 14 entre las casas, los patios y los extremos de la calle ✅.
+**Aparición**: al azar en cualquier punto transitable del mapa (ver 1.2) ✅. El plugin calcula de antemano todos los lugares donde se puede parar un jugador y sortea uno en cada reaparición.
 
-**Final de la partida**: destello blanco, onda expansiva, humo y temblor ✅. El mapa se restaura para la siguiente partida.
+**Bomba atómica** (solo con la racha de 25): destello blanco, onda expansiva, humo y temblor ✅. El mapa se restaura para la siguiente partida.
 
 **Ambiente**: mediodía soleado y fijo, con el cielo despejado. Afuera del límite, torres de prueba, un búnker y carteles de radiación como decorado.
 
@@ -222,6 +226,8 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 ### 2.1 Concepto
 
 Dos equipos, **Azul** y **Rojo**, en un conflicto moderno ("WW3"). Infantería y vehículos combinados, estilo Battlefield, con daño de vehículos inspirado en War Thunder y World of Tanks: blindaje por zonas, módulos y munición AP o HE. El objetivo es robar la bandera enemiga.
+
+**Los vehículos son opcionales.** Ningún objetivo exige subirse a uno: se puede jugar la partida entera a pie, robando la bandera por el bosque o las trincheras y destruyendo vehículos con cohetes, C4, minas y granadas.
 
 ### 2.2 Captura la bandera
 
@@ -246,10 +252,17 @@ Usa el mismo sistema de armas y movilidad del Shooter (deslizarse, cuerpo a tier
 
 | Clase | Principal | Secundaria y equipo | Rol |
 |---|---|---|---|
-| Fusilero | M4A1 / AK-47 / SCAR-H | Pistola, granadas, humo, botiquín | Combate de infantería, revive |
-| Antitanque | Carabina (G36K) | RPG-7 (sin guía), Javelin (fija un blanco terrestre en 2 s y ataca desde arriba), minas antitanque | Cazar tanques |
-| Ingeniero | Subfusil | Llave de reparación, C4, Stinger (fija un avión en 2 s) | Reparar, emboscar, antiaéreo |
-| Tirador | M24 / SVD | Pistola, binoculares (marca blancos para el equipo por 10 s), claymore | Reconocimiento, cubrir la bandera |
+| Fusilero | M4A1 / AK-47 / SCAR-H | Pistola, granadas, granada antitanque (se pega al vehículo), humo, botiquín | Combate de infantería, revive |
+| Antitanque | Carabina (G36K) | RPG-7 (sin guía), AT4 (descartable, un solo tiro fuerte), Javelin (fija un blanco terrestre en 2 s y ataca desde arriba), minas antitanque | Cazar tanques |
+| Ingeniero | Subfusil | Llave de reparación, C4 (hasta 3 cargas con detonador), Stinger (fija aviones y helicópteros en 2 s) | Reparar, demoler, antiaéreo |
+| Tirador | M24 / SVD / Barrett M82A1 (antimaterial: daña vehículos ligeros y helicópteros) | Pistola, binoculares (marca blancos para el equipo por 10 s), claymore | Reconocimiento, cubrir la bandera |
+
+**A pie contra vehículos**:
+- **Cajas de munición** en el pueblo, el bosque y las trincheras: recargan cohetes, C4, minas y granadas ✅.
+- **Zonas de infantería**: interiores, sótanos, trincheras, bosque denso y callejones, donde los vehículos no entran o quedan expuestos.
+- **Puntos débiles**: la trasera y el techo de un tanque reciben mucho más daño (ver 2.6).
+- **Abordaje**: podés subirte al techo de un tanque enemigo y pegarle el C4 o la granada antitanque ✅.
+- **Rutas a pie** entre las bases por el bosque y las trincheras, para robar la bandera sin vehículo.
 
 ### 2.4 Vehículos
 
@@ -263,8 +276,9 @@ Velocidades en bloques por segundo (b/s); 1 b/s = 3,6 km/h. La escala está comp
 | Tanque | M1 Abrams / T-72 | Conductor-artillero + ametralladora de techo | Cañón 120 mm (AP / HE) + ametralladora coaxial | 350 | Pesado | 10 | 1 | 90 s |
 | Antiaéreo | Gepard / Tunguska | Conductor-artillero + 1 | 2 cañones de 35 mm + radar que marca aviones | 180 | Medio | 12 | 1 | 60 s |
 | Avión | Caza (F-16 / MiG-29) o ataque (A-10 / Su-25), se elige en el hangar | Piloto | Cañón + 2 misiles aire-aire, o cañón + cohetes + 2 bombas | 120 | Ligero | 25–35 | 1 | 120 s |
+| Helicóptero de ataque | AH-64 Apache / Mi-28 | Piloto + artillero | Piloto: cohetes. Artillero: cañón de 30 mm + 4 misiles guiados | 160 | Ligero, cabina blindada al frente | 20 | 1 | 120 s |
 
-El helicóptero (Apache / Mi-24) queda para más adelante ⚠️: es el más difícil de manejar con teclado sin mods.
+Hay más vehículos que jugadores a propósito: están disponibles, pero ninguno hace falta para ganar.
 
 **Cómo se arma un vehículo**:
 - Una entidad invisible hace de asiento y lleva al jugador.
@@ -295,6 +309,15 @@ El helicóptero (Apache / Mi-24) queda para más adelante ⚠️: es el más dif
 - Chocar contra el terreno = avión destruido.
 - Shift = eyección con paracaídas ✅.
 
+**Helicóptero** ⚠️ (es el más difícil de controlar con teclado; se ajusta jugando):
+- Espacio sube y Ctrl baja ✅.
+- W/S lo inclinan y lo mueven hacia adelante o atrás; A/D lo desplazan de costado.
+- El rumbo sigue tu mirada, con giro limitado.
+- Puede quedarse quieto en el aire ✅.
+- Aterriza en cualquier lugar plano. Se rearma y repara en el helipuerto de tu base ✅.
+- Si le rompen el rotor de cola (módulo), gira descontrolado y cae.
+- El artillero apunta con el mouse; los misiles siguen al blanco que tenga marcado 1,5 s.
+
 **Cámaras**:
 - Primera persona desde el asiento ✅.
 - F5 para tercera persona (lo maneja el cliente) ✅.
@@ -323,14 +346,19 @@ El helicóptero (Apache / Mi-24) queda para más adelante ⚠️: es el más dif
 - **Reparación**: con la llave del Ingeniero o en la zona de reparación de la base ✅.
 - **Armas de infantería contra vehículos**:
 
-| Arma | Contra tanque | Contra jeep | Contra avión |
+| Arma | Contra tanque | Contra jeep | Contra avión o helicóptero |
 |---|---|---|---|
 | Fusiles y subfusiles | 0 | Poco | Poco |
-| RPG-7 | 100 | 100 | — |
+| Barrett M82A1 | 0 | 25 | 25 |
+| Granada antitanque | 60 | 80 | — |
+| RPG-7 | 100 | 100 | 100 (si acertás al helicóptero) |
+| AT4 | 130 | 130 | — |
 | Javelin | 160 (techo) | 160 | — |
 | Stinger | — | — | 100 |
 | C4 | 200 | 200 | — |
 | Mina AT | 150 + orugas | Destruye | — |
+
+Con la trasera (×1,6) o el techo (×2), dos RPG o un C4 bien puestos alcanzan para un tanque.
 
 - **Vehículo destruido**: explosión y carcasa humeante. Los ocupantes salen eyectados con daño ✅.
 - Sin fuego amigo ✅.
@@ -342,7 +370,7 @@ El helicóptero (Apache / Mi-24) queda para más adelante ⚠️: es el más dif
 **Cada base** tiene:
 - mástil con la bandera dentro de un recinto de bolsas de arena;
 - garaje con los puntos de aparición de los vehículos;
-- hangar y pista de 120 bloques;
+- hangar y pista de 120 bloques, y helipuerto;
 - zona de reparación y búnker de aparición protegido.
 
 **Centro: el pueblo** (unos 130 × 130), para combate cerrado:
@@ -410,8 +438,9 @@ El reino de Valdren cayó cuando **el Durmiente**, una entidad antigua bajo el m
 | **Voltereta** | F + dirección | Invulnerable 8 ticks; la distancia depende de la carga de equipo | ✅ / ⚠️ El cuerpo baja al piso durante la voltereta (bloque fantasma); no hay animación de rodar |
 | Paso atrás | F sin dirección | Corto y rápido | ✅ Ya existe |
 | Correr | Ctrl | Gasta aguante | ✅ Ya existe |
-| Habilidad del arma | Q con el arma en la mano | Movimiento especial; gasta éter | ✅ |
-| Hechizos | Clic derecho con catalizador; rueda para elegir | Ver 3.6 | ✅ |
+| Habilidad del arma | Q con el arma en la mano | Movimiento especial; cambia según la rama del árbol (ver 3.5). Gasta éter | ✅ |
+| Habilidad definitiva | Shift + Q | La habilidad final de tu rama del árbol (ver 3.5) | ✅ |
+| Hechizos | Clic derecho con catalizador; rueda para elegir | Ver 3.7 | ✅ |
 | Estus y objetos | Seleccionar el slot y clic derecho | Te deja expuesto mientras tomás, como en Souls | ✅ Ya existe |
 
 - **Aguante**: lo gasta todo (atacar, bloquear, rodar y correr) y no se regenera mientras lo usás ✅ (ya existe).
@@ -456,7 +485,93 @@ Seis, una por jugador.
 
 Cada clase empieza con su arma, su set de armadura y 2 objetos propios.
 
-### 3.5 Armas, mejoras y armaduras
+### 3.5 Árbol de habilidades
+
+Cada clase tiene un árbol con **tres ramas**. La rama que elijas cambia cómo funciona la habilidad de tu arma (Q) y te da una **habilidad definitiva** (Shift + Q).
+
+| Rama | Qué potencia |
+|---|---|
+| **Daño** | Más daño. Al entrar elegís el **tipo de daño** de tu clase, uno de dos; para cambiarlo hay que reiniciar el árbol |
+| **Vida y armadura** | Vida máxima, defensa, postura y bloqueo más barato |
+| **Bendiciones y sanación** | Curar, potenciar aliados, recuperar aguante y éter |
+
+**Estructura de cada rama** (5 niveles):
+
+| Nivel | Costo | Qué da |
+|---|---|---|
+| 1 | 1 brasa | En Daño, elegís el tipo de daño. En las otras dos, una mejora pasiva |
+| 2 | 2 | Mejora pasiva |
+| 3 | 3 | **Transforma tu Q** en la versión de esa rama |
+| 4 | 3 | Mejora pasiva fuerte |
+| 5 | 4 | **Habilidad definitiva** (Shift + Q), con enfriamiento de 90 s |
+
+- **Brasas** (los puntos del árbol): 1 cada 3 niveles y 1 por jefe derrotado (2 por el Durmiente). Con unas 25 brasas al final del juego completás una rama y la mitad de otra, no todo ✅.
+- Podés mezclar ramas. Si tenés el nivel 3 en dos ramas, elegís en la hoguera qué versión de Q llevás; lo mismo con la definitiva ✅.
+- **Reiniciar el árbol**: en el Santuario, con una **Lágrima del Olvido** que se compra con almas ✅.
+- El árbol se ve en un menú con iconos, desde la hoguera ✅.
+
+**Pasivas por rama** (cada clase ajusta los números):
+- **Daño**: +8 % de daño por nivel, más acumulación del estado de tu tipo de daño y críticos más fuertes.
+- **Vida y armadura**: +8 % de vida por nivel, más defensa y postura, y bloquear cuesta menos aguante.
+- **Bendiciones y sanación**: curaciones más fuertes, auras más grandes, más éter y regeneración de éter.
+
+Todas las habilidades se hacen con el plugin ✅. Las que tienen objeto propio (jeringa, estandarte, cepo, lobo, glifo) llevan modelo en el resource pack.
+
+#### Caballero Ceniciento (Q base: *Tajo ascendente*)
+
+| Rama | Q transformada (nivel 3) | Habilidad definitiva (nivel 5) |
+|---|---|---|
+| Daño: Fuego | *Tajo llameante*: deja una estela de fuego que quema 4 s | *Juicio*: clava la espada y levanta un círculo de llamas de 6 bloques |
+| Daño: Rayo | *Tajo de tormenta*: cae un rayo sobre el enemigo y salta a otro cercano | *Cólera del cielo*: 5 rayos sobre los enemigos más cercanos |
+| Vida y armadura | *Bastión*: 3 s de bloqueo total al frente; devuelve el 30 % del daño | *Muralla*: 8 s con −60 % de daño y sin perder postura; los enemigos cercanos solo te atacan a vos |
+| Bendiciones y sanación | *Estandarte*: clava un estandarte que da +15 % de daño y regeneración a los aliados en 6 bloques por 12 s | *Última luz*: 5 s en los que ningún aliado cercano puede bajar de 1 de vida |
+
+#### Verdugo (Q base: *Grito de guerra*)
+
+| Rama | Q transformada (nivel 3) | Habilidad definitiva (nivel 5) |
+|---|---|---|
+| Daño: Sangrado | *Desgarro*: hachazo giratorio que llena el sangrado de los enemigos alrededor | *Ejecución*: salto y hachazo que mata en el acto a los enemigos comunes con menos del 30 % de vida (a los jefes, daño enorme) |
+| Daño: Aplastante | *Terremoto*: golpe al piso que derriba y rompe postura en 5 bloques | *Cataclismo*: tres golpes al piso que avanzan en línea y rompen la postura de todo lo que tocan |
+| Vida y armadura | *Piel de hierro*: 8 s sin que los golpes te interrumpan y −30 % de daño | *Inmortal*: 6 s en los que no podés morir; al terminar recuperás el 30 % de vida |
+| Bendiciones y sanación | *Grito de la horda*: el grito además cura un 15 % a los aliados | *Canto de guerra*: 10 s de aguante infinito para todo el grupo |
+
+#### Ronin (Q base: *Desenvaine*)
+
+| Rama | Q transformada (nivel 3) | Habilidad definitiva (nivel 5) |
+|---|---|---|
+| Daño: Sangrado | *Corte carmesí*: el desenvaine llena medio sangrado y deja una herida que sangra 5 s | *Mil cortes*: 8 tajos saltando entre los enemigos cercanos |
+| Daño: Rayo | *Relámpago*: atravesás 8 bloques en línea y dañás todo lo que cruzás | *Tormenta de acero*: durante 6 s, cada golpe suelta un rayo |
+| Vida y armadura | *Postura del agua*: durante 2 s, el próximo golpe que recibas se devuelve como parry perfecto con crítico | *Espíritu inquebrantable*: 8 s con la ventana de parry triplicada |
+| Bendiciones y sanación | *Meditación*: te arrodillás 2 s y curás vida y aguante a vos y a los aliados cercanos | *Camino del guerrero*: 10 s con ventana de parry doble y +20 % de daño para todo el grupo |
+
+#### Cazador de Bestias (Q base: *Lluvia de flechas*)
+
+| Rama | Q transformada (nivel 3) | Habilidad definitiva (nivel 5) |
+|---|---|---|
+| Daño: Robo de vida | *Jeringa sangrienta*: lanzás una jeringa con cadena que se clava en el enemigo y le saca sangre durante 4 s; te curás la mitad de lo que drena | *Cacería*: marcás a un enemigo; todo el grupo le pega +40 % y cada golpe que le dan los cura |
+| Daño: Veneno | *Flecha de la plaga*: deja una nube de veneno de 4 bloques por 6 s | *Pestilencia*: durante 10 s, los enemigos envenenados contagian a los que tienen cerca |
+| Vida y armadura | *Trampa de hierro*: cepo que inmoviliza 3 s al primero que lo pisa | *Instinto*: 6 s en los que cada voltereta te da el doble de invulnerabilidad y deja un señuelo |
+| Bendiciones y sanación | *Compañero lobo*: invocás un lobo que pelea a tu lado y aúlla para curar a los aliados | *Manada*: tres lobos durante 15 s |
+
+#### Hechicero del Vacío (Q base: *Orbe gravitatorio*)
+
+| Rama | Q transformada (nivel 3) | Habilidad definitiva (nivel 5) |
+|---|---|---|
+| Daño: Vacío | *Colapso*: el orbe atrae a los enemigos y explota al final | *Lluvia de estrellas*: 10 meteoros del vacío en un área de 10 bloques |
+| Daño: Hielo | *Prisión de escarcha*: congela a los enemigos en 4 bloques por 2 s | *Invierno eterno*: tormenta de hielo de 8 s que frena y congela |
+| Vida y armadura | *Barrera de cristal*: escudo que absorbe daño por el 40 % de tu vida máxima | *Fase*: 3 s intangible y un teletransporte de 10 bloques |
+| Bendiciones y sanación | *Glifo*: círculo en el piso; los aliados dentro hacen +25 % de daño mágico y recuperan éter | *Tiempo detenido*: los enemigos en 10 bloques quedan casi quietos 5 s |
+
+#### Clérigo de la Llama (Q base: *Llamarada sagrada*)
+
+| Rama | Q transformada (nivel 3) | Habilidad definitiva (nivel 5) |
+|---|---|---|
+| Daño: Fuego sagrado | *Martillo solar*: golpe de maza que explota en fuego | *Sol negro*: área de 8 bloques que quema a los enemigos durante 6 s |
+| Daño: Rayo | *Lanza del cielo*: lanza de rayo a distancia que aturde | *Juicio celestial*: rayo continuo durante 4 s sobre el enemigo apuntado |
+| Vida y armadura | *Égida*: escudo sobre un aliado que absorbe daño por el 30 % de su vida | *Santuario*: cúpula de 8 s donde los aliados reciben −50 % de daño |
+| Bendiciones y sanación | *Plegaria*: cura el 35 % a todo el grupo cercano | *Resurrección*: revive al último aliado muerto (en los últimos 30 s) donde cayó, sin que pierda sus almas |
+
+### 3.6 Armas, mejoras y armaduras
 
 - **Mejoras**: +0 a +10 con el herrero del Santuario, usando **Fragmentos de Hierro Estelar** (comunes, los sueltan los enemigos) y **Escamas del Abismo** (raras, para +7 en adelante) ✅.
 - **Armas de jefe**: cada Señor deja un **alma**. En el Santuario se cambia por un arma o un hechizo único de ese jefe, con habilidad propia ✅.
@@ -471,7 +586,7 @@ Cada clase empieza con su arma, su set de armadura y 2 objetos propios.
   - Frío: congela la pantalla y te frena (efecto de nieve polvo de Minecraft).
   - **Locura**: aparece en las zonas del Durmiente; te hace daño y te distorsiona la vista.
 
-### 3.6 Magia
+### 3.7 Magia
 
 - **Hechicería** (Inteligencia, con bastón):
   - Saeta del Vacío: proyectil rápido.
@@ -485,7 +600,7 @@ Cada clase empieza con su arma, su set de armadura y 2 objetos propios.
   - Llama purificadora: limpia los estados alterados.
 - Se gastan con **éter** (barra azul), que se recupera con el **Frasco de Éter** o en las hogueras ✅.
 
-### 3.7 Objetos
+### 3.8 Objetos
 
 - **Frasco de Estus**: cura el 45 %. Se rellena en las hogueras y se mejora de 3 a 8 cargas ✅ (ya existe).
 - **Frasco de Éter**: recupera éter. Las cargas se reparten con el Estus en el herrero.
@@ -496,12 +611,12 @@ Cada clase empieza con su arma, su set de armadura y 2 objetos propios.
   - **Ceniza de Retorno**: te lleva a tu última hoguera.
 - **Llaves y objetos de misión**: abren atajos y zonas.
 
-### 3.8 Muerte y almas
+### 3.9 Muerte y almas
 
 - Al morir perdés tus almas, que quedan donde caíste. Si llegás a buscarlas, las recuperás; si morís antes, se pierden ✅ (ya existe).
 - Al descansar en una hoguera **reaparecen todos los enemigos** comunes (no los jefes ni las élites derrotadas) ✅.
 
-### 3.9 Enemigos y dificultad progresiva
+### 3.10 Enemigos y dificultad progresiva
 
 **Nivel de los enemigos**: cada zona tiene un rango de nivel, y dentro de la zona sube con la distancia a su hoguera de entrada ✅.
 
@@ -532,7 +647,7 @@ Cada clase empieza con su arma, su set de armadura y 2 objetos propios.
 | Ahogado | 4 | Criatura anfibia con tentáculos en la cara; sale del agua |
 | Vástago del Durmiente | 5 | Masa de tentáculos que escupe locura |
 
-### 3.10 Jefes
+### 3.11 Jefes
 
 Cada jefe tiene arena propia con **muro de niebla** (una vez adentro, no salís hasta ganar o morir), barra de jefe y ataques anunciados: un gesto previo que deja tiempo para rodar o hacer parry ✅. Los modelos y las animaciones son el trabajo más grande ⚠️.
 
@@ -546,7 +661,7 @@ Cada jefe tiene arena propia con **muro de niebla** (una vez adentro, no salís 
 
 Además, cada zona tiene 1 o 2 **minijefes** (Campeón Hueco, Bestia Alfa, Gárgola Gemela, etc.) que custodian atajos u objetos clave.
 
-### 3.11 Mundo: Las Tierras Cenicientas
+### 3.12 Mundo: Las Tierras Cenicientas
 
 **Tamaño**: unos 1500 × 1500 bloques. El borde actual de 8000 es demasiado para 6 jugadores.
 
@@ -571,7 +686,7 @@ Además, cada zona tiene 1 o 2 **minijefes** (Campeón Hueco, Bestia Alfa, Gárg
 
 **Hora**: atardecer permanente en las zonas 1–3 y noche en la 4–5 ✅. La Noche Roja la pisa cada 3 noches.
 
-### 3.12 Dirección de arte
+### 3.13 Dirección de arte
 
 - **Paleta**: grises de ceniza, marrón óxido, verde enfermo y naranja brasa. Acentos dorados en la Ciudadela y verde azulado bioluminiscente en las zonas del Durmiente.
 - **Armas**: hierro forjado con mellas, cuero gastado y empuñaduras con tela. Las de jefe, con detalles orgánicos (dientes, hueso, tentáculos).
@@ -584,7 +699,7 @@ Además, cada zona tiene 1 o 2 **minijefes** (Campeón Hueco, Bestia Alfa, Gárg
   - abajo a la izquierda, los slots rápidos;
   - "HAS MUERTO" en rojo y "ENEMIGO FORMIDABLE DERROTADO" en dorado, centrados ✅ (ya existen como títulos).
 
-### 3.13 Cooperativo
+### 3.14 Cooperativo
 
 - Todos en el mismo mundo, sin fuego amigo ✅ (ya existe).
 - **Muro de niebla compartido**: cuando uno entra, los demás tienen 15 s para entrar a la misma pelea ✅.
@@ -617,8 +732,8 @@ Es el volumen real de trabajo. Lo modelo y texturizo yo; conviene revisarlo y re
 | Modo | Modelos | Otros |
 |---|---|---|
 | Shooter | 24 armas, ~10 accesorios, 7 equipamientos, paquete de ayuda, misil, perros, ~20 objetos del mapa (autos, colectivo, maniquíes, muebles) | Camuflajes (8 por arma), HUD, ~30 sonidos |
-| Guerra | 6 vehículos en piezas (casco, torreta, cañón, ruedas u orugas), 6 armas nuevas (Javelin, Stinger, C4, minas, llave, binoculares), banderas, ~25 objetos del mapa | Uniformes por equipo, HUD de vehículo, ~25 sonidos |
-| RPG | 6 armas de clase, 5 de jefe, ~10 comunes, 2 catalizadores; 6 sets de armadura + 3 de jefe; 11 enemigos; 5 jefes animados; NPC y objetos | Texturas de biomas, HUD Souls, ~40 sonidos |
+| Guerra | 7 vehículos en piezas (casco, torreta, cañón, ruedas, orugas o rotores), 8 armas nuevas (AT4, Javelin, Stinger, C4, granada y minas antitanque, llave, binoculares), banderas, ~25 objetos del mapa | Uniformes por equipo, HUD de vehículo, ~25 sonidos |
+| RPG | ~12 objetos de habilidades (jeringa, estandarte, cepo, lobo, glifo…), 6 armas de clase, 5 de jefe, ~10 comunes, 2 catalizadores; 6 sets de armadura + 3 de jefe; 11 enemigos; 5 jefes animados; NPC y objetos | Texturas de biomas, HUD Souls, ~40 sonidos |
 
 ---
 
@@ -631,8 +746,11 @@ Es el volumen real de trabajo. Lo modelo y texturizo yo; conviene revisarlo y re
 
 Cada etapa se compila en GitHub Actions y se prueba en la VM.
 
-## 7. Decisiones pendientes
+## 7. Decisiones tomadas
 
-1. **Época de Guerra**: moderna ("WW3", como tu captura) o Segunda Guerra Mundial (como World of Tanks clásico). Este documento asume la moderna.
-2. **Bomba atómica a las 25 bajas**: ¿la dejamos? Con 4 a 6 jugadores es difícil de conseguir, pero define la partida.
-3. **Clases del RPG**: ¿te sirven las 6 propuestas o querés cambiar alguna?
+1. **Época**: moderna en Shooter y Guerra.
+2. **Guerra**: los vehículos son opcionales; la infantería puede jugar todo a pie y destruirlos con cohetes, C4, minas y granadas. Se suma el helicóptero de ataque.
+3. **Shooter**: límite de 15 min con o sin meta alcanzada; la bomba atómica solo con 25 bajas seguidas sin morir; 5 s como espectador al morir y reaparición al azar en el mapa.
+4. **RPG**: las 6 clases quedan aprobadas, con árbol de tres ramas (Daño, Vida y armadura, Bendiciones y sanación) que transforma la Q de cada clase.
+
+Pendiente de confirmar: la regla de no aparecer a menos de 8 bloques de un enemigo que te vea (Shooter, 1.2) la agregué yo.
