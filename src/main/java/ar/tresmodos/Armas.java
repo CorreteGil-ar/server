@@ -6,6 +6,7 @@ import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -46,21 +47,23 @@ import java.util.UUID;
 public class Armas implements Listener {
 
     public enum Tipo {
-        //            nombre           material             daño cad alc  carg rec perd disp
-        PISTOLA("Pistola M9", Material.IRON_HOE, 4.5, 5, 45, 12, 30, 1, 0.025),
-        MP5("MP5", Material.STONE_HOE, 3.5, 2, 35, 30, 40, 1, 0.045),
-        M4A1("M4A1", Material.DIAMOND_HOE, 5.0, 3, 70, 30, 45, 1, 0.020),
-        ESCOPETA("M1014", Material.GOLDEN_HOE, 3.0, 14, 18, 8, 60, 8, 0.120),
-        FRANCOTIRADOR("Barrett .50", Material.NETHERITE_HOE, 30.0, 30, 150, 5, 70, 1, 0.000);
+        //            nombre           material             daño cad alc  carg rec perd disp   modelo
+        PISTOLA("Pistola M9", Material.IRON_HOE, 4.5, 5, 45, 12, 30, 1, 0.025, null),
+        MP5("MP5", Material.STONE_HOE, 3.5, 2, 35, 30, 40, 1, 0.045, null),
+        M4A1("M4A1", Material.DIAMOND_HOE, 5.0, 3, 70, 30, 45, 1, 0.020, "m4a1"),
+        ESCOPETA("M1014", Material.GOLDEN_HOE, 3.0, 14, 18, 8, 60, 8, 0.120, null),
+        FRANCOTIRADOR("Barrett .50", Material.NETHERITE_HOE, 30.0, 30, 150, 5, 70, 1, 0.000, null);
 
         public final String nombre;
         public final Material material;
         public final double danio;
         public final int cadencia, alcance, cargador, recarga, perdigones;
         public final double dispersion;
+        /** Modelo del paquete de recursos ("tresmodos:" + modelo), o null si todavía se ve como la azada. */
+        public final String modelo;
 
         Tipo(String nombre, Material material, double danio, int cadencia, int alcance, int cargador,
-             int recarga, int perdigones, double dispersion) {
+             int recarga, int perdigones, double dispersion, String modelo) {
             this.nombre = nombre;
             this.material = material;
             this.danio = danio;
@@ -70,6 +73,7 @@ public class Armas implements Listener {
             this.recarga = recarga;
             this.perdigones = perdigones;
             this.dispersion = dispersion;
+            this.modelo = modelo;
         }
     }
 
@@ -102,6 +106,7 @@ public class Armas implements Listener {
         meta.getPersistentDataContainer().set(Claves.ARMA, PersistentDataType.STRING, t.name());
         meta.getPersistentDataContainer().set(Claves.BALAS, PersistentDataType.INTEGER, t.cargador);
         meta.setUnbreakable(true);
+        if (t.modelo != null) meta.setItemModel(new NamespacedKey("tresmodos", t.modelo));
         it.setItemMeta(meta);
         return it;
     }
@@ -222,6 +227,7 @@ public class Armas implements Listener {
         } finally {
             aplicandoBala = false;
         }
+        Hud.marcador(tirador, blanco.isDead());
         blanco.getWorld().spawnParticle(Particle.BLOCK, punto.toLocation(blanco.getWorld()), 6, 0.1, 0.1, 0.1, 0,
                 Material.REDSTONE_BLOCK.createBlockData());
         tirador.playSound(tirador, cabeza ? Sound.ENTITY_ARROW_HIT_PLAYER : Sound.BLOCK_NOTE_BLOCK_HAT,
@@ -256,7 +262,7 @@ public class Armas implements Listener {
     public void mostrarBalas(Player p, ItemStack it, Tipo t) {
         int b = balas(it);
         String color = b == 0 ? "<red>" : b <= t.cargador / 4 ? "<yellow>" : "<white>";
-        Util.barra(p, "<gray>" + t.nombre + "  " + color + "<bold>" + b + "</bold><gray> / " + t.cargador);
+        Util.barra(p, "<gray>" + t.nombre + "  " + Hud.ICONO_BALA + " " + color + "<bold>" + b + "</bold><gray> / " + t.cargador);
     }
 
     // ------------------------------------------------------------------ recarga

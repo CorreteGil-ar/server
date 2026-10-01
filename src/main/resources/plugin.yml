@@ -17,7 +17,7 @@ commands:
     aliases: [cel, tel]
   tm:
     description: Comandos de administracion de TresModos
-    usage: /tm <dinero|almas|buscado|jefe|guardar|info> ...
+    usage: /tm <dinero|almas|buscado|jefe|guardar|paquete|info> ...
     permission: tresmodos.admin
 permissions:
   tresmodos.admin:

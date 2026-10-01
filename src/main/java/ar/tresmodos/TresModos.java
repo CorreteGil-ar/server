@@ -19,6 +19,7 @@ public final class TresModos extends JavaPlugin {
     private Sidebar sidebar;
     private CambioModo cambio;
     private Armas armas;
+    private PaqueteRecursos paquete;
     private Lobby lobby;
     private ModoGta gta;
     private ModoCod cod;
@@ -29,12 +30,14 @@ public final class TresModos extends JavaPlugin {
     public void onEnable() {
         Claves.init(this);
         getDataFolder().mkdirs();
+        saveDefaultConfig();
         almacen = new Almacen(this);
         mundos = new Mundos(this);
         mundos.crear();
         sidebar = new Sidebar(this);
         cambio = new CambioModo(this);
         armas = new Armas(this);
+        paquete = new PaqueteRecursos(this);
         lobby = new Lobby(this);
         gta = new ModoGta(this);
         cod = new ModoCod(this);
@@ -48,6 +51,7 @@ public final class TresModos extends JavaPlugin {
         pm.registerEvents(new Menu.Escucha(), this);
         pm.registerEvents(cambio, this);
         pm.registerEvents(armas, this);
+        pm.registerEvents(paquete, this);
         pm.registerEvents(lobby, this);
         pm.registerEvents(gta, this);
         pm.registerEvents(cod, this);
@@ -71,6 +75,7 @@ public final class TresModos extends JavaPlugin {
             cambio.limpiar(p);
             cambio.entrar(p, Modo.LOBBY);
         }
+        paquete.cargar();
         getLogger().info("TresModos listo: lobby, GTA, COD y RPG.");
     }
 
@@ -112,6 +117,7 @@ public final class TresModos extends JavaPlugin {
     public Sidebar sidebar() { return sidebar; }
     public CambioModo cambio() { return cambio; }
     public Armas armas() { return armas; }
+    public PaqueteRecursos paquete() { return paquete; }
     public Lobby lobby() { return lobby; }
     public ModoGta gta() { return gta; }
     public ModoCod cod() { return cod; }

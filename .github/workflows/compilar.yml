@@ -8,6 +8,8 @@ on:
 jobs:
   compilar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -20,13 +22,27 @@ jobs:
       - name: Compilar con Maven
         run: mvn -B -ntp package
 
-      # Plugin compilado + scripts del server, listo para copiar a la VM.
+      - name: Validar y empaquetar el paquete de recursos
+        run: python3 herramientas/armar_paquete.py
+
+      # Plugin compilado + paquete de recursos + scripts del server, listo para copiar a la VM.
       - name: Armar paquete
         run: |
           mkdir -p paquete
-          cp target/TresModos.jar instalar.sh mc apagado-inactivo.sh paquete/
+          cp target/TresModos.jar target/tresmodos-pack.zip instalar.sh mc apagado-inactivo.sh paquete/
 
       - uses: actions/upload-artifact@v4
         with:
           name: tresmodos
           path: paquete/
+
+      # El plugin baja el paquete de recursos desde este release y se lo manda a los jugadores.
+      - name: Publicar paquete de recursos
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view pack >/dev/null 2>&1 || gh release create pack --target "$GITHUB_SHA" --prerelease \
+            --title "Paquete de recursos" \
+            --notes "Paquete de recursos del server. Lo actualiza GitHub Actions en cada push a main."
+          gh release upload pack target/tresmodos-pack.zip --clobber
