@@ -38,7 +38,7 @@ public class JefeVigia extends Jefe {
     @Override public String alma() { return "Alma del Vigía"; }
     @Override protected double vidaBase() { return 1200; }
     @Override public long almas() { return 30000; }
-    @Override protected BossBar.Color colorBarra() { return BossBar.Color.WHITE; }
+    @Override protected BossBar.Color colorBarra() { return BossBar.Color.YELLOW; }
 
     @Override
     protected LivingEntity crearCuerpo(Location c) {

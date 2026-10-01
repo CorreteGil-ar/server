@@ -3,10 +3,12 @@ package ar.tresmodos.guerra;
 import ar.tresmodos.Armas;
 import ar.tresmodos.Modo;
 import ar.tresmodos.TresModos;
+import ar.tresmodos.Hud;
 import ar.tresmodos.Util;
 import ar.tresmodos.guerra.TipoVehiculo.Movimiento;
 import ar.tresmodos.guerra.TipoVehiculo.Puesto;
 import ar.tresmodos.mundo.ValleDeHierro;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
@@ -416,6 +418,7 @@ public class Vehiculos implements Listener {
             v.actualizar();
             if (ahora % 5 == 0) hud(v, ahora);
         }
+        if (ahora % 5 == 0) limpiarTableros();
         // Bajar con Shift sostenido.
         for (Map.Entry<UUID, Integer> en : new ArrayList<>(shiftDesde.entrySet())) {
             if (ahora - en.getValue() < 20) continue;
@@ -904,7 +907,7 @@ public class Vehiculos implements Listener {
                     Util.barra(p, "<gray>Recargando… " + String.format("%.1f", (v.recargaHasta - ahora) / 20.0) + " s");
                     return;
                 }
-                v.recargaHasta = ahora + 80;
+                v.recargaHasta = ahora + RECARGA_CANON;
                 proyectiles.lanzar(v.municionHE ? Proyectiles.Municion.HE : Proyectiles.Municion.AP, p, v, v.bocaCanon(),
                         v.direccionCanon(), null);
             }
@@ -1115,32 +1118,63 @@ public class Vehiculos implements Listener {
         return null;
     }
 
+    /** Ticks que tarda en recargar el cañón del tanque. */
+    private static final int RECARGA_CANON = 80;
+
+    /** Tablero del vehículo arriba al centro (la barra de acción queda libre para avisos). */
+    private final Hud.Panel tablero = new Hud.Panel();
+
     private void hud(Vehiculo v, int ahora) {
         for (int i = 0; i < v.ocupantes.length; i++) {
             Player p = ocupante(v, i);
             if (p == null || v.tipo.asientos.get(i).puesto() == Puesto.PASAJERO) continue;
-            StringBuilder sb = new StringBuilder("<white>" + v.tipo.nombre + " ");
             double frac = v.vida / v.tipo.vida;
-            sb.append(frac > 0.6 ? "<green>" : frac > 0.3 ? "<yellow>" : "<red>").append("❤ ").append((int) Math.ceil(v.vida))
-                    .append("<gray>/").append((int) v.tipo.vida);
+            Hud.ColorBarra color = frac > 0.6 ? Hud.ColorBarra.VERDE : frac > 0.3 ? Hud.ColorBarra.AMARILLO : Hud.ColorBarra.ROJO;
+            Hud.Pieza f0 = Hud.texto(0, v.tipo.nombre).mas(Hud.espacio(4)).mas(Hud.barra(0, color, frac, 0, 90))
+                    .mas(Hud.espacio(4)).mas(Hud.texto(0, (int) Math.ceil(v.vida) + "/" + (int) v.tipo.vida));
+
             double vel = v.tipo.movimiento == Movimiento.HELI ? Math.hypot(v.vel, v.velLado) : Math.abs(v.vel);
-            sb.append(" <gray>· <white>").append((int) Math.round(vel)).append(" b/s");
-            if (v.tipo == TipoVehiculo.AVION) sb.append(" <gray>· ").append((int) (v.potencia * 100)).append("% · alt ")
-                    .append((int) (v.y - ValleDeHierro.SUELO));
+            // 1 bloque/s = 3,6 km/h
+            Hud.Pieza f1 = Hud.texto(1, (int) Math.round(vel * 3.6) + " KM/H", NamedTextColor.GRAY);
+            if (v.tipo == TipoVehiculo.AVION) f1 = f1.mas(Hud.texto(1, "  POT " + (int) (v.potencia * 100) + "%  ALT "
+                    + (int) (v.y - ValleDeHierro.SUELO), NamedTextColor.GRAY));
+            if (v.tipo == TipoVehiculo.HELICOPTERO) f1 = f1.mas(Hud.texto(1, "  ALT " + (int) (v.y - ValleDeHierro.SUELO),
+                    NamedTextColor.GRAY));
             if (v.tipo == TipoVehiculo.TANQUE && i == 0) {
-                sb.append(" <gray>· <yellow>").append(v.municionHE ? "HE" : "AP");
                 int resta = v.recargaHasta - ahora;
-                sb.append(resta > 0 ? " <red>" + "▮".repeat(Math.max(0, 4 - resta / 20)) + "<dark_gray>" + "▯".repeat(Math.min(4, resta / 20 + 0)) : " <green>LISTO");
+                double carga = resta > 0 ? 1 - resta / (double) RECARGA_CANON : 1;
+                f1 = f1.mas(Hud.texto(1, "  " + (v.municionHE ? "HE" : "AP"), NamedTextColor.YELLOW)).mas(Hud.espacio(3))
+                        .mas(Hud.barra(1, resta > 0 ? Hud.ColorBarra.AMARILLO : Hud.ColorBarra.VERDE, carga, 0, 30))
+                        .mas(Hud.espacio(3)).mas(resta > 0 ? Hud.texto(1, String.format("%.1f", resta / 20.0).replace(',', '.'),
+                                NamedTextColor.GRAY) : Hud.texto(1, "LISTO", NamedTextColor.GREEN));
             }
-            if (v.tipo == TipoVehiculo.AVION) sb.append(" <gray>· ").append(v.secundarioBombas ? "bombas " + v.bombas : "misiles " + v.misiles);
-            if (v.tipo == TipoVehiculo.HELICOPTERO) sb.append(i == 0 ? " <gray>· cohetes " + v.cohetes : " <gray>· misiles " + v.misiles);
-            if (v.tipo == TipoVehiculo.VCI && i == 1) sb.append(" <gray>· TOW ").append(v.misiles);
-            if (!v.movil(ahora)) sb.append(" <red>⚠ orugas");
-            if (v.motorDanado) sb.append(" <red>⚠ motor");
-            if (v.canonHasta > ahora) sb.append(" <red>⚠ cañón");
-            if (v.rotorCola) sb.append(" <red>⚠ rotor de cola");
-            if (v.incendio) sb.append(" <gold>🔥 Q: extintor");
-            p.sendActionBar(Util.mm(sb.toString()));
+
+            Hud.Pieza f2 = Hud.espacio(0);
+            String municion = null;
+            if (v.tipo == TipoVehiculo.AVION) municion = v.secundarioBombas ? "BOMBAS " + v.bombas : "MISILES " + v.misiles;
+            if (v.tipo == TipoVehiculo.HELICOPTERO) municion = i == 0 ? "COHETES " + v.cohetes : "MISILES " + v.misiles;
+            if (v.tipo == TipoVehiculo.VCI && i == 1) municion = "TOW " + v.misiles;
+            if (municion != null) f2 = f2.mas(Hud.texto(2, municion, NamedTextColor.WHITE)).mas(Hud.espacio(6));
+            if (!v.movil(ahora)) f2 = f2.mas(Hud.texto(2, "! ORUGAS  ", NamedTextColor.RED));
+            if (v.motorDanado) f2 = f2.mas(Hud.texto(2, "! MOTOR  ", NamedTextColor.RED));
+            if (v.canonHasta > ahora) f2 = f2.mas(Hud.texto(2, "! CANON  ", NamedTextColor.RED));
+            if (v.rotorCola) f2 = f2.mas(Hud.texto(2, "! ROTOR DE COLA  ", NamedTextColor.RED));
+            if (v.incendio) f2 = f2.mas(Hud.texto(2, "FUEGO: Q EXTINTOR", NamedTextColor.GOLD));
+            tablero.mostrar(p, Hud.renglones(f0, f1, f2));
+        }
+    }
+
+    /** Saca el tablero a quien ya no maneja ni dispara. */
+    private void limpiarTableros() {
+        for (UUID id : tablero.jugadores()) {
+            Player p = Bukkit.getPlayer(id);
+            if (p == null) {
+                tablero.olvidar(id);
+                continue;
+            }
+            Vehiculo v = de(p);
+            int asiento = v == null ? -1 : v.asientoDe(p);
+            if (v == null || asiento < 0 || v.tipo.asientos.get(asiento).puesto() == Puesto.PASAJERO) tablero.ocultar(p);
         }
     }
 
@@ -1295,9 +1329,11 @@ public class Vehiculos implements Listener {
         gatillo.remove(p.getUniqueId());
         paracaidas.remove(p.getUniqueId());
         soltarFijacion(p);
+        tablero.ocultar(p);
     }
 
     public void apagar() {
+        tablero.ocultarTodos();
         for (Vehiculo v : new ArrayList<>(vehiculos)) quitar(v);
         vehiculos.clear();
         proyectiles.limpiar();

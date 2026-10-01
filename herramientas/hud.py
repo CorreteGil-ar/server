@@ -57,6 +57,114 @@ def destello():
     return Image.new("RGBA", (64, 16), (255, 255, 255, 255))
 
 
+# ------------------------------------------------------------------ paneles (barras y letra chica)
+#
+# Los paneles del HUD (barras estilo Souls del RPG, tablero de los vehículos) se escriben como
+# título de una barra de jefe blanca cuyo dibujo es transparente. Tres fuentes iguales salvo la
+# altura: tresmodos:fila0, fila1 y fila2 (cada una 7 px más abajo). Hud.java arma el texto.
+#
+#   letras: ASCII en mayúsculas, 3×5 (M, W y N más anchas), avance = ancho + 1
+#   barras: U+E100 + 16·color + i, pieza de 2^i px de largo (i = 0..7), 5 px de alto con borde
+#   espacios: U+E200 + i retrocede 2^i px; U+E210 + i avanza 2^i px (i = 0..9)
+
+LETRAS = {
+    "0": ["###", "#.#", "#.#", "#.#", "###"], "1": [".#.", "##.", ".#.", ".#.", "###"],
+    "2": ["###", "..#", "###", "#..", "###"], "3": ["###", "..#", ".##", "..#", "###"],
+    "4": ["#.#", "#.#", "###", "..#", "..#"], "5": ["###", "#..", "###", "..#", "###"],
+    "6": ["###", "#..", "###", "#.#", "###"], "7": ["###", "..#", ".#.", ".#.", ".#."],
+    "8": ["###", "#.#", "###", "#.#", "###"], "9": ["###", "#.#", "###", "..#", "###"],
+    "A": [".#.", "#.#", "###", "#.#", "#.#"], "B": ["##.", "#.#", "##.", "#.#", "##."],
+    "C": [".##", "#..", "#..", "#..", ".##"], "D": ["##.", "#.#", "#.#", "#.#", "##."],
+    "E": ["###", "#..", "##.", "#..", "###"], "F": ["###", "#..", "##.", "#..", "#.."],
+    "G": [".##", "#..", "#.#", "#.#", ".##"], "H": ["#.#", "#.#", "###", "#.#", "#.#"],
+    "I": ["###", ".#.", ".#.", ".#.", "###"], "J": ["..#", "..#", "..#", "#.#", ".#."],
+    "K": ["#.#", "#.#", "##.", "#.#", "#.#"], "L": ["#..", "#..", "#..", "#..", "###"],
+    "M": ["#...#", "##.##", "#.#.#", "#...#", "#...#"], "N": ["#..#", "##.#", "#.##", "#..#", "#..#"],
+    "O": [".#.", "#.#", "#.#", "#.#", ".#."], "P": ["##.", "#.#", "##.", "#..", "#.."],
+    "Q": [".#.", "#.#", "#.#", "##.", ".##"], "R": ["##.", "#.#", "##.", "#.#", "#.#"],
+    "S": [".##", "#..", ".#.", "..#", "##."], "T": ["###", ".#.", ".#.", ".#.", ".#."],
+    "U": ["#.#", "#.#", "#.#", "#.#", "###"], "V": ["#.#", "#.#", "#.#", "#.#", ".#."],
+    "W": ["#...#", "#...#", "#.#.#", "##.##", "#...#"], "X": ["#.#", "#.#", ".#.", "#.#", "#.#"],
+    "Y": ["#.#", "#.#", ".#.", ".#.", ".#."], "Z": ["###", "..#", ".#.", "#..", "###"],
+    "/": ["..#", "..#", ".#.", "#..", "#.."], "%": ["#.#", "..#", ".#.", "#..", "#.#"],
+    ".": [".", ".", ".", ".", "#"], ":": [".", "#", ".", "#", "."], "!": ["#", "#", "#", ".", "#"],
+    "-": ["...", "...", "###", "...", "..."], "+": ["...", ".#.", "###", ".#.", "..."],
+    "(": [".#", "#.", "#.", "#.", ".#"], ")": ["#.", ".#", ".#", ".#", "#."],
+    "?": ["##.", "..#", ".#.", "...", ".#."], "*": ["#.#", ".#.", "#.#", "...", "..."],
+}
+
+# Colores de las barras: (brillo, medio, sombra). El orden es el de Hud.ColorBarra.
+COLORES_BARRA = [
+    ((236, 84, 74), (190, 34, 34), (120, 16, 16)),     # ROJO (vida)
+    ((120, 210, 96), (60, 160, 60), (28, 96, 34)),     # VERDE (aguante, blindaje sano)
+    ((104, 156, 244), (52, 96, 206), (28, 54, 138)),   # AZUL (éter)
+    ((252, 222, 104), (220, 178, 40), (150, 108, 20)),  # AMARILLO
+    ((250, 164, 80), (226, 116, 30), (150, 70, 14)),   # NARANJA
+    ((250, 246, 230), (230, 220, 196), (190, 176, 150)),  # BLANCO (daño reciente)
+    ((54, 50, 50), (38, 34, 34), (30, 26, 26)),        # VACIO
+    None,                                               # BORDE (columna oscura)
+    ((170, 170, 176), (124, 124, 130), (84, 84, 90)),  # GRIS
+]
+BORDE = (14, 10, 10, 235)
+
+
+def letras():
+    """Grilla 16 × n de celdas de 6 × 8 (la letra arriba a la izquierda; el ancho sale solo)."""
+    chars = list(LETRAS)
+    filas = [chars[i:i + 16] for i in range(0, len(chars), 16)]
+    im = Image.new("RGBA", (16 * 6, len(filas) * 8), (0, 0, 0, 0))
+    px = im.load()
+    for fy, fila in enumerate(filas):
+        for fx, c in enumerate(fila):
+            for y, linea in enumerate(LETRAS[c]):
+                for x, v in enumerate(linea):
+                    if v == "#":
+                        px[fx * 6 + x, fy * 8 + y] = (255, 255, 255, 255)
+    return im, ["".join(f).ljust(16, "\0") for f in filas]
+
+
+def barras():
+    """Grilla 8 × colores de celdas de 128 × 8: la pieza i mide 2^i px (5 de alto con borde)."""
+    im = Image.new("RGBA", (8 * 128, len(COLORES_BARRA) * 8), (0, 0, 0, 0))
+    px = im.load()
+    for ci, col in enumerate(COLORES_BARRA):
+        for i in range(8):
+            largo = 1 << i
+            for x in range(largo):
+                for y in range(5):
+                    if col is None or y in (0, 4):
+                        c = BORDE
+                    else:
+                        c = col[y - 1] + ((200,) if ci == 6 else (255,))
+                    px[i * 128 + x, ci * 8 + y] = c
+    filas = ["".join(chr(0xE100 + 16 * ci + i) for i in range(8)) for ci in range(len(COLORES_BARRA))]
+    return im, filas
+
+
+def fuentes_paneles():
+    im, filas_letras = letras()
+    im.save(FUENTES / "letras.png")
+    im, filas_barras = barras()
+    im.save(FUENTES / "barras.png")
+    espacios = {" ": 3}
+    for i in range(10):
+        espacios[chr(0xE200 + i)] = -(1 << i)
+        espacios[chr(0xE210 + i)] = 1 << i
+    for n, ascent in enumerate((7, 0, -7)):
+        fuente = {"providers": [
+            {"type": "space", "advances": espacios},
+            {"type": "bitmap", "file": "tresmodos:font/letras.png", "ascent": ascent, "height": 8, "chars": filas_letras},
+            {"type": "bitmap", "file": "tresmodos:font/barras.png", "ascent": ascent, "height": 8, "chars": filas_barras},
+        ]}
+        ruta = PACK / "assets" / "tresmodos" / "font" / f"fila{n}.json"
+        ruta.write_text(json.dumps(fuente, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # La barra de jefe blanca queda invisible: es el soporte de los paneles (ningún jefe la usa).
+    sprites = PACK / "assets" / "minecraft" / "textures" / "gui" / "sprites" / "boss_bar"
+    sprites.mkdir(parents=True, exist_ok=True)
+    for nombre in ("white_background", "white_progress"):
+        Image.new("RGBA", (182, 5), (0, 0, 0, 0)).save(sprites / f"{nombre}.png")
+
+
 def icono_pack():
     """Ícono del paquete: tres franjas (Shooter, Guerra, RPG) sobre fondo oscuro."""
     im = Image.new("RGBA", (128, 128), (24, 24, 28, 255))
@@ -93,7 +201,8 @@ def main():
     ruta = PACK / "assets" / "tresmodos" / "font" / "hud.json"
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(json.dumps(fuente, indent=2) + "\n", encoding="utf-8")
-    print("hud: marcador, marcador_baja, bala, destello, pack.png")
+    fuentes_paneles()
+    print("hud: marcador, marcador_baja, bala, destello, paneles (fila0-2), pack.png")
 
 
 if __name__ == "__main__":

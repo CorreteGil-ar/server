@@ -108,7 +108,10 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     private final Map<UUID, Integer> invulnerableHasta = new HashMap<>();
     private final Map<UUID, Integer> ultimoEsquive = new HashMap<>();
     private final Set<UUID> sinAliento = new HashSet<>();
-    private final Map<UUID, BossBar> barrasEter = new HashMap<>();
+    /** Barras estilo Souls (vida, aguante y éter) arriba al centro. */
+    private final ar.tresmodos.Hud.Panel panel = new ar.tresmodos.Hud.Panel();
+    /** Vida que muestra la barra: baja con retraso para dejar ver el golpe en blanco. */
+    private final Map<UUID, double[]> vidaMostrada = new HashMap<>();
     private final Map<UUID, Caida> caidos = new HashMap<>();
 
     public ModoRpg(TresModos plugin) {
@@ -126,6 +129,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         this.invasores = new Invasores(plugin, this);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickAguante, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickEter, 10, 10);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::tickPanel, 2, 2);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickManchas, 10, 10);
     }
 
@@ -284,7 +288,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         if (!mundo().getWorldBorder().isInside(p.getLocation())) p.teleport(respawn(p));
         aguante.put(p.getUniqueId(), aguanteMax(p));
         eter.put(p.getUniqueId(), eterMax(p));
-        mostrarBarra(p);
+        actualizarPanel(p, Bukkit.getCurrentTick());
         DatosJugador d = datos(p);
         if (primeraVez || d.clase == null) {
             Util.titulo(p, "<gold><bold>LAS TIERRAS CENICIENTAS", "<gray>Morir cuesta caro", 800, 3500, 1000);
@@ -308,8 +312,8 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         sinAliento.remove(id);
         invulnerableHasta.remove(id);
         ultimoEsquive.remove(id);
-        BossBar b = barrasEter.remove(id);
-        if (b != null) p.hideBossBar(b);
+        panel.ocultar(p);
+        vidaMostrada.remove(id);
         magia.olvidar(id);
         mundoRpg.olvidar(p);
         estados.olvidar(id);
@@ -341,10 +345,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         invasores.apagar();
         habilidades.apagar();
         enemigos.apagar();
-        for (Map.Entry<UUID, BossBar> en : barrasEter.entrySet()) {
-            Player p = Bukkit.getPlayer(en.getKey());
-            if (p != null) p.hideBossBar(en.getValue());
-        }
+        panel.ocultarTodos();
     }
 
     // ------------------------------------------------------------------ clases
@@ -489,10 +490,42 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         eter.put(p.getUniqueId(), Math.min(eterMax(p), eterDe(p) + cant));
     }
 
-    private void mostrarBarra(Player p) {
-        BossBar b = barrasEter.computeIfAbsent(p.getUniqueId(),
-                u -> BossBar.bossBar(Util.mm("<aqua>Éter"), 1f, BossBar.Color.BLUE, BossBar.Overlay.NOTCHED_10));
-        p.showBossBar(b);
+    private void tickPanel() {
+        int ahora = Bukkit.getCurrentTick();
+        for (Player p : mundo().getPlayers()) {
+            if (p.isDead() || p.getGameMode() == GameMode.SPECTATOR) continue;
+            actualizarPanel(p, ahora);
+        }
+    }
+
+    /**
+     * Barras estilo Souls: el largo crece con el máximo (Vigor, Aguante y Mente) y el golpe
+     * recibido queda en blanco un momento antes de bajar.
+     */
+    private void actualizarPanel(Player p, int ahora) {
+        AttributeInstance atr = p.getAttribute(Attribute.MAX_HEALTH);
+        double max = atr == null ? 20 : atr.getValue();
+        double vida = p.getHealth();
+        // {mostrada, anterior, tick del último golpe}
+        double[] m = vidaMostrada.computeIfAbsent(p.getUniqueId(), u -> new double[]{vida, vida, 0});
+        if (vida < m[1]) m[2] = ahora;
+        m[1] = vida;
+        if (vida >= m[0]) m[0] = vida;
+        else if (ahora - m[2] > 14) m[0] = Math.max(vida, m[0] - max * 0.03);
+        int largoVida = (int) Math.max(40, Math.min(200, Math.round(24 + max * 1.7)));
+        var filaVida = ar.tresmodos.Hud.barra(0, ar.tresmodos.Hud.ColorBarra.ROJO, vida / max, (m[0] - vida) / max, largoVida)
+                .mas(ar.tresmodos.Hud.espacio(4))
+                .mas(ar.tresmodos.Hud.texto(0, (int) Math.ceil(vida) + "/" + (int) Math.round(max),
+                        net.kyori.adventure.text.format.TextColor.color(0xE8D8C8)));
+        double agMax = aguanteMax(p);
+        int largoAg = (int) Math.max(40, Math.min(180, Math.round(agMax * 0.45)));
+        var filaAg = ar.tresmodos.Hud.barra(1, sinAliento.contains(p.getUniqueId())
+                ? ar.tresmodos.Hud.ColorBarra.GRIS : ar.tresmodos.Hud.ColorBarra.VERDE, aguanteDe(p) / agMax, 0, largoAg);
+        double etMax = eterMax(p);
+        int largoEt = (int) Math.max(30, Math.min(160, Math.round(etMax * 0.6)));
+        var filaEt = ar.tresmodos.Hud.barra(2, ar.tresmodos.Hud.ColorBarra.AZUL, eterDe(p) / etMax, 0, largoEt)
+                .mas(estados.panel(p));
+        panel.mostrar(p, ar.tresmodos.Hud.renglones(filaVida, filaAg, filaEt));
     }
 
     private void tickEter() {
@@ -502,13 +535,6 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
             // Medio punto por segundo; más con la rama de Bendiciones.
             double e = Math.min(max, eterDe(p) + 0.25 * (1 + 0.2 * datos(p).rama(Rama.BENDICION)));
             eter.put(p.getUniqueId(), e);
-            BossBar b = barrasEter.get(p.getUniqueId());
-            if (b == null) {
-                mostrarBarra(p);
-                b = barrasEter.get(p.getUniqueId());
-            }
-            b.progress((float) Math.max(0, Math.min(1, e / max)));
-            b.name(Util.mm("<aqua>Éter <white>" + (int) e + "<gray>/" + (int) max + estados.resumen(p)));
             actualizarCarga(p);
         }
     }

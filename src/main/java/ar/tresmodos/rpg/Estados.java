@@ -133,19 +133,30 @@ public class Estados {
         }
     }
 
-    /** Texto con las barras de acumulación del jugador (para la barra de éter). */
-    public String resumen(Player p) {
+    /** Acumulación de cada estado para el panel del HUD (nombre y barrita del color del estado). */
+    public ar.tresmodos.Hud.Pieza panel(Player p) {
+        var hud = new ar.tresmodos.Hud.Pieza(net.kyori.adventure.text.Component.empty(), 0);
         EnumMap<Estado, Double> m = acumulado.get(p.getUniqueId());
-        StringBuilder sb = new StringBuilder();
         if (m != null) {
             for (Map.Entry<Estado, Double> en : m.entrySet()) {
-                int lleno = (int) Math.min(5, Math.round(en.getValue() / en.getKey().umbral * 5));
-                sb.append("  ").append(en.getKey().color).append(en.getKey().nombre).append(" ")
-                        .append("▰".repeat(lleno)).append("<dark_gray>").append("▱".repeat(5 - lleno));
+                Estado e = en.getKey();
+                var color = net.kyori.adventure.text.format.NamedTextColor.NAMES.valueOr(
+                        e.color.replaceAll("[<>]", ""), net.kyori.adventure.text.format.NamedTextColor.WHITE);
+                var barra = switch (e) {
+                    case SANGRADO -> ar.tresmodos.Hud.ColorBarra.ROJO;
+                    case VENENO -> ar.tresmodos.Hud.ColorBarra.VERDE;
+                    case FRIO -> ar.tresmodos.Hud.ColorBarra.AZUL;
+                    case LOCURA -> ar.tresmodos.Hud.ColorBarra.AMARILLO;
+                };
+                hud = hud.mas(ar.tresmodos.Hud.espacio(6)).mas(ar.tresmodos.Hud.texto(2, e.nombre, color))
+                        .mas(ar.tresmodos.Hud.espacio(2)).mas(ar.tresmodos.Hud.barra(2, barra, en.getValue() / e.umbral, 0, 20));
             }
         }
-        if (veneno.containsKey(p.getUniqueId())) sb.append("  <dark_green>☠ envenenado");
-        return sb.toString();
+        if (veneno.containsKey(p.getUniqueId())) {
+            hud = hud.mas(ar.tresmodos.Hud.espacio(6)).mas(ar.tresmodos.Hud.texto(2, "Envenenado",
+                    net.kyori.adventure.text.format.NamedTextColor.GREEN));
+        }
+        return hud;
     }
 
     public boolean envenenado(LivingEntity v) {

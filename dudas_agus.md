@@ -12,6 +12,21 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   Prioricé las **mecánicas jugables** y el **mapa**, con modelos donde más se notan; lo que quedó
   afuera está listado al final de este archivo, en "Pendiente".
 
+## HUD (todos los modos)
+
+- **Paneles arriba al centro**: las barras estilo Souls del RPG (vida, aguante y éter, con el golpe
+  recibido en blanco unos instantes) y el tablero de los vehículos (blindaje, velocidad, recarga del
+  cañón, munición y averías) se dibujan como título de una barra de jefe **blanca**, que el paquete
+  deja transparente (`minecraft:gui/sprites/boss_bar/white_*`). Por eso ningún jefe puede usar el
+  color blanco (el Vigía pasó a amarillo). Usan letra chica de 3×5 propia.
+  - No se puede anclar arriba a la izquierda como en Dark Souls: sin mods, el HUD solo se puede
+    ubicar respecto del centro de la pantalla. Lo dejé centrado arriba, donde no tapa la mira.
+  - **Para probar en el juego**: que las barras no se pisen con la barra de un jefe (van debajo) y
+    que se lea bien en escala de interfaz 2 y 3.
+  - Los corazones y la barra de experiencia (aguante) de vanilla siguen visibles: esconderlos
+    cambiaría también los otros modos.
+- La barra de acción de los vehículos ahora queda libre para los avisos ("Cañón dañado", etc.).
+
 ## Shooter
 
 - **Regla de los 8 bloques al reaparecer** (la había propuesto yo y estaba pendiente de tu OK):
