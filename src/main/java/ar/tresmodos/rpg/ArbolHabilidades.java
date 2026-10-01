@@ -30,7 +30,9 @@ public class ArbolHabilidades implements Listener {
     }
 
     public static int brasasTotales(DatosJugador d) {
-        return d.nivelRpg() / 3 + 2 * d.almasJefe.size();
+        int jefes = 0;
+        for (String j : List.of("gloton", "tejedora", "abismo", "vigia", "durmiente")) if (d.jefes.contains(j)) jefes++;
+        return d.nivelRpg() / 3 + 2 * jefes;
     }
 
     public static int brasasGastadas(DatosJugador d) {

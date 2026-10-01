@@ -44,6 +44,9 @@ import java.util.UUID;
 public class CombateRpg implements Listener {
     private static final int VENTANA_PARRY = 5;
 
+    /** true mientras se aplica daño de habilidad, hechizo o estado (no es un golpe cuerpo a cuerpo). */
+    public static boolean aplicando;
+
     private final TresModos plugin;
     private final ModoRpg modo;
     private final Map<UUID, Integer> ultimoParry = new HashMap<>();
@@ -83,6 +86,19 @@ public class CombateRpg implements Listener {
         if (t == null) return false;
         double mult = modo.buffs().valor(p, Buffs.Tipo.PARRY, 1.0);
         return Bukkit.getCurrentTick() - t <= Math.round(VENTANA_PARRY * mult);
+    }
+
+    /** Daño que no pasa por el cálculo de golpe cuerpo a cuerpo (ni gasta aguante ni vuelve a escalar). */
+    public static void herir(LivingEntity v, double danio, Player autor) {
+        if (v == null || v.isDead()) return;
+        v.setNoDamageTicks(0);
+        aplicando = true;
+        try {
+            if (autor != null && autor.isOnline()) v.damage(danio, autor);
+            else v.damage(danio);
+        } finally {
+            aplicando = false;
+        }
     }
 
     // ------------------------------------------------------------------ aturdir y postura
@@ -148,7 +164,7 @@ public class CombateRpg implements Listener {
             recibirGolpe(e, pv);
             return;
         }
-        if (atacante == null || Armas.aplicandoBala) return;
+        if (atacante == null || Armas.aplicandoBala || aplicando) return;
         if (e.getDamager() == atacante && (e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK
                 || e.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)) {
             golpeMelee(e, atacante, victima);
@@ -179,8 +195,7 @@ public class CombateRpg implements Listener {
             if (contra) {
                 b.quitar(p, Buffs.Tipo.CONTRAATAQUE);
                 double danio = danioArmaEnMano(p) * 3;
-                agresor.setNoDamageTicks(0);
-                agresor.damage(danio, p);
+                herir(agresor, danio, p);
             }
             return;
         }
@@ -188,7 +203,7 @@ public class CombateRpg implements Listener {
         double devolver = b.valor(p, Buffs.Tipo.BASTION, 0);
         if (devolver > 0 && agresor != null && deFrente(p, agresor)) {
             e.setCancelled(true);
-            agresor.damage(e.getDamage() * devolver, p);
+            herir(agresor, e.getDamage() * devolver, p);
             p.playSound(p, Sound.ITEM_SHIELD_BLOCK, 1f, 0.8f);
             return;
         }
@@ -307,8 +322,7 @@ public class CombateRpg implements Listener {
             v.getWorld().strikeLightningEffect(v.getLocation());
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (v.isValid() && !v.isDead()) {
-                    v.setNoDamageTicks(0);
-                    v.damage(danioArmaEnMano(p) * 0.35, p);
+                    herir(v, danioArmaEnMano(p) * 0.35, p);
                 }
             });
         }

@@ -219,7 +219,7 @@ public class ObjetosRpg implements Listener {
         pr.remove();
         if (tipo.equals("cuchillo")) {
             if (e.getHitEntity() instanceof LivingEntity le && le != autor) {
-                le.damage(4, autor);
+                CombateRpg.herir(le, 4, autor);
                 modo.estados().acumular(le, Estado.SANGRADO, 18, autor);
             }
             return;
@@ -229,7 +229,7 @@ public class ObjetosRpg implements Listener {
         w.playSound(l, Sound.ITEM_FIRECHARGE_USE, 1f, 0.7f);
         for (Entity en : w.getNearbyEntities(l, 2.8, 2.0, 2.8)) {
             if (!(en instanceof LivingEntity le) || le == autor || le instanceof Player) continue;
-            le.damage(8, autor);
+            CombateRpg.herir(le, 8, autor);
             le.setFireTicks(80);
         }
     }

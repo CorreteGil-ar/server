@@ -60,6 +60,9 @@ public class DatosJugador {
     public final Set<String> hogueras = new LinkedHashSet<>();
     public int ciclo = 0;
     public int lagrimas = 0;
+    /** Hechizos aprendidos (rpg.Magia.Hechizo) y el elegido. */
+    public final Set<String> hechizos = new LinkedHashSet<>();
+    public String hechizo;
     public Location hoguera;
     public Location mancha;
     public long almasMancha = 0;
@@ -143,6 +146,8 @@ public class DatosJugador {
         d.hogueras.addAll(y.getStringList("rpg.hogueras"));
         d.ciclo = y.getInt("rpg.ciclo");
         d.lagrimas = y.getInt("rpg.lagrimas");
+        d.hechizos.addAll(y.getStringList("rpg.hechizos"));
+        d.hechizo = y.getString("rpg.hechizo");
         d.hoguera = leerLoc(y, "rpg.hoguera");
         d.mancha = leerLoc(y, "rpg.mancha");
         d.almasMancha = y.getLong("rpg.almasMancha");
@@ -203,6 +208,8 @@ public class DatosJugador {
         y.set("rpg.hogueras", new java.util.ArrayList<>(hogueras));
         y.set("rpg.ciclo", ciclo);
         y.set("rpg.lagrimas", lagrimas);
+        y.set("rpg.hechizos", new java.util.ArrayList<>(hechizos));
+        y.set("rpg.hechizo", hechizo);
         escribirLoc(y, "rpg.hoguera", hoguera);
         escribirLoc(y, "rpg.mancha", mancha);
         y.set("rpg.almasMancha", almasMancha);

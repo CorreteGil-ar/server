@@ -90,7 +90,9 @@ public class Comandos implements CommandExecutor, TabCompleter {
             }
             case "jefe" -> {
                 if (!(s instanceof Player p) || Modo.de(p.getWorld()) != Modo.RPG) return uso(s, "Usalo dentro del RPG.");
-                plugin.rpg().jefe().invocar(p);
+                if (args.length < 2 || !plugin.rpg().jefes().irA(p, args[1].toLowerCase())) {
+                    return uso(s, "/tm jefe <" + String.join("|", plugin.rpg().jefes().ids()) + ">");
+                }
             }
             case "guardar" -> {
                 plugin.almacen().guardarTodo();

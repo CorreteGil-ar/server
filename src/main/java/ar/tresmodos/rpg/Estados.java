@@ -100,9 +100,7 @@ public class Estados {
     }
 
     private static void golpe(LivingEntity v, double danio, Player autor) {
-        v.setNoDamageTicks(0);
-        if (autor != null && autor.isOnline()) v.damage(danio, autor);
-        else v.damage(danio);
+        CombateRpg.herir(v, danio, autor);
     }
 
     private void tick() {

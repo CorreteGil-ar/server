@@ -290,8 +290,12 @@ public class Habilidades implements Listener {
     private void danio(Player p, LivingEntity v, double base, Atributo a, boolean magico) {
         double m = poder(p, a) * modo.combate().multiplicadorGeneral(p, v);
         if (magico) m *= modo.buffs().valor(p, Buffs.Tipo.DANIO_MAGICO, 1.0);
-        v.setNoDamageTicks(0);
-        v.damage(base * m, p);
+        CombateRpg.herir(v, base * m, p);
+    }
+
+    /** Golpe de habilidad basado en el arma: suma los multiplicadores de rama y efectos. */
+    private void golpe(LivingEntity v, double danio, Player p) {
+        CombateRpg.herir(v, danio * modo.combate().multiplicadorGeneral(p, v), p);
     }
 
     private double danioArma(Player p) {
@@ -339,7 +343,7 @@ public class Habilidades implements Listener {
             case BASE -> {
                 for (LivingEntity e : enCono(p, 3.5, 0.5)) {
                     e.setNoDamageTicks(0);
-                    e.damage(danioArma(p) * 1.4, p);
+                    golpe(e, danioArma(p) * 1.4, p);
                     e.setVelocity(new Vector(0, 1.1, 0));
                     modo.combate().danioPostura(e, 30, p);
                 }
@@ -349,7 +353,7 @@ public class Habilidades implements Listener {
             case DANIO_A -> {
                 for (LivingEntity e : enCono(p, 4, 0.4)) {
                     e.setNoDamageTicks(0);
-                    e.damage(danioArma(p) * 1.3, p);
+                    golpe(e, danioArma(p) * 1.3, p);
                     e.setFireTicks(80);
                 }
                 List<Location> estela = new ArrayList<>();
@@ -372,14 +376,14 @@ public class Habilidades implements Listener {
                 if (t == null) return;
                 w.strikeLightningEffect(t.getLocation());
                 t.setNoDamageTicks(0);
-                t.damage(danioArma(p) * 1.5, p);
+                golpe(t, danioArma(p) * 1.5, p);
                 final LivingEntity primero = t;
                 enemigos(t.getLocation(), 6).stream().filter(e -> e != primero)
                         .min(Comparator.comparingDouble(e -> e.getLocation().distanceSquared(primero.getLocation())))
                         .ifPresent(otro -> despues(6, () -> {
                             w.strikeLightningEffect(otro.getLocation());
                             otro.setNoDamageTicks(0);
-                            otro.damage(danioArma(p) * 0.8, p);
+                            golpe(otro, danioArma(p) * 0.8, p);
                         }));
             }
             case VIDA -> {
@@ -427,7 +431,7 @@ public class Habilidades implements Listener {
                         if (!e.isValid()) return;
                         w.strikeLightningEffect(e.getLocation());
                         e.setNoDamageTicks(0);
-                        e.damage(danioArma(p) * 2, p);
+                        golpe(e, danioArma(p) * 2, p);
                     });
                 }
             }
@@ -467,7 +471,7 @@ public class Habilidades implements Listener {
             case DANIO_A -> {
                 for (LivingEntity e : enemigos(p.getLocation(), 3.5)) {
                     e.setNoDamageTicks(0);
-                    e.damage(danioArma(p) * 1.2, p);
+                    golpe(e, danioArma(p) * 1.2, p);
                     modo.estados().acumular(e, Estado.SANGRADO, 60, p);
                 }
                 circulo(p.getLocation().add(0, 1, 0), 2.5, Particle.SWEEP_ATTACK, 8);
@@ -489,8 +493,8 @@ public class Habilidades implements Listener {
                         boolean jefe = e.getPersistentDataContainer().has(Claves.JEFE);
                         double max = e.getAttribute(Attribute.MAX_HEALTH).getValue();
                         e.setNoDamageTicks(0);
-                        if (!jefe && e.getHealth() < max * 0.3) e.damage(e.getHealth() + 100, p);
-                        else e.damage(danioArma(p) * 3, p);
+                        if (!jefe && e.getHealth() < max * 0.3) CombateRpg.herir(e, e.getHealth() + 100, p);
+                        else golpe(e, danioArma(p) * 3, p);
                     }
                     w.spawnParticle(Particle.EXPLOSION, p.getLocation(), 3, 1, 0.2, 1, 0);
                     w.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.6f);
@@ -523,7 +527,7 @@ public class Habilidades implements Listener {
         World w = c.getWorld();
         for (LivingEntity e : enemigos(c, radio)) {
             e.setNoDamageTicks(0);
-            e.damage(danioArma(p) * mult, p);
+            golpe(e, danioArma(p) * mult, p);
             e.setVelocity(new Vector(0, 0.5, 0));
             modo.combate().danioPostura(e, postura, p);
         }
@@ -540,7 +544,7 @@ public class Habilidades implements Listener {
             case BASE, DANIO_A -> {
                 for (LivingEntity e : enCono(p, 4.2, 0.75)) {
                     e.setNoDamageTicks(0);
-                    e.damage(danioArma(p) * 1.5, p);
+                    golpe(e, danioArma(p) * 1.5, p);
                     if (v == Variante.DANIO_A) {
                         modo.estados().acumular(e, Estado.SANGRADO, 50, p);
                         repetir(10, 10, k -> {
@@ -562,7 +566,7 @@ public class Habilidades implements Listener {
                     w.spawnParticle(Particle.ELECTRIC_SPARK, l, 4, 0.1, 0.2, 0.1, 0.05);
                     for (LivingEntity e : enemigos(l, 1.4)) {
                         e.setNoDamageTicks(0);
-                        e.damage(danioArma(p) * 1.4, p);
+                        golpe(e, danioArma(p) * 1.4, p);
                     }
                 }
                 modo.buffs().dar(p, Buffs.Tipo.FASE, 1, 6);
@@ -598,7 +602,7 @@ public class Habilidades implements Listener {
                     l.setDirection(e.getLocation().toVector().subtract(l.toVector()));
                     p.teleport(l);
                     e.setNoDamageTicks(0);
-                    e.damage(danioArma(p) * 0.9, p);
+                    golpe(e, danioArma(p) * 0.9, p);
                     modo.estados().acumular(e, Estado.SANGRADO, 25, p);
                     w.spawnParticle(Particle.SWEEP_ATTACK, e.getLocation().add(0, 1, 0), 2);
                     w.playSound(l, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1.5f);
@@ -866,7 +870,7 @@ public class Habilidades implements Listener {
                 Location c = t != null ? t.getLocation() : p.getLocation().add(p.getLocation().getDirection().multiply(2));
                 if (t != null) {
                     t.setNoDamageTicks(0);
-                    t.damage(danioArma(p) * 2, p);
+                    golpe(t, danioArma(p) * 2, p);
                 }
                 w.spawnParticle(Particle.FLAME, c, 60, 1.2, 0.5, 1.2, 0.1);
                 w.spawnParticle(Particle.EXPLOSION, c, 1);

@@ -106,3 +106,36 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   los no-muertos no se queman. Cada jugador ve la hora de su zona (atardecer o noche).
 - **Borde del mundo**: bajó de 8000 a 1700 bloques. Si alguien había quedado afuera, al entrar
   lo mando a su hoguera.
+- **Jefes (R4)**: cada Señor tiene una arena construida a 24 bloques de la hoguera "antesala", con
+  muro de niebla en la entrada. El Durmiente tiene la suya en una caverna bajo la Costa; se llega por
+  la **Puerta del Abismo**, un arco de obsidiana con una piedra imán que necesita las 4 almas.
+  **[revisar]** El diseño pide una escalera ciclópea; por ahora la puerta te teletransporta.
+  Los cuerpos de los jefes, en vanilla:
+  - Glotón: Devastador grande.
+  - Tejedora: araña ×2,8.
+  - Caballero: Wither esqueleto.
+  - Vigía: Enderman ×1,7.
+  - Durmiente: Warden ×1,6.
+
+  Todos los ataques tienen un aviso previo y se esquivan rodando o se paran con parry. Los modelos
+  propios con item displays quedan para más adelante.
+- **Jefes repetibles**: en un mundo compartido no tiene sentido que un jefe muera para todos.
+  Cualquiera puede volver a pelearlo; el alma y las brasas se dan una sola vez por jugador.
+- **Bug que arreglé de paso**: las habilidades, los estados y los cuchillos pegaban con
+  `damage(x, jugador)`, que Paper trata como un golpe cuerpo a cuerpo. Por eso les volvía a aplicar
+  el multiplicador del arma y gastaba aguante. Ahora usan `CombateRpg.herir()`.
+- **Magia**: los catalizadores son el **bastón de hueso** (hechicería) y el **talismán** (milagros).
+  La maza del Clérigo no, porque el clic derecho con escudo en la otra mano ya es bloquear o hacer
+  parry. Con el catalizador en la mano:
+  - Clic derecho: lanza el hechizo elegido.
+  - Shift + clic derecho: cambia de hechizo.
+
+  Hay 9 hechizos; el Hechicero y el Clérigo arrancan con 2 cada uno. El resto se aprende con
+  pergaminos del mercader. La rueda del mouse no se puede interceptar sin cambiar de slot.
+- **Santuario**: tiene 3 NPC (aldeanos sin IA) y el altar:
+  - Herrero: mejora de +1 a +6 con fragmentos y de +7 a +10 con escamas.
+  - Mercader: consumibles, pergaminos y catalizadores.
+  - Guardiana: niveles y Ciclo+.
+  - Altar: canjea las almas de jefe.
+
+  El **Ciclo+** conserva todo (nivel, equipo y árbol); suben los enemigos y las almas.

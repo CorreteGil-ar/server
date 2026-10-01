@@ -95,7 +95,9 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     private final CombateRpg combate;
     private final ArbolHabilidades arbol;
     private final Habilidades habilidades;
-    private final JefeAbismo jefe;
+    private final Jefes jefes;
+    private final Santuario santuario;
+    private final Magia magia;
     private final MundoRpg mundoRpg;
     private final Enemigos enemigos;
 
@@ -115,9 +117,11 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         this.combate = new CombateRpg(plugin, this);
         this.arbol = new ArbolHabilidades(plugin, this);
         this.habilidades = new Habilidades(plugin, this);
-        this.jefe = new JefeAbismo(plugin);
         this.mundoRpg = new MundoRpg(plugin, this);
         this.enemigos = new Enemigos(plugin, this);
+        this.jefes = new Jefes(plugin, this);
+        this.santuario = new Santuario(plugin, this);
+        this.magia = new Magia(plugin, this);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickAguante, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickEter, 10, 10);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickManchas, 10, 10);
@@ -125,7 +129,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     /** Las piezas que también escuchan eventos (las registra TresModos). */
     public List<Listener> escuchas() {
-        return List.of(this, objetos, combate, arbol, habilidades, jefe, mundoRpg, enemigos);
+        return List.of(this, objetos, combate, arbol, habilidades, mundoRpg, enemigos, jefes, santuario, magia);
     }
 
     public Buffs buffs() { return buffs; }
@@ -134,7 +138,9 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     public CombateRpg combate() { return combate; }
     public ArbolHabilidades arbol() { return arbol; }
     public Habilidades habilidades() { return habilidades; }
-    public JefeAbismo jefe() { return jefe; }
+    public Jefes jefes() { return jefes; }
+    public Santuario santuario() { return santuario; }
+    public Magia magia() { return magia; }
     public MundoRpg mundoRpg() { return mundoRpg; }
     public Enemigos enemigos() { return enemigos; }
 
@@ -301,7 +307,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         ultimoEsquive.remove(id);
         BossBar b = barrasEter.remove(id);
         if (b != null) p.hideBossBar(b);
-        jefe.ocultar(p);
+        magia.olvidar(id);
         mundoRpg.olvidar(p);
         estados.olvidar(id);
         buffs.olvidar(id);
@@ -328,7 +334,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     }
 
     public void apagar() {
-        jefe.apagar();
+        jefes.apagar();
         habilidades.apagar();
         enemigos.apagar();
         for (Map.Entry<UUID, BossBar> en : barrasEter.entrySet()) {
@@ -377,6 +383,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         PlayerInventory inv = p.getInventory();
         inv.clear();
         c.darKit(p);
+        for (Magia.Hechizo h : Magia.iniciales(c)) d.hechizos.add(h.name());
         darFrascos(p);
         prepararAtributos(p);
         p.setHealth(p.getAttribute(Attribute.MAX_HEALTH).getValue());
@@ -681,12 +688,6 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         Player p = e.getPlayer();
         if (!enRpg(p) || e.getHand() != EquipmentSlot.HAND) return;
         ItemStack mano = e.getItem();
-        if ((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
-                && Util.marca(mano, Claves.CAMPANA) != null) {
-            e.setCancelled(true);
-            if (jefe.invocar(p)) mano.setAmount(mano.getAmount() - 1);
-            return;
-        }
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK || e.getClickedBlock() == null) return;
         Block b = e.getClickedBlock();
         if (b.getType() != Material.CAMPFIRE && b.getType() != Material.SOUL_CAMPFIRE) return;
@@ -794,14 +795,6 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
                 "<gray>Carga: " + cg.color + cg.nombre,
                 "<gray>Ligera: rodás lejos. Pesada: rodás corto.",
                 "<gray>Sobrecarga: no podés rodar."), pl -> { });
-        m.poner(35, Util.item(Material.BELL, "<dark_red><bold>Campana del Jefe", "Despierta al Caballero del Abismo.",
-                "Mejor ir acompañado.", "<gold>Costo: 1.000 almas"), pl -> {
-            if (gastarAlmas(pl, 1000)) {
-                pl.getInventory().addItem(JefeAbismo.campana());
-                pl.playSound(pl, Sound.BLOCK_BELL_USE, 1f, 0.6f);
-            }
-            abrirHoguera(pl);
-        });
         m.poner(27, Util.item(Material.OAK_DOOR, "<white>Volver al lobby"), pl -> {
             pl.closeInventory();
             plugin.cambio().cambiar(pl, Modo.LOBBY, false);
