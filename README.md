@@ -23,7 +23,7 @@ src/main/java/ar/tresmodos/   código del plugin (lobby, armas, movilidad, cambi
   mundo/                      mapas (Pueblo Atómico y Valle de Hierro) y sus generadores
 src/main/resources/           plugin.yml (comandos y permisos) y config.yml
 paquete-recursos/             paquete de recursos: modelos, texturas y fuente del HUD
-herramientas/                 generador de modelos y texturas (armas, equipo, vehículos, armas del RPG, HUD), vista previa y empaquetado
+herramientas/                 generador de modelos, texturas y sonidos (armas, equipo, vehículos, RPG, HUD), vista previa y empaquetado
 docs/DISENO.md                diseño de los modos
 pom.xml                       build de Maven
 instalar.sh                   instala Paper + plugin como servicio systemd (Ubuntu 24.04)
@@ -51,7 +51,7 @@ Los modelos, texturas y el HUD viven en `paquete-recursos/`. En cada push a `mai
 - Si se publica una versión nueva con el server prendido, `/tm paquete` la vuelve a bajar y se la reenvía a todos.
 - Quien rechace el paquete queda afuera con un mensaje que explica cómo activarlo.
 
-Los modelos y texturas se generan por código con las herramientas de `herramientas/` (Python 3 con Pillow y numpy):
+Los modelos, texturas y sonidos se generan por código con las herramientas de `herramientas/` (Python 3 con Pillow y numpy; los sonidos además usan ffmpeg con libvorbis):
 
 ```bash
 pip install -r herramientas/requirements.txt

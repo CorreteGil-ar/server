@@ -27,6 +27,18 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
     cambiaría también los otros modos.
 - La barra de acción de los vehículos ahora queda libre para los avisos ("Cañón dañado", etc.).
 
+## Sonidos
+
+- **Sonidos propios** (`herramientas/sonidos.py`): los sintetizo con numpy (no hay grabaciones) y
+  los paso a OGG con ffmpeg. 18 eventos con 3 variantes: disparos por categoría (pistola, subfusil,
+  fusil, ametralladora, escopeta, tirador, francotirador), silenciada, M79, RPG, ametralladora y
+  cañón de vehículo, motores de orugas y de ruedas, rotor, reactor y dos explosiones. Cada arma
+  cambia el tono (la Desert Eagle y el revólver más graves, la MP7 más aguda).
+  - El volumen fija hasta dónde se oye: pistolas ~40 bloques, fusiles ~56, francotiradores ~80,
+    cañón y explosiones grandes ~100.
+  - **Para probar en el juego**: que suenen bien. Si alguno no convence, se cambian los números de
+    `DISPAROS` (o se reemplaza el .ogg por una grabación con licencia libre con el mismo nombre).
+
 ## Lobby
 
 - **Portales**: hangar en arco (Guerra), contenedor militar (Shooter) y arco de piedra con dos fuegos

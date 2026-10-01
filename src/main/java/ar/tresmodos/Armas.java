@@ -639,57 +639,59 @@ public class Armas implements Listener {
         }
     }
 
+    /** Tono de cada arma sobre el sonido de su categoría (más grave = más calibre). */
+    private static float tono(Tipo t) {
+        return switch (t) {
+            case DEAGLE, REVOLVER -> 0.78f;
+            case M1911 -> 0.9f;
+            case MP7, P90 -> 1.12f;
+            case VECTOR -> 1.05f;
+            case AK47, SCAR_H -> 0.9f;
+            case G36K -> 1.05f;
+            case PKM -> 0.88f;
+            case AA12 -> 1.1f;
+            case REMINGTON -> 0.92f;
+            case SVD -> 1.05f;
+            case M24 -> 1.1f;
+            default -> 1.0f;
+        };
+    }
+
     private void sonidoDisparo(Player p, Tipo t, boolean silenciado) {
-        Location l = p.getLocation();
+        Location l = p.getLocation().add(0, 1.4, 0);
         World w = p.getWorld();
+        float varia = 0.96f + rnd.nextFloat() * 0.08f;
         if (silenciado) {
             // Con silenciador: chasquido corto que se oye poco más allá del tirador.
-            w.playSound(l, Sound.ENTITY_ARROW_SHOOT, 0.45f, 1.7f);
-            w.playSound(l, Sound.BLOCK_IRON_TRAPDOOR_CLOSE, 0.20f, 2.0f);
+            Util.sonido(l, "arma.silenciada", 0.6f, tono(t) * varia);
             return;
         }
+        String evento = switch (t.categoria) {
+            case PISTOLA -> "arma.pistola";
+            case SUBFUSIL -> "arma.subfusil";
+            case FUSIL -> "arma.fusil";
+            case AMETRALLADORA -> "arma.ametralladora";
+            case ESCOPETA -> "arma.escopeta";
+            case TIRADOR -> "arma.tirador";
+            case FRANCOTIRADOR -> "arma.francotirador";
+            case LANZADOR -> t == Tipo.RPG7 ? "arma.lanzacohetes" : "arma.lanzagranadas";
+        };
+        // El volumen fija hasta dónde se oye (16 bloques por unidad).
+        float volumen = switch (t.categoria) {
+            case PISTOLA, SUBFUSIL -> 2.5f;
+            case FUSIL, AMETRALLADORA, ESCOPETA -> 3.5f;
+            case TIRADOR, FRANCOTIRADOR -> 5.0f;
+            case LANZADOR -> 3.0f;
+        };
+        Util.sonido(l, evento, volumen, tono(t) * varia);
         switch (t) {
-            case DEAGLE -> {
-                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 1.1f);
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.35f, 2.0f);
-            }
-            case P90, VECTOR, MP7 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.9f, 2.0f);
-            case REVOLVER -> {
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.5f);
-                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 0.9f);
-            }
-            case SCAR_H, PKM -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5f, 1.15f);
-            case SVD, MK14 -> {
-                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5f, 0.95f);
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.4f);
-            }
-            case AK47 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 1.25f);
-            case M249 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 1.35f);
-            case REMINGTON -> {
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.6f);
-                // Bombeo: corredera atrás y adelante.
-                Bukkit.getScheduler().runTaskLater(plugin, () ->
-                        w.playSound(l, Sound.BLOCK_PISTON_CONTRACT, 0.5f, 1.9f), 6);
-            }
-            case M24 -> {
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.3f, 1.0f);
-                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5f, 0.7f);
-                // Cerrojo.
-                Bukkit.getScheduler().runTaskLater(plugin, () ->
-                        w.playSound(l, Sound.BLOCK_IRON_TRAPDOOR_OPEN, 0.5f, 1.5f), 14);
-            }
-            default -> {
-                switch (t.categoria) {
-                    case PISTOLA -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.2f, 1.6f);
-                    case SUBFUSIL -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.95f);
-                    case FUSIL, AMETRALLADORA -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.3f, 1.45f);
-                    case ESCOPETA -> w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 1.8f);
-                    case TIRADOR, FRANCOTIRADOR -> {
-                        w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.4f, 0.9f);
-                        w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.6f, 0.6f);
-                    }
-                }
-            }
+            // Bombeo: corredera atrás y adelante.
+            case REMINGTON -> Bukkit.getScheduler().runTaskLater(plugin, () ->
+                    w.playSound(l, Sound.BLOCK_PISTON_CONTRACT, 0.5f, 1.9f), 6);
+            // Cerrojo.
+            case M24 -> Bukkit.getScheduler().runTaskLater(plugin, () ->
+                    w.playSound(l, Sound.BLOCK_IRON_TRAPDOOR_OPEN, 0.5f, 1.5f), 14);
+            default -> { }
         }
     }
 
@@ -938,9 +940,8 @@ public class Armas implements Listener {
         s.getPersistentDataContainer().set(LANZADOR, PersistentDataType.STRING, t.name());
         salidas.put(s.getUniqueId(), ojo.clone());
         World w = p.getWorld();
+        sonidoDisparo(p, t, false);
         if (cohete) {
-            w.playSound(ojo, Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1.6f, 0.6f);
-            w.playSound(ojo, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.8f);
             w.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, ojo.clone().subtract(ojo.getDirection().multiply(1.2)), 8, 0.2, 0.2, 0.2, 0.02);
             // Estela, y si no pega en nada explota sola a los 3 s.
             Bukkit.getScheduler().runTaskTimer(plugin, tarea -> {
@@ -956,9 +957,6 @@ public class Armas implements Listener {
                 w.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, s.getLocation(), 1, 0.03, 0.03, 0.03, 0.01);
                 w.spawnParticle(Particle.FLAME, s.getLocation(), 1, 0.02, 0.02, 0.02, 0.01);
             }, 1, 1);
-        } else {
-            w.playSound(ojo, Sound.BLOCK_PISTON_EXTEND, 1.0f, 0.5f);
-            w.playSound(ojo, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.8f, 0.6f);
         }
         if (Modo.de(w) == Modo.SHOOTER) plugin.shooter().minimapa().marcarDisparo(p);
     }

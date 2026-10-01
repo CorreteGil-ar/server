@@ -23,6 +23,7 @@ import equipo
 import hud
 import criaturas
 import rpg
+import sonidos
 import vehiculos
 from accesorios import ACCESORIOS, LINEA_MIRA, VISORES, display_visor, montar, silenciador, visor
 from armas import ARMAS
@@ -261,6 +262,7 @@ def main():
     vehiculos.main(PACK)
     rpg.main(PACK)
     criaturas.main(PACK)
+    sonidos.main(PACK)
     (Path(__file__).resolve().parent / "accesorios_por_arma.json").write_text(
         json.dumps(resumen, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 

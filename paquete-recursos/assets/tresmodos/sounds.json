@@ -1,0 +1,128 @@
+{
+ "arma.ametralladora": {
+  "sounds": [
+   "tresmodos:arma/ametralladora_1",
+   "tresmodos:arma/ametralladora_2",
+   "tresmodos:arma/ametralladora_3"
+  ]
+ },
+ "arma.escopeta": {
+  "sounds": [
+   "tresmodos:arma/escopeta_1",
+   "tresmodos:arma/escopeta_2",
+   "tresmodos:arma/escopeta_3"
+  ]
+ },
+ "arma.francotirador": {
+  "sounds": [
+   "tresmodos:arma/francotirador_1",
+   "tresmodos:arma/francotirador_2",
+   "tresmodos:arma/francotirador_3"
+  ]
+ },
+ "arma.fusil": {
+  "sounds": [
+   "tresmodos:arma/fusil_1",
+   "tresmodos:arma/fusil_2",
+   "tresmodos:arma/fusil_3"
+  ]
+ },
+ "arma.lanzacohetes": {
+  "sounds": [
+   "tresmodos:arma/lanzacohetes_1",
+   "tresmodos:arma/lanzacohetes_2",
+   "tresmodos:arma/lanzacohetes_3"
+  ]
+ },
+ "arma.lanzagranadas": {
+  "sounds": [
+   "tresmodos:arma/lanzagranadas_1",
+   "tresmodos:arma/lanzagranadas_2",
+   "tresmodos:arma/lanzagranadas_3"
+  ]
+ },
+ "arma.pistola": {
+  "sounds": [
+   "tresmodos:arma/pistola_1",
+   "tresmodos:arma/pistola_2",
+   "tresmodos:arma/pistola_3"
+  ]
+ },
+ "arma.silenciada": {
+  "sounds": [
+   "tresmodos:arma/silenciada_1",
+   "tresmodos:arma/silenciada_2",
+   "tresmodos:arma/silenciada_3"
+  ]
+ },
+ "arma.subfusil": {
+  "sounds": [
+   "tresmodos:arma/subfusil_1",
+   "tresmodos:arma/subfusil_2",
+   "tresmodos:arma/subfusil_3"
+  ]
+ },
+ "arma.tirador": {
+  "sounds": [
+   "tresmodos:arma/tirador_1",
+   "tresmodos:arma/tirador_2",
+   "tresmodos:arma/tirador_3"
+  ]
+ },
+ "explosion.chica": {
+  "sounds": [
+   "tresmodos:explosion/chica_1",
+   "tresmodos:explosion/chica_2",
+   "tresmodos:explosion/chica_3"
+  ]
+ },
+ "explosion.grande": {
+  "sounds": [
+   "tresmodos:explosion/grande_1",
+   "tresmodos:explosion/grande_2",
+   "tresmodos:explosion/grande_3"
+  ]
+ },
+ "vehiculo.ametralladora": {
+  "sounds": [
+   "tresmodos:vehiculo/ametralladora_1",
+   "tresmodos:vehiculo/ametralladora_2",
+   "tresmodos:vehiculo/ametralladora_3"
+  ]
+ },
+ "vehiculo.canon": {
+  "sounds": [
+   "tresmodos:vehiculo/canon_1",
+   "tresmodos:vehiculo/canon_2",
+   "tresmodos:vehiculo/canon_3"
+  ]
+ },
+ "vehiculo.motor_orugas": {
+  "sounds": [
+   "tresmodos:vehiculo/motor_orugas_1",
+   "tresmodos:vehiculo/motor_orugas_2",
+   "tresmodos:vehiculo/motor_orugas_3"
+  ]
+ },
+ "vehiculo.motor_ruedas": {
+  "sounds": [
+   "tresmodos:vehiculo/motor_ruedas_1",
+   "tresmodos:vehiculo/motor_ruedas_2",
+   "tresmodos:vehiculo/motor_ruedas_3"
+  ]
+ },
+ "vehiculo.reactor": {
+  "sounds": [
+   "tresmodos:vehiculo/reactor_1",
+   "tresmodos:vehiculo/reactor_2",
+   "tresmodos:vehiculo/reactor_3"
+  ]
+ },
+ "vehiculo.rotor": {
+  "sounds": [
+   "tresmodos:vehiculo/rotor_1",
+   "tresmodos:vehiculo/rotor_2",
+   "tresmodos:vehiculo/rotor_3"
+  ]
+ }
+}

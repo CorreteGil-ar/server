@@ -568,9 +568,10 @@ public class Vehiculos implements Listener {
         v.alabeo = 0;
         // Atropellar infantería enemiga.
         if (Math.abs(v.vel) > 4) atropellar(v, c);
-        if (c != null && Math.abs(v.vel) > 0.5 && ahora % 8 == 0) {
-            w.playSound(new Location(w, v.x, v.y, v.z), orugas ? Sound.ENTITY_IRON_GOLEM_STEP : Sound.ENTITY_MINECART_RIDING,
-                    orugas ? 0.8f : 0.4f, orugas ? 0.5f : 1.2f);
+        // Motor: en ralentí también se oye; el tono sube con la velocidad.
+        if (c != null && ahora % 8 == 0) {
+            Util.sonido(new Location(w, v.x, v.y + 1, v.z), orugas ? "vehiculo.motor_orugas" : "vehiculo.motor_ruedas",
+                    orugas ? 2.2f : 1.4f, (float) (0.75 + 0.5 * Math.min(1, Math.abs(v.vel) / v.tipo.velMax)));
         }
         if (orugas && Math.abs(v.vel) > 1 && ahora % 3 == 0) {
             w.spawnParticle(Particle.BLOCK, v.x - f.getX() * v.tipo.largo / 2, v.y + 0.2, v.z - f.getZ() * v.tipo.largo / 2, 4,
@@ -688,8 +689,8 @@ public class Vehiculos implements Listener {
         v.x = nx;
         v.y = ny;
         v.z = nz;
-        if (c != null && ahora % 6 == 0) w.playSound(new Location(w, v.x, v.y, v.z), Sound.ENTITY_MINECART_INSIDE, 0.7f,
-                (float) (0.5 + v.vel / v.tipo.velMax));
+        if (c != null && ahora % 12 == 0) Util.sonido(new Location(w, v.x, v.y, v.z), "vehiculo.reactor", 4f,
+                (float) (0.7 + 0.6 * Math.min(1, v.vel / v.tipo.velMax)));
         if (!v.enTierra && ahora % 2 == 0) {
             Vector cola = v.mundo(0, 1.2, -v.tipo.largo / 2);
             w.spawnParticle(Particle.CLOUD, cola.getX(), cola.getY(), cola.getZ(), 1, 0, 0, 0, 0);
@@ -766,7 +767,7 @@ public class Vehiculos implements Listener {
         v.y = ny;
         v.z = nz;
         if ((c != null || !v.enTierra) && ahora % 4 == 0) {
-            w.playSound(new Location(w, v.x, v.y + 3, v.z), Sound.ENTITY_PHANTOM_FLAP, 1.2f, 0.5f);
+            Util.sonido(new Location(w, v.x, v.y + 3, v.z), "vehiculo.rotor", 3f, 0.9f);
         }
         if (!v.enTierra && v.y - suelo < 6 && ahora % 2 == 0) {
             w.spawnParticle(Particle.CLOUD, v.x, suelo + 0.2, v.z, 6, 2.5, 0, 2.5, 0.05);
@@ -890,7 +891,7 @@ public class Vehiculos implements Listener {
             Vector q = desde.clone().add(d.clone().multiply(s));
             w.spawnParticle(Particle.DUST, q.getX(), q.getY(), q.getZ(), 1, 0, 0, 0, 0, polvo);
         }
-        w.playSound(desde.toLocation(w), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.4f, 1.3f);
+        Util.sonido(desde.toLocation(w), "vehiculo.ametralladora", 3.5f, 0.95f + (float) Math.random() * 0.1f);
     }
 
     /** Clic izquierdo: cañón del tanque, TOW, misiles, cohetes y bombas. */
@@ -1303,7 +1304,7 @@ public class Vehiculos implements Listener {
         w.spawnParticle(Particle.EXPLOSION_EMITTER, l, 2, 1, 0.5, 1, 0);
         w.spawnParticle(Particle.FLAME, l, 80, 1.5, 1, 1.5, 0.1);
         w.spawnParticle(Particle.LARGE_SMOKE, l, 60, 1.5, 1.5, 1.5, 0.05);
-        w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 3f, 0.5f);
+        Util.sonido(l, "explosion.grande", 6f, 0.8f);
         proyectiles.explotar(l, 4, 14, 0, autor, v.tipo.nombre + " destruido", false, null);
         // Carcasa humeante.
         for (int k = 0; k < 20; k++) {

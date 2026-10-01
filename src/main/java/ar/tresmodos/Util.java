@@ -36,6 +36,11 @@ public final class Util {
         p.sendMessage(mm(s));
     }
 
+    /** Sonido propio del paquete (herramientas/sonidos.py): "arma.fusil", "vehiculo.canon", etc. */
+    public static void sonido(org.bukkit.Location l, String evento, float volumen, float tono) {
+        l.getWorld().playSound(l, "tresmodos:" + evento, org.bukkit.SoundCategory.PLAYERS, volumen, tono);
+    }
+
     public static void barra(Player p, String s) {
         p.sendActionBar(mm(s));
     }

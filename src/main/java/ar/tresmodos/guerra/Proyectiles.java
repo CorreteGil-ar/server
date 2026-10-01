@@ -1,6 +1,7 @@
 package ar.tresmodos.guerra;
 
 import ar.tresmodos.Armas;
+import ar.tresmodos.Util;
 import ar.tresmodos.TresModos;
 import ar.tresmodos.mundo.ValleDeHierro;
 import org.bukkit.Bukkit;
@@ -113,16 +114,13 @@ public class Proyectiles {
         Location l = desde.toLocation(w);
         switch (m) {
             case AP, HE -> {
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 2.5f, 0.55f);
+                Util.sonido(l, "vehiculo.canon", 6f, 1.0f);
                 w.spawnParticle(Particle.EXPLOSION, l, 1);
                 w.spawnParticle(Particle.LARGE_SMOKE, l, 12, 0.3, 0.3, 0.3, 0.05);
             }
-            case CANON_25, FLAK -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.6f, 0.7f);
+            case CANON_25, FLAK -> Util.sonido(l, "vehiculo.ametralladora", 4f, 0.7f);
             case BOMBA -> w.playSound(l, Sound.BLOCK_PISTON_EXTEND, 1f, 0.5f);
-            default -> {
-                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2f, 0.6f);
-                w.playSound(l, Sound.ENTITY_BLAZE_SHOOT, 1f, 0.6f);
-            }
+            default -> Util.sonido(l, "arma.lanzacohetes", 3.5f, 0.9f);
         }
         return b;
     }
@@ -240,7 +238,7 @@ public class Proyectiles {
         } else {
             if (hp != null) Armas.danioDirecto(hp, b.m.infanteria, b.autor, arma, false);
             modo.mundo().spawnParticle(Particle.EXPLOSION, punto.toLocation(modo.mundo()), 1);
-            modo.mundo().playSound(punto.toLocation(modo.mundo()), Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 1.4f);
+            Util.sonido(punto.toLocation(modo.mundo()), "explosion.chica", 2f, 1.3f);
         }
     }
 
@@ -254,7 +252,7 @@ public class Proyectiles {
         w.spawnParticle(radio >= 4 ? Particle.EXPLOSION_EMITTER : Particle.EXPLOSION, l, radio >= 4 ? 1 : 3, radio * 0.2, 0.2, radio * 0.2, 0);
         w.spawnParticle(Particle.LARGE_SMOKE, l, (int) (10 * radio), radio * 0.4, radio * 0.3, radio * 0.4, 0.04);
         w.spawnParticle(Particle.FLAME, l, (int) (6 * radio), radio * 0.3, radio * 0.2, radio * 0.3, 0.05);
-        w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, (float) Math.min(4, 1 + radio * 0.4), radio >= 4 ? 0.6f : 0.9f);
+        Util.sonido(l, radio >= 4 ? "explosion.grande" : "explosion.chica", (float) Math.min(8, 2 + radio * 0.8), 0.9f + (float) Math.random() * 0.2f);
         ModoGuerra.Equipo eq = autor != null ? modo.equipo(autor) : null;
         for (Player p : w.getPlayers()) {
             if (p.getGameMode() != GameMode.ADVENTURE || vehiculos().protegido(p)) continue;

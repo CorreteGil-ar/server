@@ -173,6 +173,19 @@ def validar():
         for r in refs:
             validar_modelo(r, vistos)
 
+    for ruta in PACK.glob("assets/*/sounds.json"):
+        d = cargar_json(ruta)
+        if d is None:
+            continue
+        for evento, datos in d.items():
+            for s in datos.get("sounds", []):
+                nombre = s if isinstance(s, str) else s.get("name", "")
+                archivo, _ = ruta_recurso(nombre, "sounds", ".ogg")
+                if not archivo.exists():
+                    error(f"{ruta.relative_to(RAIZ)}: {evento} pide {nombre} y no existe")
+                elif archivo.read_bytes()[:4] != b"OggS":
+                    error(f"{archivo.relative_to(RAIZ)}: no es un OGG")
+
     for ruta in PACK.glob("assets/*/font/*.json"):
         d = cargar_json(ruta)
         if d is None:
