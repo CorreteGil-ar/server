@@ -445,6 +445,7 @@ public class Armas implements Listener {
         }
         sonidoDisparo(p, t, acc.silenciador());
         if (!acc.silenciador() && Modo.de(w) == Modo.SHOOTER) plugin.shooter().minimapa().marcarDisparo(p);
+        retroceso(p, t, apunta, acc);
         if (!acc.silenciador()) {
             w.spawnParticle(Particle.SMOKE, ojo.clone().add(dir.clone().multiply(0.9)), 2, 0.02, 0.02, 0.02, 0.01);
         }
@@ -498,6 +499,26 @@ public class Armas implements Listener {
     /** true si el tirador puede pegarle a esa entidad (lo usan el cuchillo y lo arrojadizo). */
     public boolean blanco(Player tirador, LivingEntity ent) {
         return blancoValido(tirador, ent);
+    }
+
+    /**
+     * Retroceso: la mira sube un poco con cada disparo y se va de costado al azar. El cliente suma
+     * el giro (rotación relativa), así no pelea con el mouse del jugador.
+     */
+    private void retroceso(Player p, Tipo t, boolean apunta, Accesorios acc) {
+        double vertical = switch (t) {
+            case PISTOLA -> 1.6;
+            case MP5 -> 0.55;
+            case M4A1 -> 0.7;
+            case ESCOPETA -> 3.6;
+            case FRANCOTIRADOR -> 6.5;
+        };
+        if (apunta) vertical *= 0.65;
+        if (p.isSneaking()) vertical *= 0.8;
+        if (acc.empunadura()) vertical *= 0.7;
+        vertical *= plugin.movilidad().tendido(p) ? 0.5 : 1;
+        double lateral = (rnd.nextDouble() - 0.5) * vertical * 0.6;
+        p.setRotation(io.papermc.paper.math.Angle.relative((float) lateral), io.papermc.paper.math.Angle.relative((float) -vertical));
     }
 
     private boolean blancoValido(Player tirador, Entity ent) {
