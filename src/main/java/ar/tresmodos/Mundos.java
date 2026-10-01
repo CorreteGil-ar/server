@@ -200,7 +200,11 @@ public class Mundos {
     public static final double[][] CARTEL_STATS = {{-3.6, 66.6, 6.2}, {4.4, 66.6, -3.6}, {5.8, 66.6, -4.6}};
 
     private static void poner(World w, int x, int y, int z, String datos) {
-        w.getBlockAt(x, y, z).setBlockData(Bukkit.createBlockData("minecraft:" + datos), false);
+        try {
+            w.getBlockAt(x, y, z).setBlockData(Bukkit.createBlockData("minecraft:" + datos), false);
+        } catch (IllegalArgumentException e) {
+            Bukkit.getLogger().warning("[TresModos] Bloque inválido en el lobby: " + datos);
+        }
     }
 
     /**

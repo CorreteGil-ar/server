@@ -4,13 +4,28 @@ Preguntas que dejé anotadas para no frenar el trabajo, y decisiones que tomé p
 Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también tienen un
 `// TODO: Agus - Revisar esto` en el código.
 
+## Resumen para cuando te despiertes
+
+Todo está en `main` y el CI pasó en cada commit. Lo nuevo de la segunda tanda, en orden:
+
+1. **Arsenal completo del Shooter**: 23 armas con modelo, miras, accesorios y 8 camuflajes
+   (sumé AK-47, P90, Vector, M249, M24, Remington 870, Desert Eagle, SCAR-H, G36K, MP7, PKM, SVD,
+   Mk 14, AA-12, M1911, revólver y las secundarias explosivas M79 y RPG-7).
+2. **HUD propio**: barras estilo Souls en el RPG y tablero de vehículos en Guerra.
+3. **RPG**: estructuras de las 4 zonas (aldea, bosque, ciudadela y puerto), 2 atajos con su
+   Campeón, 4 paredes ilusorias con tesoro, 5 notas de lore, 15 armas con modelo, 9 sets de
+   armadura con textura, cascos en los enemigos y piezas encima de los jefes (alas, cola, fauces).
+4. **Lobby**: portales temáticos y carteles con tus estadísticas.
+5. **Sonidos propios** sintetizados: disparos, motores, rotor, reactor, cañón y explosiones.
+
+Lo que más conviene probar primero está en cada sección bajo **"Para probar en el juego"**.
+
 ## Alcance
 
 - **"Completar el proyecto"**: seguí el orden de construcción de `docs/DISENO.md` (sección 6):
-  primero Shooter, después RPG y por último Guerra. El documento pide mucho más de lo que entra
-  en una sola noche (24 armas con modelo, 7 vehículos, 5 jefes animados, un mundo de 1500 × 1500).
-  Prioricé las **mecánicas jugables** y el **mapa**, con modelos donde más se notan; lo que quedó
-  afuera está listado al final de este archivo, en "Pendiente".
+  primero Shooter, después RPG y por último Guerra. Prioricé las **mecánicas jugables** y el
+  **mapa**, y después los modelos, el HUD y los sonidos. Lo que quedó afuera está al final de este
+  archivo, en "Pendiente".
 
 ## HUD (todos los modos)
 
@@ -250,8 +265,8 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   y abrir paredes del pueblo.
 - **Infantería**: cada clase elige su principal en `/clase` (fila de abajo): Fusilero M4A1, AK-47,
   SCAR-H, M249 o PKM; Antitanque G36K, MP5 o P90; Ingeniero MP5, MP7, Vector, P90, Remington 870,
-  M1014 o AA-12; Tirador Barrett, M24, SVD o Mk 14. La pistola (M9 o Desert Eagle) también se
-  elige ahí. **[revisar]** si preferís que cada equipo tenga su arsenal (Rojo con AK-47, etc.).
+  M1014 o AA-12; Tirador Barrett, M24, SVD o Mk 14. La pistola (M9, M1911, Desert Eagle o el
+  revólver) también se elige ahí. **[revisar]** si preferís que cada equipo tenga su arsenal (Rojo con AK-47, etc.).
 - **Vehículos**:
   - Controles:
     - **Clic derecho mantenido**: el arma automática (ametralladora o cañón).
@@ -273,3 +288,21 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
     15 b/s, despegue a 18 b/s) son una primera pasada.
   - El clic izquierdo estando montado: el plugin lo toma del balanceo del brazo
     (`LEFT_CLICK_AIR`).
+
+## Pendiente
+
+Lo que no hice y por qué:
+
+- **Probar todo en el juego**: no tengo cliente de Minecraft acá. Revisé modelos, mapas y
+  estructuras con renders fuera del juego, y los sonidos por su forma de onda, pero falta jugarlo:
+  manejo de los vehículos, balance de las armas, que las piezas de los jefes queden en su lugar,
+  cómo se ven las estructuras sobre el relieve real del mundo RPG.
+- **Cuerpos propios de enemigos y jefes**: siguen siendo mobs vanilla con cascos y piezas encima.
+  Reemplazarlos por modelos de ItemDisplay les sacaría las animaciones de caminar y atacar; haría
+  falta animarlos a mano (es el trabajo más grande que queda).
+- **Arco, ballesta y lanzas del RPG con modelo propio**: tienen animaciones de carga que dependen
+  del modelo de vanilla; prefiero no tocarlas sin probar.
+- **Objetos decorativos de los mapas** (autos y colectivo del Pueblo Atómico, muebles, objetos del
+  Valle de Hierro): hoy son de bloques.
+- **Kill cam, lock-on, animaciones del cuerpo del jugador**: no se pueden sin mods (sección 4 del
+  diseño).
