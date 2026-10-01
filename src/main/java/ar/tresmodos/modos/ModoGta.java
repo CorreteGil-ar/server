@@ -605,7 +605,7 @@ public class ModoGta implements ModoJuego, Listener {
             }
             if (ahora % 20 < 10) {
                 new ParticleBuilder(Particle.END_ROD).location(m.destino().clone().add(0, 4, 0)).count(25)
-                        .offset(0.15, 4, 0.15).extra(0).receivers(p).force(true).spawn();
+                        .offset(0.15, 4, 0.15).speed(0).receivers(p).force(true).spawn();
             }
         }
     }
