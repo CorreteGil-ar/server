@@ -96,6 +96,8 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     private final ArbolHabilidades arbol;
     private final Habilidades habilidades;
     private final JefeAbismo jefe;
+    private final MundoRpg mundoRpg;
+    private final Enemigos enemigos;
 
     private final Map<UUID, Double> aguante = new HashMap<>();
     private final Map<UUID, Double> eter = new HashMap<>();
@@ -114,6 +116,8 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         this.arbol = new ArbolHabilidades(plugin, this);
         this.habilidades = new Habilidades(plugin, this);
         this.jefe = new JefeAbismo(plugin);
+        this.mundoRpg = new MundoRpg(plugin, this);
+        this.enemigos = new Enemigos(plugin, this);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickAguante, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickEter, 10, 10);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickManchas, 10, 10);
@@ -121,7 +125,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     /** Las piezas que también escuchan eventos (las registra TresModos). */
     public List<Listener> escuchas() {
-        return List.of(this, objetos, combate, arbol, habilidades, jefe);
+        return List.of(this, objetos, combate, arbol, habilidades, jefe, mundoRpg, enemigos);
     }
 
     public Buffs buffs() { return buffs; }
@@ -131,6 +135,8 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     public ArbolHabilidades arbol() { return arbol; }
     public Habilidades habilidades() { return habilidades; }
     public JefeAbismo jefe() { return jefe; }
+    public MundoRpg mundoRpg() { return mundoRpg; }
+    public Enemigos enemigos() { return enemigos; }
 
     private World mundo() {
         return plugin.mundos().de(Modo.RPG);
@@ -146,7 +152,8 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     @Override public Modo modo() { return Modo.RPG; }
     @Override public boolean guardaEstado() { return true; }
-    @Override public GameMode modoJuego() { return GameMode.SURVIVAL; }
+    /** Aventura: no se construye ni se rompe, así nadie hace trampa contra los jefes. */
+    @Override public GameMode modoJuego() { return GameMode.ADVENTURE; }
 
     @Override
     public Location ubicacionEntrada(Player p) {
@@ -253,7 +260,6 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
             if (c != null) c.darKit(p);
         }
         darFrascos(p);
-        p.getInventory().setItem(8, new ItemStack(Material.TORCH, 16));
     }
 
     private void darFrascos(Player p) {
@@ -266,6 +272,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     @Override
     public void alEntrar(Player p, boolean primeraVez) {
+        if (!mundo().getWorldBorder().isInside(p.getLocation())) p.teleport(respawn(p));
         aguante.put(p.getUniqueId(), aguanteMax(p));
         eter.put(p.getUniqueId(), eterMax(p));
         mostrarBarra(p);
@@ -295,6 +302,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         BossBar b = barrasEter.remove(id);
         if (b != null) p.hideBossBar(b);
         jefe.ocultar(p);
+        mundoRpg.olvidar(p);
         estados.olvidar(id);
         buffs.olvidar(id);
         objetos.olvidar(id);
@@ -322,6 +330,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     public void apagar() {
         jefe.apagar();
         habilidades.apagar();
+        enemigos.apagar();
         for (Map.Entry<UUID, BossBar> en : barrasEter.entrySet()) {
             Player p = Bukkit.getPlayer(en.getKey());
             if (p != null) p.hideBossBar(en.getValue());
@@ -369,7 +378,6 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         inv.clear();
         c.darKit(p);
         darFrascos(p);
-        inv.setItem(8, new ItemStack(Material.TORCH, 16));
         prepararAtributos(p);
         p.setHealth(p.getAttribute(Attribute.MAX_HEALTH).getValue());
         aguante.put(p.getUniqueId(), aguanteMax(p));
@@ -402,7 +410,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     private void tickAguante() {
         int ahora = Bukkit.getCurrentTick();
         for (Player p : mundo().getPlayers()) {
-            if (p.isDead() || p.getGameMode() != GameMode.SURVIVAL) continue;
+            if (p.isDead() || p.getGameMode() == GameMode.SPECTATOR || p.getGameMode() == GameMode.CREATIVE) continue;
             UUID id = p.getUniqueId();
             double max = aguanteMax(p);
             double s = aguanteDe(p);
@@ -574,7 +582,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         buffs.olvidar(v.getUniqueId());
         combate.olvidar(v.getUniqueId());
         if (v.getPersistentDataContainer().has(Claves.JEFE) || v.getPersistentDataContainer().has(Claves.SIERVO)
-                || v.getPersistentDataContainer().has(Claves.INVOCACION)) return;
+                || v.getPersistentDataContainer().has(Claves.INVOCACION) || v.getPersistentDataContainer().has(Claves.ENEMIGO)) return;
         Player asesino = v.getKiller();
         if (asesino == null) return;
         AttributeInstance vida = v.getAttribute(Attribute.MAX_HEALTH);
@@ -693,6 +701,10 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
             abrirClases(p);
             return;
         }
+        if (mundoRpg.hoguera(b) == null) {
+            Util.barra(p, "<gray>Es una fogata común. Las hogueras tienen una espada clavada.");
+            return;
+        }
         descansar(p, b);
         abrirHoguera(p);
     }
@@ -703,7 +715,12 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         boolean nueva = d.hoguera == null || d.hoguera.getWorld() != lugar.getWorld()
                 || d.hoguera.distanceSquared(lugar) > 4;
         d.hoguera = lugar;
-        d.hogueras.add(fuego.getX() + "," + fuego.getY() + "," + fuego.getZ());
+        MundoRpg.Hoguera h = mundoRpg.hoguera(fuego);
+        if (h != null && d.hogueras.add(h.id()) && !h.id().equals("santuario")) {
+            Util.msg(p, "<gold>Encendiste <white>" + h.nombre() + "<gold>: ya podés viajar acá desde cualquier hoguera.");
+        }
+        nueva = nueva && h != null && !h.id().equals("santuario");
+        enemigos.descanso();
         prepararAtributos(p);
         p.setHealth(p.getAttribute(Attribute.MAX_HEALTH).getValue());
         p.setFireTicks(0);
@@ -720,7 +737,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     }
 
     /** Un lugar libre al lado de la fogata para reaparecer (no encima: quema). */
-    private static Location lugarJunto(Block fuego) {
+    static Location lugarJunto(Block fuego) {
         for (BlockFace f : new BlockFace[]{BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST}) {
             Block b = fuego.getRelative(f);
             if (b.isPassable() && b.getRelative(BlockFace.UP).isPassable() && b.getRelative(BlockFace.DOWN).isSolid()) {
@@ -769,6 +786,9 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
                 "<gray>Brasas libres: <gold>" + brasas,
                 "", "<yellow>Clic para abrir"), arbol::abrir);
         Carga cg = carga(p);
+        m.poner(30, Util.item(Material.ENDER_PEARL, "<aqua><bold>Viajar",
+                "<gray>Hogueras encendidas: <white>" + (d.hogueras.size() + (d.hogueras.contains("santuario") ? 0 : 1)),
+                "", "<yellow>Clic para elegir destino"), mundoRpg::abrirViaje);
         m.poner(33, Util.item(Material.IRON_CHESTPLATE, "<white><bold>Equipo",
                 "<gray>Peso: <white>" + Math.round(peso(p) * 10) / 10.0 + "<gray>/" + (int) capacidad(p),
                 "<gray>Carga: " + cg.color + cg.nombre,
@@ -915,6 +935,8 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         ClaseRpg c = ClaseRpg.de(d.clase);
         List<String> l = new ArrayList<>();
         l.add("<white>" + (c == null ? "Sin clase" : c.nombre) + (d.ciclo > 0 ? " <dark_red>Ciclo+" + d.ciclo : ""));
+        l.add(mundoRpg.nombreZona(p) + " <dark_gray>Nv. " + mundoRpg.nivel(p.getLocation())
+                + (mundoRpg.nocheRoja() ? " <red>☾" : ""));
         l.add("<white>Almas: <gold>" + Util.num(d.almas));
         l.add("<white>Nivel: <light_purple>" + d.nivelRpg() + " <dark_gray>(próx. " + Util.num(costoNivel(d)) + ")");
         l.add("");

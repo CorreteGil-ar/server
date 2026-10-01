@@ -81,14 +81,27 @@ public class Mundos {
         shooter.getWorldBorder().setSize(352);
 
         // ---- RPG: mundo vanilla en difícil, sin regeneración natural ----
+        // Los enemigos salen de encuentros diseñados (rpg.Enemigos), no de spawns naturales. En el
+        // server siempre es de noche (los no-muertos no se queman y las arañas atacan); cada jugador
+        // ve la hora de su zona (atardecer o noche) con setPlayerTime.
         rpg.setDifficulty(Difficulty.HARD);
         rpg.setGameRule(GameRules.KEEP_INVENTORY, true);
         rpg.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
         rpg.setGameRule(GameRules.SPAWN_PHANTOMS, false);
         rpg.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
-        rpg.getWorldBorder().setCenter(rpg.getSpawnLocation());
-        rpg.getWorldBorder().setSize(8000);
+        rpg.setGameRule(GameRules.SPAWN_MONSTERS, false);
+        rpg.setGameRule(GameRules.SPAWN_PATROLS, false);
+        rpg.setGameRule(GameRules.SPAWN_WANDERING_TRADERS, false);
+        rpg.setGameRule(GameRules.RAIDS, false);
+        rpg.setGameRule(GameRules.MOB_GRIEFING, false);
+        rpg.setGameRule(GameRules.ADVANCE_TIME, false);
+        rpg.setGameRule(GameRules.ADVANCE_WEATHER, false);
+        rpg.setTime(18000);
+        rpg.setStorm(false);
+        rpg.setThundering(false);
         hogueraInicial(rpg);
+        rpg.getWorldBorder().setCenter(rpg.getSpawnLocation());
+        rpg.getWorldBorder().setSize(1700);
     }
 
     private void comunes(World w, boolean mobs) {

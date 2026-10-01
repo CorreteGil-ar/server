@@ -9,7 +9,7 @@ public final class Claves {
     public static NamespacedKey SELECTOR, CELULAR, LLAVE, PAQUETE, AUTO_DUENO, POLICIA;
     public static NamespacedKey ESTUS, CAMPANA, JEFE, SIERVO, DISPLAY_LOBBY, BOTIN;
     public static NamespacedKey RESERVA, LETAL, TACTICO, EQUIPO, RACHA, DUENIO, MUNICION, MANIQUI, DECORADO;
-    public static NamespacedKey ARMA_RPG, MEJORA, ETER, CONSUMIBLE, ENEMIGO, NIVEL, ELITE, INVOCACION;
+    public static NamespacedKey ARMA_RPG, MEJORA, ETER, CONSUMIBLE, ENEMIGO, NIVEL, ELITE, INVOCACION, MATERIAL, NPC;
 
     private Claves() {}
 
@@ -51,5 +51,7 @@ public final class Claves {
         NIVEL = new NamespacedKey(p, "nivel");
         ELITE = new NamespacedKey(p, "elite");
         INVOCACION = new NamespacedKey(p, "invocacion");
+        MATERIAL = new NamespacedKey(p, "material");
+        NPC = new NamespacedKey(p, "npc");
     }
 }

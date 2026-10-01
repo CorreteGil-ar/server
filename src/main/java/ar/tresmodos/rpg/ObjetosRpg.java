@@ -115,6 +115,49 @@ public class ObjetosRpg implements Listener {
         return consumible(Material.GHAST_TEAR, "Lágrima del Olvido", "Reinicia tu árbol de habilidades.", "lagrima", n);
     }
 
+    // ------------------------------------------------------------------ materiales de mejora
+
+    public static ItemStack fragmento(int n) {
+        return material(Material.PRISMARINE_SHARD, "<aqua>Fragmento de Hierro Estelar", "fragmento",
+                "Lo usa el herrero del Santuario", "para mejorar armas de +0 a +6.", n);
+    }
+
+    public static ItemStack escama(int n) {
+        return material(Material.ECHO_SHARD, "<dark_purple>Escama del Abismo", "escama",
+                "Rara. El herrero la pide", "para mejorar armas de +7 a +10.", n);
+    }
+
+    private static ItemStack material(Material m, String nombre, String id, String l1, String l2, int n) {
+        ItemStack it = Util.item(m, "<bold>" + nombre, l1, l2);
+        ItemMeta meta = it.getItemMeta();
+        meta.getPersistentDataContainer().set(Claves.MATERIAL, PersistentDataType.STRING, id);
+        it.setItemMeta(meta);
+        it.setAmount(n);
+        return it;
+    }
+
+    /** Cuántos materiales de un tipo tiene el jugador. */
+    public static int contar(Player p, String id) {
+        int n = 0;
+        for (ItemStack it : p.getInventory().getStorageContents()) {
+            if (id.equals(Util.marca(it, Claves.MATERIAL))) n += it.getAmount();
+        }
+        return n;
+    }
+
+    /** Saca materiales del inventario (asume que alcanzan). */
+    public static void quitar(Player p, String id, int cant) {
+        ItemStack[] cont = p.getInventory().getStorageContents();
+        for (ItemStack it : cont) {
+            if (cant <= 0) break;
+            if (!id.equals(Util.marca(it, Claves.MATERIAL))) continue;
+            int saca = Math.min(cant, it.getAmount());
+            it.setAmount(it.getAmount() - saca);
+            cant -= saca;
+        }
+        p.getInventory().setStorageContents(cont);
+    }
+
     private static ItemStack consumible(Material m, String nombre, String desc, String id, int n) {
         ItemStack it = Util.item(m, "<white><bold>" + nombre, desc, "<yellow>Clic derecho para usar");
         ItemMeta meta = it.getItemMeta();

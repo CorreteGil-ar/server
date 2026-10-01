@@ -74,3 +74,35 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
     que también dispara la habilidad.
   - Que el `setAware(false)` del aturdimiento no deje mobs congelados si el server se reinicia
     en medio.
+- **Mundo RPG (R3)**: sigue siendo el terreno vanilla de `tm_rpg`. El plugin le suma lo siguiente:
+  - **Zonas** ubicadas respecto del Santuario (el spawn), con su hora y bioma pintado:
+    - Aldea Hueca, al oeste, nivel 1–10;
+    - Bosque Podrido, al norte, 10–25;
+    - Ciudadela, al este, 25–40;
+    - Costa Hundida, al sudeste, 40–55;
+    - Templo, debajo de la Costa, 55+.
+  - **Biomas**: con setBiome, al cargar cada chunk. Así cambian el color de la niebla, el cielo, el
+    pasto y las partículas. Para conseguir esos colores sin datapack usé biomas del Nether y uno nuevo:
+    - Jardín Pálido para la Aldea;
+    - Valle de Almas para el Bosque (niebla verdosa);
+    - Deltas de Basalto para la Ciudadela (ceniza);
+    - Pantano para la Costa (llueve);
+    - Bosque Distorsionado para el Templo.
+
+    **[revisar]** Lo raro es que en esas zonas suena la música del Nether. Si molesta, la
+    alternativa es un datapack con biomas propios (`tresmodos:aldea_hueca`, etc.), que pide
+    reiniciar el server una vez.
+  - **Hogueras**: el plugin construye 3 por zona (entrada, medio y antesala del jefe): una ruina
+    con la espada clavada y el nombre encima. Solo sirven de hoguera las registradas; las fogatas
+    de las aldeas vanilla no. Desde cualquier hoguera se puede **viajar** a las que ya encendiste.
+  - **Encuentros**: 45 puntos fijos por zona, con 13 tipos de enemigo hechos con mobs vanilla
+    renombrados y equipados (Hueco, Perro de la plaga, Acechador, Caballero caído, Pálido con el
+    Creaking, Vástago con el Evocador, etc.). El 10 % son Campeones. Los spawns naturales de
+    monstruos quedaron apagados.
+  - **Noche Roja**: cada 3 días del reloj del mundo (60 minutos reales), durante 10 minutos.
+- **Modo aventura** en el RPG, como pide el diseño. Saqué las antorchas del kit porque ya no se
+  pueden poner.
+- **Siempre de noche en el server**: el mundo RPG queda fijo a medianoche, así las arañas atacan y
+  los no-muertos no se queman. Cada jugador ve la hora de su zona (atardecer o noche).
+- **Borde del mundo**: bajó de 8000 a 1700 bloques. Si alguien había quedado afuera, al entrar
+  lo mando a su hoguera.
