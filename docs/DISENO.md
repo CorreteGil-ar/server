@@ -749,6 +749,14 @@ Es el volumen real de trabajo. Lo modelo y texturizo yo; conviene revisarlo y re
 
 Cada etapa se compila en GitHub Actions y se prueba en la VM.
 
+### Estado (octubre de 2026)
+
+| Modo | Hecho | Falta |
+|---|---|---|
+| Shooter | Mapa Pueblo Atómico; reglas (meta 20/30, 15 min, espectador 5 s, reaparición segura); movilidad completa; clases editables con 9 ventajas; equipamiento (7); rachas hasta la bomba atómica; 5 armas con modelo, accesorios y apuntado | El resto del arsenal (19 armas) y los camuflajes |
+| RPG | 6 clases, 7 atributos, árbol de 3 ramas con 54 habilidades, combate (pesado, parry, postura, críticos, estados), carga y voltereta, éter y frascos, 5 zonas con bioma, hora y nivel, 180 encuentros con 13 enemigos y Campeones, Noche Roja, 15 hogueras con viaje, 5 jefes con arena y niebla, Puerta del Abismo, Santuario (herrero, mercader, Guardiana, altar), 9 hechizos, Cazador Carmesí, mímicos y Ciclo+ | Modelos propios de armas, armaduras, enemigos y jefes (hoy son ítems y mobs vanilla); estructuras grandes de cada zona (aldea, castillo, faro); atajos y paredes ilusorias; notas de lore; HUD de barras estilo Souls |
+| Guerra | Mapa Valle de Hierro; captura la bandera con muerte súbita; 4 clases; caído y revivir; puesto avanzado; cajas de munición; 7 vehículos con física, torretas, armas, blindaje por zonas, módulos e incendio; RPG-7, AT4, Javelin, Stinger, C4, minas, granada antitanque, llave y binoculares; modelos de vehículos y equipo; restauración del mapa | Ajustar el manejo jugando; HUD de vehículo con fuente propia; sonidos propios |
+
 ## 7. Decisiones tomadas
 
 1. **Época**: moderna en Shooter y Guerra.

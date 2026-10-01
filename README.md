@@ -5,21 +5,25 @@ Server de Minecraft con modos: **TresModos**, un plugin para Paper con un lobby 
 | Modo | Mundo | Qué es |
 |---|---|---|
 | Lobby | `tm_lobby` | Plataforma con placas para entrar a cada modo y selector (estrella) |
-| GTA | `tm_gta` | Ciudad generada, dinero, armería, autos (caballos), policía con 5 estrellas, misiones de entrega |
-| COD | `tm_cod` | Arena todos contra todos, 4 clases, granadas, rachas (UAV, bombardeo), primero a 30 bajas |
-| RPG / Souls | `tm_rpg` | Aguante, esquive con F, hogueras, Estus, almas que se pierden al morir, jefe con dos fases |
+| Guerra | `tm_guerra` | Valle de Hierro (512 × 512): captura la bandera Azul contra Rojo, 4 clases de infantería, caído y revivir, 7 vehículos (cuatriciclo, jeep, VCI, tanque, antiaéreo, avión y helicóptero) y armas antitanque |
+| Shooter | `tm_shooter` | Pueblo Atómico (inspirado en Nuketown): todos contra todos estilo Modern Warfare, clases editables, ventajas, equipamiento, rachas hasta la bomba atómica |
+| RPG / Souls | `tm_rpg` | Las Tierras Cenicientas: 6 clases, 7 atributos, árbol de habilidades, combate con parry y postura, 5 zonas con encuentros, 5 jefes con arena, magia, Santuario y Ciclo+ |
+
+El diseño completo de cada modo está en [`docs/DISENO.md`](docs/DISENO.md). Las decisiones que tomé por mi cuenta y lo que falta probar en el juego están en [`dudas_agus.md`](dudas_agus.md).
 
 Versión de destino: **Paper 26.3** (build 140) y **Java 25**. El instalador agrega ViaVersion 5.12.0.
 
 ## Estructura
 
 ```
-src/main/java/ar/tresmodos/   código del plugin
-  modos/                      ModoGta, ModoCod, ModoRpg
-  mundo/                      generadores de la ciudad y la arena
+src/main/java/ar/tresmodos/   código del plugin (lobby, armas, movilidad, cambio de modo, datos)
+  guerra/                     ModoGuerra, vehículos, proyectiles y arsenal antitanque
+  shooter/                    ModoShooter, clases, equipamiento, rachas y minimapa
+  rpg/                        ModoRpg, combate, clases, árbol, habilidades, magia, zonas, enemigos, jefes
+  mundo/                      mapas (Pueblo Atómico y Valle de Hierro) y sus generadores
 src/main/resources/           plugin.yml (comandos y permisos) y config.yml
 paquete-recursos/             paquete de recursos: modelos, texturas y fuente del HUD
-herramientas/                 generador de modelos y texturas, vista previa y empaquetado del paquete
+herramientas/                 generador de modelos y texturas (armas, equipo, vehículos, HUD), vista previa y empaquetado
 docs/DISENO.md                diseño de los modos
 pom.xml                       build de Maven
 instalar.sh                   instala Paper + plugin como servicio systemd (Ubuntu 24.04)
@@ -80,6 +84,14 @@ journalctl -u minecraft -f
 journalctl -t tresmodos        # avisos del apagado automático
 ```
 
+## Controles por modo
+
+**Shooter y Guerra (infantería)**: clic derecho dispara (mantener = automático), clic izquierdo apunta, Q recarga, F cuchillazo (Shooter), Shift corriendo se desliza, doble Shift cuerpo a tierra, doble W sprint táctico, saltar frente a un muro de 2 trepa.
+
+**Guerra (vehículos)**: clic derecho sobre un vehículo aliado para subir · W/A/S/D manejan · clic derecho mantenido = ametralladora o cañón automático · clic izquierdo = cañón principal, misiles, cohetes o bombas · F cambia munición (AP/HE) o arma secundaria · Q extintor · 1-4 cambia de asiento · Shift 1 s baja (en el avión, eyecta). Avión: W/S potencia y sigue la mirada. Helicóptero: Espacio sube, Ctrl baja.
+
+**RPG**: F voltereta (según la carga), Shift + clic ataque pesado, clic derecho con escudo o katana justo antes del golpe = parry, Q con el arma = habilidad de clase, Shift + Q = definitiva, clic derecho con bastón o talismán = hechizo (Shift + clic cambia). Las hogueras (con la espada clavada) curan, rellenan frascos, suben atributos, abren el árbol y permiten viajar.
+
 ## Armas
 
 Cinco armas con modelo propio: Beretta M9, H&K MP5, Colt M4A1, Benelli M1014 y Barrett M82A1.
@@ -98,9 +110,8 @@ Accesorios (todos desbloqueados, se eligen en `/armero` y quedan guardados por a
 
 | Comando | Para qué |
 |---|---|
-| `/modo [gta\|cod\|rpg\|lobby]` | Abre el selector o cambia de modo directo |
+| `/modo [guerra\|shooter\|rpg\|lobby]` | Abre el selector o cambia de modo directo |
 | `/lobby` (`/hub`, `/l`) | Volver al lobby |
-| `/clase` | Elegir clase en COD |
-| `/celular` (`/cel`, `/tel`) | Celular de GTA: armería, armero, concesionaria, misiones, soborno |
-| `/armero` (`/accesorios`) | Poner y sacar accesorios al arma (todos desbloqueados) |
-| `/tm <dinero\|almas\|buscado\|jefe\|guardar\|paquete\|info>` | Administración (solo op). `paquete` recarga el paquete de recursos |
+| `/clase` | Elegir clase (Guerra, Shooter o RPG) |
+| `/armero` (`/accesorios`) | Poner y sacar accesorios al arma (Guerra y Shooter) |
+| `/tm <almas\|jefe\|cazador\|guardar\|paquete\|info>` | Administración (solo op). `jefe <id>` lleva a la arena de un jefe del RPG, `cazador` fuerza una invasión, `paquete` recarga el paquete de recursos |
