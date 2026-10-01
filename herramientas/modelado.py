@@ -57,16 +57,43 @@ class Caja:
     el material la sombrea redondeada alrededor de ese eje.
     """
 
-    def __init__(self, desde, hasta, material, nombre="", eje=None):
+    def __init__(self, desde, hasta, material, nombre="", eje=None, densidad=None, luz=0, caras=None):
         a, b = _v(desde), _v(hasta)
         self.desde = np.minimum(a, b)
         self.hasta = np.maximum(a, b)
         self.material = material
         self.nombre = nombre
         self.eje = EJES[eje] if isinstance(eje, str) else eje
+        self.densidad = densidad  # píxeles por unidad de esta caja (None = la del modelo)
+        self.luz = luz            # light_emission: retículas que se ven de noche
+        self.caras = caras        # caras a exportar (None = todas), en el marco de la variante
+
+    def copia(self, desde, hasta, eje=None):
+        """Misma caja (material, nombre, densidad, luz, caras) con otras esquinas y eje."""
+        return Caja(desde, hasta, self.material, self.nombre, eje, self.densidad, self.luz, self.caras)
 
     def mover(self, d):
-        return Caja(self.desde + _v(d), self.hasta + _v(d), self.material, self.nombre, self.eje)
+        return self.copia(self.desde + _v(d), self.hasta + _v(d), self.eje)
+
+
+def engrosar(cajas, k, centro_x=8.0):
+    """Ensancha las piezas a lo ancho (eje X) sin cambiar el largo ni la altura.
+
+    Los cilindros siguen redondos: su radio crece k veces en los dos ejes de la sección,
+    alrededor de su propio centro. Las posiciones a lo ancho se escalan desde centro_x,
+    así lo montado a los costados sigue apoyado sobre la pieza ensanchada.
+    """
+    salida = []
+    for c in cajas:
+        a, b = c.desde.copy(), c.hasta.copy()
+        a[0], b[0] = centro_x + (a[0] - centro_x) * k, centro_x + (b[0] - centro_x) * k
+        if c.eje is not None:
+            for i in range(1, 3):
+                if abs(c.eje[i]) < 0.5:
+                    m = (a[i] + b[i]) / 2
+                    a[i], b[i] = m + (a[i] - m) * k, m + (b[i] - m) * k
+        salida.append(c.copia(a, b, c.eje))
+    return salida
 
 
 def cilindro(eje, centro, radio, desde, hasta, material, nombre=""):
@@ -363,8 +390,11 @@ def puntos(posiciones, solo_normal="derecha", signo_normal=1, delta=-0.25):
     return patron
 
 
-def reticula(color=(255, 40, 30), anillo=True):
-    """Retícula de mira: punto central y, opcional, anillo (holográfica)."""
+def reticula(color=(255, 40, 30), anillo=True, punto=0.06, radio_anillo=0.32):
+    """Retícula de mira: punto central y, opcional, anillo (holográfica).
+
+    punto y radio_anillo: radios en fracción del lado menor de la cara.
+    """
 
     def patron(reg, info):
         if abs(float(np.dot(info["normal"], info["adelante"]))) < 0.5:
@@ -374,11 +404,11 @@ def reticula(color=(255, 40, 30), anillo=True):
         cy, cx = (h - 1) / 2, (w - 1) / 2
         r = np.sqrt((yy - cy) ** 2 + (xx - cx) ** 2)
         c = np.array(color) / 255.0
-        punto = r <= max(0.6, min(h, w) * 0.06)
-        reg[punto, :3] = c
-        reg[punto, 3] = 1
+        centro = r <= max(0.6, min(h, w) * punto)
+        reg[centro, :3] = c
+        reg[centro, 3] = 1
         if anillo:
-            radio = min(h, w) * 0.32
+            radio = min(h, w) * radio_anillo
             ar = np.abs(r - radio) <= 0.55
             reg[ar, :3] = c
             reg[ar, 3] = 0.95
@@ -395,11 +425,12 @@ def _orientar(cajas, orient, desplazamiento):
     for c in cajas:
         esquinas = [m @ (_v(p) - centro) + centro + desplazamiento for p in (c.desde, c.hasta)]
         eje = None if c.eje is None else m @ c.eje
-        salida.append(Caja(esquinas[0], esquinas[1], c.material, c.nombre, eje))
+        salida.append(c.copia(esquinas[0], esquinas[1], eje))
     return salida, {"adelante": m @ ADELANTE, "arriba": m @ ARRIBA, "derecha": m @ DERECHA}
 
 
 def _tam_cara(caja, cara, densidad):
+    densidad = caja.densidad or densidad
     d = caja.hasta - caja.desde
     if cara in ("north", "south"):
         ancho, alto = d[0], d[1]
@@ -462,6 +493,8 @@ def exportar(nombre, cajas, variantes, carpeta_pack, densidad=8, namespace="tres
         preparadas[vnombre] = (orientadas, ejes)
         for idx, c in enumerate(orientadas):
             for cara, (normal, _, _) in CARAS.items():
+                if c.caras is not None and cara not in c.caras:
+                    continue
                 w, h, ancho, alto = _tam_cara(c, cara, densidad)
                 if ancho <= 1e-6 or alto <= 1e-6:
                     continue
@@ -519,12 +552,15 @@ def exportar(nombre, cajas, variantes, carpeta_pack, densidad=8, namespace="tres
             for p in (*c.desde, *c.hasta):
                 if p < -16 or p > 32:
                     raise ValueError(f"{nombre}/{vnombre}: la caja {c.nombre!r} sale del rango -16..32 ({p:.2f})")
-            elementos.append({
+            elemento = {
                 "name": c.nombre or f"caja{idx}",
                 "from": [round(float(t), 4) for t in c.desde],
                 "to": [round(float(t), 4) for t in c.hasta],
                 "faces": caras,
-            })
+            }
+            if c.luz:
+                elemento["light_emission"] = c.luz
+            elementos.append(elemento)
         modelo = {
             "textures": {"0": tex_rel, "particle": tex_rel},
             "elements": elementos,
@@ -557,17 +593,27 @@ def _escribir_item(nombre, definicion, carpeta_pack, namespace):
     ruta.write_text(json.dumps(definicion, indent=1) + "\n", encoding="utf-8")
 
 
-def definicion_arma(nombre, base, ranuras, carpeta_pack, namespace="tresmodos"):
+def definicion_arma(nombre, base, ranuras, carpeta_pack, ads=None, namespace="tresmodos"):
     """Item con el arma base más una ranura por accesorio, según el contexto de dibujo.
 
     base: dict variante -> recurso. ranuras: lista ordenada (índice en los strings de
     custom_model_data) de dicts {"opciones": {valor: rutas}, "defecto": rutas | None}.
+    La ranura 0 es la mira.
+
+    ads: apuntado en primera persona, que el plugin activa con el flag 0 de
+    custom_model_data. Dict {"opciones": {valor_mira: modo}, "defecto": modo}, donde modo es
+    {"variante": "ads_x"} (el arma entera con la transformación de esa mira; las rutas deben
+    tener esa variante) o {"visor": recurso} (solo la vista a través de la óptica).
     """
 
-    def compuesto(v):
+    def compuesto(v, mira=None):
         modelos = [_modelo(base[v])]
         for i, ranura in enumerate(ranuras):
             defecto = ranura.get("defecto")
+            if i == 0 and mira is not None:
+                rutas = ranura["opciones"].get(mira) or defecto
+                modelos.append(_modelo(rutas[v]) if rutas else {"type": "minecraft:empty"})
+                continue
             modelos.append({
                 "type": "minecraft:select",
                 "property": "minecraft:custom_model_data",
@@ -578,13 +624,47 @@ def definicion_arma(nombre, base, ranuras, carpeta_pack, namespace="tresmodos"):
             })
         return {"type": "minecraft:composite", "models": modelos}
 
+    def apuntando(valor, modo):
+        if "visor" in modo:
+            return _modelo(modo["visor"])
+        return compuesto(modo["variante"], mira=valor)
+
+    primera = compuesto("fp")
+    if ads:
+        primera = {
+            "type": "minecraft:condition",
+            "property": "minecraft:custom_model_data",
+            "index": 0,
+            "on_true": {
+                "type": "minecraft:select",
+                "property": "minecraft:custom_model_data",
+                "index": 0,
+                "cases": [{"when": valor, "model": apuntando(valor, modo)}
+                          for valor, modo in ads["opciones"].items() if valor],
+                "fallback": apuntando("", ads["defecto"]),
+            },
+            "on_false": primera,
+        }
     definicion = {"model": {
         "type": "minecraft:select",
         "property": "minecraft:display_context",
-        "cases": [{"when": CONTEXTOS[v], "model": compuesto(v)} for v in ("fp", "tp")],
+        "cases": [{"when": CONTEXTOS["fp"], "model": primera},
+                  {"when": CONTEXTOS["tp"], "model": compuesto("tp")}],
         "fallback": compuesto("gui"),
     }}
+    if ads:
+        # Al apuntar cambia el ítem (el flag): sin esto el arma baja y sube cada vez.
+        definicion["hand_animation_on_swap"] = False
     _escribir_item(nombre, definicion, carpeta_pack, namespace)
+
+
+def modelo_hijo(nombre, padre, display, carpeta_pack, namespace="tresmodos"):
+    """Modelo que hereda geometría y textura de `padre` y solo cambia la transformación."""
+    ruta = Path(carpeta_pack) / "assets" / namespace / "models" / "item" / f"{nombre}.json"
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    ruta.write_text(json.dumps({"parent": padre, "display": display}, separators=(",", ":")) + "\n",
+                    encoding="utf-8")
+    return f"{namespace}:item/{nombre}"
 
 
 def definicion_simple(nombre, recurso, carpeta_pack, namespace="tresmodos"):

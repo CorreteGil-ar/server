@@ -9,132 +9,457 @@
      "firstperson_lefthand"
     ],
     "model": {
-     "type": "minecraft:composite",
-     "models": [
-      {
-       "type": "minecraft:model",
-       "model": "tresmodos:item/m4a1_fp"
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 0,
-       "cases": [
+     "type": "minecraft:condition",
+     "property": "minecraft:custom_model_data",
+     "index": 0,
+     "on_true": {
+      "type": "minecraft:select",
+      "property": "minecraft:custom_model_data",
+      "index": 0,
+      "cases": [
+       {
+        "when": "punto_rojo",
+        "model": {
+         "type": "minecraft:composite",
+         "models": [
+          {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_ads_punto_rojo"
+          },
+          {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_punto_rojo_ads_punto_rojo"
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 1,
+           "cases": [
+            {
+             "when": "silenciador",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_silenciador_ads_punto_rojo"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_boca_ads_punto_rojo"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 2,
+           "cases": [
+            {
+             "when": "empunadura",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_empunadura_ads_punto_rojo"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:empty"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 3,
+           "cases": [
+            {
+             "when": "laser",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_laser_ads_punto_rojo"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:empty"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 4,
+           "cases": [
+            {
+             "when": "linterna",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_linterna_ads_punto_rojo"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:empty"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 5,
+           "cases": [
+            {
+             "when": "ampliado",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_cargador_ampliado_ads_punto_rojo"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_cargador_normal_ads_punto_rojo"
+           }
+          }
+         ]
+        }
+       },
+       {
+        "when": "holografica",
+        "model": {
+         "type": "minecraft:composite",
+         "models": [
+          {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_ads_holografica"
+          },
+          {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_holografica_ads_holografica"
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 1,
+           "cases": [
+            {
+             "when": "silenciador",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_silenciador_ads_holografica"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_boca_ads_holografica"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 2,
+           "cases": [
+            {
+             "when": "empunadura",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_empunadura_ads_holografica"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:empty"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 3,
+           "cases": [
+            {
+             "when": "laser",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_laser_ads_holografica"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:empty"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 4,
+           "cases": [
+            {
+             "when": "linterna",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_linterna_ads_holografica"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:empty"
+           }
+          },
+          {
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 5,
+           "cases": [
+            {
+             "when": "ampliado",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m4a1_cargador_ampliado_ads_holografica"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_cargador_normal_ads_holografica"
+           }
+          }
+         ]
+        }
+       },
+       {
+        "when": "acog",
+        "model": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/visor_acog"
+        }
+       }
+      ],
+      "fallback": {
+       "type": "minecraft:composite",
+       "models": [
         {
-         "when": "punto_rojo",
-         "model": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m4a1_ads_hierro"
+        },
+        {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m4a1_mira_hierro_ads_hierro"
+        },
+        {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 1,
+         "cases": [
+          {
+           "when": "silenciador",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_silenciador_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
           "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_punto_rojo_fp"
+          "model": "tresmodos:item/m4a1_boca_ads_hierro"
          }
         },
         {
-         "when": "holografica",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_holografica_fp"
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 2,
+         "cases": [
+          {
+           "when": "empunadura",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_empunadura_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:empty"
          }
         },
         {
-         "when": "acog",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_acog_fp"
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 3,
+         "cases": [
+          {
+           "when": "laser",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_laser_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:empty"
          }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m4a1_mira_hierro_fp"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [
+        },
         {
-         "when": "silenciador",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_silenciador_fp"
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 4,
+         "cases": [
+          {
+           "when": "linterna",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_linterna_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:empty"
          }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m4a1_boca_fp"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [
+        },
         {
-         "when": "empunadura",
-         "model": {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 5,
+         "cases": [
+          {
+           "when": "ampliado",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m4a1_cargador_ampliado_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
           "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_empunadura_fp"
+          "model": "tresmodos:item/m4a1_cargador_normal_ads_hierro"
          }
         }
-       ],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 3,
-       "cases": [
-        {
-         "when": "laser",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_laser_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 4,
-       "cases": [
-        {
-         "when": "linterna",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_linterna_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 5,
-       "cases": [
-        {
-         "when": "ampliado",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m4a1_cargador_ampliado_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m4a1_cargador_normal_fp"
-       }
+       ]
       }
-     ]
+     },
+     "on_false": {
+      "type": "minecraft:composite",
+      "models": [
+       {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m4a1_fp"
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 0,
+        "cases": [
+         {
+          "when": "punto_rojo",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_punto_rojo_fp"
+          }
+         },
+         {
+          "when": "holografica",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_holografica_fp"
+          }
+         },
+         {
+          "when": "acog",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_acog_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m4a1_mira_hierro_fp"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 1,
+        "cases": [
+         {
+          "when": "silenciador",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_silenciador_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m4a1_boca_fp"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 2,
+        "cases": [
+         {
+          "when": "empunadura",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_empunadura_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 3,
+        "cases": [
+         {
+          "when": "laser",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_laser_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 4,
+        "cases": [
+         {
+          "when": "linterna",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_linterna_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 5,
+        "cases": [
+         {
+          "when": "ampliado",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m4a1_cargador_ampliado_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m4a1_cargador_normal_fp"
+        }
+       }
+      ]
+     }
     }
    },
    {
@@ -400,5 +725,6 @@
     }
    ]
   }
- }
+ },
+ "hand_animation_on_swap": false
 }

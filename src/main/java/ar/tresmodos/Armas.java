@@ -2,6 +2,8 @@ package ar.tresmodos;
 
 import ar.tresmodos.Accesorios.Mira;
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.SwingAnimation;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
@@ -12,6 +14,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -30,7 +34,10 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
@@ -121,7 +128,8 @@ public class Armas implements Listener {
     private final Map<UUID, Integer> gatilloHasta = new HashMap<>();
     private final Map<UUID, Double> acumulado = new HashMap<>();
     private final Map<UUID, Recarga> recargando = new HashMap<>();
-    private final Set<UUID> apuntando = new HashSet<>();
+    /** Jugador que está apuntando -> id del arma con la que apunta. */
+    private final Map<UUID, String> apuntando = new HashMap<>();
     private final Set<UUID> conLinterna = new HashSet<>();
     private final Map<UUID, Integer> ultimoTirar = new HashMap<>();
     private final Map<UUID, Impacto> impactos = new HashMap<>();
@@ -161,6 +169,8 @@ public class Armas implements Listener {
         return it;
     }
 
+    private static final NamespacedKey SIN_DEMORA = new NamespacedKey("tresmodos", "arma_sin_demora");
+
     /** Monta los accesorios en el ítem: datos, modelo y descripción. */
     static void aplicarAccesorios(ItemStack it, Tipo t, Accesorios a) {
         ItemMeta meta = it.getItemMeta();
@@ -177,7 +187,16 @@ public class Armas implements Listener {
         lore.add(Util.mmItem("<gray>Q: recargar · /armero: accesorios"));
         for (String linea : a.resumen()) lore.add(Util.mmItem("<dark_aqua>• " + linea));
         meta.lore(lore);
+        // Sin demora de ataque: si no, el cliente baja el arma y la vuelve a subir después de
+        // cada clic izquierdo (apuntar), como tras un golpe.
+        meta.removeAttributeModifier(Attribute.ATTACK_SPEED);
+        meta.addAttributeModifier(Attribute.ATTACK_SPEED, new AttributeModifier(SIN_DEMORA, 1000,
+                AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         it.setItemMeta(meta);
+        // Y sin el golpe del brazo al hacer clic izquierdo: la mira no se mueve al apuntar.
+        it.setData(DataComponentTypes.ATTACK_ANIMATION,
+                SwingAnimation.swingAnimation().type(SwingAnimation.Animation.NONE).build());
     }
 
     public static ItemStack granadas(int cantidad) {
@@ -236,6 +255,7 @@ public class Armas implements Listener {
 
     /** Pasa al ítem las balas de todas las armas del inventario (antes de guardarlo). */
     public void sincronizar(Player p) {
+        dejarDeApuntar(p);
         for (ItemStack it : p.getInventory().getContents()) {
             if (it != null && tipo(it) != null) persistir(it);
         }
@@ -341,7 +361,7 @@ public class Armas implements Listener {
         setBalas(it, balas - 1);
 
         Accesorios acc = accesorios(it);
-        boolean apunta = apuntando.contains(id);
+        boolean apunta = apuntando.containsKey(id);
         double disp = t.dispersion;
         if (t == Tipo.FRANCOTIRADOR) {
             disp = apunta ? 0.0 : 0.09;
@@ -457,13 +477,16 @@ public class Armas implements Listener {
         UUID id = p.getUniqueId();
         // Al tirar el arma con Q el cliente también agita el brazo: no lo tomamos como clic.
         if (Bukkit.getCurrentTick() - ultimoTirar.getOrDefault(id, -100) <= 3) return;
-        if (apuntando.contains(id)) {
+        if (apuntando.containsKey(id)) {
             dejarDeApuntar(p);
             return;
         }
         if (recargando.containsKey(id) || p.isSprinting()) return;
         Mira mira = accesorios(it).mira();
-        apuntando.add(id);
+        apuntando.put(id, String.valueOf(Util.marca(it, Claves.ARMA_ID)));
+        // El paquete de recursos centra el arma con la mira alineada (o muestra el visor).
+        marcarApuntado(it, true);
+        p.getInventory().setItemInMainHand(it);
         // La lentitud cierra el campo visual: es el zoom de la óptica (y te frena al apuntar).
         p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, PotionEffect.INFINITE_DURATION, mira.zoom,
                 false, false, false));
@@ -471,7 +494,35 @@ public class Armas implements Listener {
     }
 
     public void dejarDeApuntar(Player p) {
-        if (apuntando.remove(p.getUniqueId())) p.removePotionEffect(PotionEffectType.SLOWNESS);
+        if (apuntando.remove(p.getUniqueId()) != null) p.removePotionEffect(PotionEffectType.SLOWNESS);
+        limpiarMarcas(p);
+    }
+
+    /** Saca la marca de apuntado de todas las armas del inventario (el ítem decide el modelo). */
+    private static void limpiarMarcas(Player p) {
+        PlayerInventory inv = p.getInventory();
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack it = inv.getItem(i);
+            if (apuntado(it)) {
+                marcarApuntado(it, false);
+                inv.setItem(i, it);
+            }
+        }
+    }
+
+    /** Flag 0 de custom_model_data: el paquete de recursos dibuja el arma apuntando. */
+    static boolean apuntado(ItemStack it) {
+        if (tipo(it) == null) return false;
+        List<Boolean> flags = it.getItemMeta().getCustomModelDataComponent().getFlags();
+        return !flags.isEmpty() && flags.getFirst();
+    }
+
+    static void marcarApuntado(ItemStack it, boolean valor) {
+        ItemMeta meta = it.getItemMeta();
+        CustomModelDataComponent cmd = meta.getCustomModelDataComponent();
+        cmd.setFlags(valor ? List.of(true) : List.of());
+        meta.setCustomModelDataComponent(cmd);
+        it.setItemMeta(meta);
     }
 
     @EventHandler
@@ -488,6 +539,10 @@ public class Armas implements Listener {
             ItemStack it = p.getInventory().getItemInMainHand();
             Tipo t = tipo(it);
             Accesorios a = t != null && mundoConArmas(p) ? accesorios(it) : null;
+
+            // Si el arma con la que apuntaba ya no está en la mano (la movió en el inventario), deja de apuntar.
+            String apuntada = apuntando.get(id);
+            if (apuntada != null && !apuntada.equals(Util.marca(it, Claves.ARMA_ID))) dejarDeApuntar(p);
 
             // Linterna: visión nocturna mientras el arma esté en la mano.
             if (a != null && a.linterna()) {
@@ -594,6 +649,8 @@ public class Armas implements Listener {
         // Al morir se pierden los efectos (zoom, visión nocturna): se reinicia el estado del arma.
         UUID id = e.getPlayer().getUniqueId();
         apuntando.remove(id);
+        limpiarMarcas(e.getPlayer());
+        for (ItemStack it : e.getDrops()) if (apuntado(it)) marcarApuntado(it, false);
         conLinterna.remove(id);
         recargando.remove(id);
         gatilloHasta.remove(id);

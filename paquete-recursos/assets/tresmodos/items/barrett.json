@@ -9,86 +9,109 @@
      "firstperson_lefthand"
     ],
     "model": {
-     "type": "minecraft:composite",
-     "models": [
-      {
+     "type": "minecraft:condition",
+     "property": "minecraft:custom_model_data",
+     "index": 0,
+     "on_true": {
+      "type": "minecraft:select",
+      "property": "minecraft:custom_model_data",
+      "index": 0,
+      "cases": [
+       {
+        "when": "telescopica",
+        "model": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/visor_telescopica"
+        }
+       }
+      ],
+      "fallback": {
        "type": "minecraft:model",
-       "model": "tresmodos:item/barrett_fp"
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 0,
-       "cases": [
-        {
-         "when": "telescopica",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/barrett_telescopica_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/barrett_telescopica_fp"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [
-        {
-         "when": "silenciador",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/barrett_silenciador_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/barrett_boca_fp"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 3,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 4,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 5,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/barrett_cargador_normal_fp"
-       }
+       "model": "tresmodos:item/visor_telescopica"
       }
-     ]
+     },
+     "on_false": {
+      "type": "minecraft:composite",
+      "models": [
+       {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_fp"
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 0,
+        "cases": [
+         {
+          "when": "telescopica",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_telescopica_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/barrett_telescopica_fp"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 1,
+        "cases": [
+         {
+          "when": "silenciador",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_silenciador_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/barrett_boca_fp"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 2,
+        "cases": [],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 3,
+        "cases": [],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 4,
+        "cases": [],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 5,
+        "cases": [],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/barrett_cargador_normal_fp"
+        }
+       }
+      ]
+     }
     }
    },
    {
@@ -262,5 +285,6 @@
     }
    ]
   }
- }
+ },
+ "hand_animation_on_swap": false
 }

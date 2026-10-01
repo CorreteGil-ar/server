@@ -4,4 +4,4 @@
 paquete-recursos:
   activo: true
   url: "https://github.com/CorreteGil-ar/server/releases/download/pack/tresmodos-pack.zip"
-  mensaje: "<gold>TresModos</gold> <gray>usa modelos y texturas propios. Aceptá el paquete para jugar."
+  mensaje: "<gold>TresModos</gold> <gray>usa modelos y texturas propios. Aceptá el paquete para jugar.<newline><dark_gray>Para apuntar estable: Opciones → Gráficos → Movimiento de la visión: NO."

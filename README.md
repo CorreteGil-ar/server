@@ -87,8 +87,10 @@ Cinco armas con modelo propio: Beretta M9, H&K MP5, Colt M4A1, Benelli M1014 y B
 | Control | Acción |
 |---|---|
 | Clic derecho (mantener) | Disparar; M4A1 y MP5 en automático a 800 disp/min |
-| Clic izquierdo | Apuntar / dejar de apuntar (zoom según la óptica) |
+| Clic izquierdo | Apuntar / dejar de apuntar: el arma se centra con la mira de hierro o la óptica alineada con la mira de la pantalla; con ACOG o telescópica se ve el ocular. El zoom depende de la óptica |
 | Q | Recargar |
+
+Para apuntar estable al caminar conviene desactivar **Movimiento de la visión** (Opciones → Gráficos): ese balanceo mueve el arma en la mano. El zoom usa **Efectos de FOV** (Opciones → Accesibilidad), que tiene que estar en más de 0 %.
 
 Accesorios (todos desbloqueados, se eligen en `/armero` y quedan guardados por arma): punto rojo, holográfica, ACOG 4x, mira telescópica (fija en la Barrett), silenciador, empuñadura vertical, láser, linterna y cargador ampliado. Cada arma admite los que tiene en la realidad.
 

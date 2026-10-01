@@ -7,6 +7,10 @@ Cada arma se exporta en partes (cuerpo, cargadores, dispositivo de boca, miras d
 y un modelo por accesorio montado) y la definición del ítem las combina según los
 strings de custom_model_data que pone el plugin (ver Accesorios.java):
   0 mira · 1 boca · 2 bajo · 3 láser · 4 linterna · 5 cargador
+
+Apuntado (flag 0 de custom_model_data, ver Armas.java): con miras de hierro, punto rojo u
+holográfica el arma se centra con la línea de mira sobre la mira de la pantalla; con ACOG o
+telescópica se ve el visor del ocular.
 """
 import json
 from pathlib import Path
@@ -14,12 +18,22 @@ from pathlib import Path
 import numpy as np
 
 import hud
-from accesorios import ACCESORIOS, montar, silenciador
+from accesorios import ACCESORIOS, LINEA_MIRA, VISORES, display_visor, montar, silenciador, visor
 from armas import ARMAS
-from modelado import ORIENTACIONES, definicion_arma, definicion_simple, exportar
+from modelado import ORIENTACIONES, definicion_arma, definicion_simple, engrosar, exportar, modelo_hijo
 
 PACK = Path(__file__).resolve().parent.parent / "paquete-recursos"
 RANURAS = ["mira", "boca", "bajo", "laser", "linterna", "cargador"]
+OPTICAS = ("punto_rojo", "holografica", "acog", "telescopica")
+
+# Volumen: las armas y accesorios se ensanchan a lo ancho (las medidas reales quedan finas
+# vistas desde atrás). Los cilindros siguen redondos.
+GROSOR = 1.3
+
+# Al apuntar, el arma se dibuja a escala 4 y cuatro veces más lejos: se ve igual, pero el
+# balanceo de la vista (que mueve la mano una distancia fija) la desplaza cuatro veces menos.
+ADS_ESCALA = 4
+MANO = np.array([0.56, -0.52, -0.72])   # posición de la mano derecha en la vista (bloques)
 
 
 def _caja_limites(cajas):
@@ -48,6 +62,7 @@ def planificar(arma, base, todas):
         m = ORIENTACIONES[v]
         d = 8 - _en_variante(m, centro_todo)       # centra el conjunto completo
         if v == "fp":
+            d[0] = 0  # el ánima queda en x = 8: al apuntar con la mano izquierda también se centra
             s = cfg["fp"]["scale"]
             t = np.array(cfg["fp"]["translation"], float) - s * d
             mano = {"translation": [round(x, 3) for x in t], "scale": [s] * 3}
@@ -70,22 +85,58 @@ def planificar(arma, base, todas):
     return variantes
 
 
+def engrosar_arma(arma):
+    """Ensancha las piezas del arma y corre los montajes laterales a la nueva superficie."""
+    arma.cuerpo = engrosar(arma.cuerpo, GROSOR)
+    arma.cargador = {tipo: engrosar(cajas, GROSOR) for tipo, cajas in arma.cargador.items()}
+    arma.boca = engrosar(arma.boca, GROSOR)
+    arma.mira_hierro = engrosar(arma.mira_hierro, GROSOR)
+    arma.mira_plegada = engrosar(arma.mira_plegada, GROSOR)
+    for mont in arma.montajes.values():
+        x, y, z = mont["pos"]
+        mont["pos"] = (8 + (x - 8) * GROSOR, y, z)
+    return arma
+
+
 def accesorio_montado(arma, clave):
     """Cajas del accesorio `clave` ya montado en el arma, y la textura que comparte."""
     if clave == "silenciador":
         mont = arma.montajes["boca"]
-        return montar(silenciador(arma.silenciador), mont["pos"], mont["lado"]), f"silenciador_{arma.silenciador}"
+        cajas = engrosar(silenciador(arma.silenciador), GROSOR, 0.0)
+        return montar(cajas, mont["pos"], mont["lado"]), f"silenciador_{arma.silenciador}"
     ranura = {"punto_rojo": "optica", "holografica": "optica", "acog": "optica", "telescopica": "optica",
               "empunadura": "inferior", "laser": "laser", "linterna": "linterna"}[clave]
     mont = arma.montajes[ranura]
-    cajas = montar(ACCESORIOS[clave](), mont["pos"], mont["lado"])
+    cajas = montar(engrosar(ACCESORIOS[clave](), GROSOR, 0.0), mont["pos"], mont["lado"])
     if ranura == "optica":
         cajas += arma.mira_plegada  # el alza se pliega bajo la óptica
         return cajas, f"{arma.nombre}_mira_{clave}"
     return cajas, f"acc_{clave}_{mont['lado']}"
 
 
-def generar_arma(arma):
+def display_ads(variantes, punto, ojo):
+    """Transformación de primera persona que lleva `punto` (marco canónico) al centro de la
+    pantalla, a `ojo` bloques del ojo si el arma estuviera a escala 1."""
+    s = ADS_ESCALA
+    p = np.asarray(punto, float) + np.asarray(variantes["fp"]["desplazamiento"], float)
+    destino = np.array([0.0, 0.0, -ojo * s])
+    t = 16 * (destino - MANO) - s * (p - 8)
+    mano = {"translation": [round(float(x), 3) for x in t], "scale": [s] * 3}
+    return {"firstperson_righthand": mano, "firstperson_lefthand": mano}
+
+
+def punto_de_mira(arma, mira):
+    """Punto a alinear con la mira de la pantalla: punta del guion o centro de la ventana."""
+    if not mira:
+        linea = arma.linea_hierro
+        return (8, linea["y"], linea["z"]), arma.config["ads"]["hierro"]
+    x, y, z = arma.montajes["optica"]["pos"]
+    linea = LINEA_MIRA[mira]
+    return (x, y + linea["y"], z + linea["z"]), arma.config["ads"]["optica"]
+
+
+def generar_arma(arma, visores):
+    engrosar_arma(arma)
     partes = {"cuerpo": arma.cuerpo}
     for tipo, cajas in arma.cargador.items():
         partes[f"cargador_{tipo}"] = cajas
@@ -112,6 +163,24 @@ def generar_arma(arma):
     for valor, (cajas, textura) in accesorios.items():
         rutas[valor] = exportar(f"{arma.nombre}_{valor}", cajas, variantes, PACK, textura=textura)
 
+    # Apuntado: un modelo hijo por parte y por mira (misma geometría, otra transformación).
+    miras = list(dict.fromkeys(arma.opciones.get("mira", [""]) + ([arma.mira_defecto] if arma.mira_defecto else [])))
+    ads = {"opciones": {}}
+    for mira in miras:
+        if mira in VISORES:
+            ads["opciones"][mira] = {"visor": visores[mira]}
+            continue
+        variante = f"ads_{mira or 'hierro'}"
+        punto, ojo = punto_de_mira(arma, mira)
+        display = display_ads(variantes, punto, ojo)
+        for parte, r in rutas.items():
+            if parte in OPTICAS and parte != mira or parte == "mira_hierro" and mira:
+                continue
+            nombre = r["fp"].split("/", 1)[1].removesuffix("_fp")
+            r[variante] = modelo_hijo(f"{nombre}_{variante}", r["fp"], display, PACK)
+        ads["opciones"][mira] = {"variante": variante}
+    ads["defecto"] = ads["opciones"][arma.mira_defecto or ""]
+
     ranuras = []
     for ranura in RANURAS:
         opciones = {v: rutas[v] for v in arma.opciones.get(ranura, [""]) if v and ranura != "cargador"}
@@ -126,15 +195,24 @@ def generar_arma(arma):
         else:
             defecto = None
         ranuras.append({"opciones": opciones, "defecto": defecto})
-    definicion_arma(arma.nombre, rutas["cuerpo"], ranuras, PACK)
+    definicion_arma(arma.nombre, rutas["cuerpo"], ranuras, PACK, ads=ads)
     return {r: arma.opciones.get(r, [""]) for r in RANURAS}
+
+
+def generar_visores():
+    """Vista a través de las ópticas de aumento, compartida por todas las armas."""
+    rutas = {}
+    for tipo in VISORES:
+        variantes = {"": {"orientacion": "fp", "desplazamiento": (0, 0, 0), "display": display_visor()}}
+        rutas[tipo] = exportar(f"visor_{tipo}", visor(tipo), variantes, PACK)[""]
+    return rutas
 
 
 def generar_iconos():
     """Íconos de los accesorios para el menú del armero."""
-    piezas = {clave: crear() for clave, crear in ACCESORIOS.items()}
-    piezas["silenciador"] = silenciador("rifle")
-    piezas["cargador"] = ARMAS["m4a1"]().cargador["ampliado"]
+    piezas = {clave: engrosar(crear(), GROSOR, 0.0) for clave, crear in ACCESORIOS.items()}
+    piezas["silenciador"] = engrosar(silenciador("rifle"), GROSOR, 0.0)
+    piezas["cargador"] = engrosar(ARMAS["m4a1"]().cargador["ampliado"], GROSOR)
     for clave, cajas in piezas.items():
         lo, hi = _caja_limites(cajas)
         centro = (lo + hi) / 2
@@ -153,9 +231,11 @@ def main():
     for carpeta in ("models/item", "textures/item", "items"):
         for f in (PACK / "assets" / "tresmodos" / carpeta).glob("*"):
             f.unlink()
+    visores = generar_visores()
+    print("visores: listo")
     resumen = {}
     for nombre, crear in ARMAS.items():
-        resumen[nombre] = generar_arma(crear())
+        resumen[nombre] = generar_arma(crear(), visores)
         print(f"{nombre}: listo")
     generar_iconos()
     print("íconos de accesorios: listo")

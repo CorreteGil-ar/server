@@ -98,7 +98,7 @@ Todos contra todos rápido, estilo Modern Warfare: muertes en menos de medio seg
 | Acción | Tecla | |
 |---|---|---|
 | Disparar | Clic derecho; mantener = automático | ✅ El cliente repite el clic cada 4 ticks y el plugin completa la cadencia |
-| Apuntar (ADS) | Clic izquierdo (alterna) | ✅ Zoom con el efecto de FOV y retícula propia. Las miras de francotirador ponen un overlay a pantalla completa ✅ |
+| Apuntar (ADS) | Clic izquierdo (alterna) | ✅ Implementado: el arma se centra con la mira de hierro o la óptica alineada con la mira de la pantalla (modelo de apuntado por óptica); ACOG y telescópica muestran la vista del ocular a pantalla completa. Zoom con el efecto de FOV |
 | Recargar | Q | ✅ Ya existe |
 | Cuchillazo rápido | F | ✅ |
 | Letal / táctico | Slots 3 y 4 + clic derecho (mantener para cocinar la granada) | ✅ |
@@ -144,7 +144,7 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 ### 1.6 Accesorios y camuflajes
 
 - **Accesorios**: todos desbloqueados desde el principio; se eligen en el armero (`/armero`, el libro de clases o el celular de GTA) y quedan guardados por arma. El modelo del arma cambia según lo que tenga puesto ✅ (implementado).
-  - Mira: punto rojo, holográfica, ACOG 4x o telescópica 8x (fija en la Barrett). Define el zoom al apuntar.
+  - Mira: miras de hierro (por defecto), punto rojo, holográfica, ACOG 4x o telescópica 8x (fija en la Barrett). Define qué se ve y el zoom al apuntar.
   - Silenciador: menos ruido y sin fogonazo; −15 % de alcance.
   - Empuñadura vertical: −25 % de dispersión.
   - Láser: −30 % de dispersión sin apuntar y un punto rojo visible para todos.

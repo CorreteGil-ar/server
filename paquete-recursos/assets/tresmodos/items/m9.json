@@ -9,100 +9,201 @@
      "firstperson_lefthand"
     ],
     "model": {
-     "type": "minecraft:composite",
-     "models": [
-      {
-       "type": "minecraft:model",
-       "model": "tresmodos:item/m9_fp"
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 0,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [
+     "type": "minecraft:condition",
+     "property": "minecraft:custom_model_data",
+     "index": 0,
+     "on_true": {
+      "type": "minecraft:select",
+      "property": "minecraft:custom_model_data",
+      "index": 0,
+      "cases": [],
+      "fallback": {
+       "type": "minecraft:composite",
+       "models": [
         {
-         "when": "silenciador",
-         "model": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m9_ads_hierro"
+        },
+        {
+         "type": "minecraft:empty"
+        },
+        {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 1,
+         "cases": [
+          {
+           "when": "silenciador",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m9_silenciador_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:empty"
+         }
+        },
+        {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 2,
+         "cases": [],
+         "fallback": {
+          "type": "minecraft:empty"
+         }
+        },
+        {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 3,
+         "cases": [
+          {
+           "when": "laser",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m9_laser_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:empty"
+         }
+        },
+        {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 4,
+         "cases": [
+          {
+           "when": "linterna",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m9_linterna_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:empty"
+         }
+        },
+        {
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 5,
+         "cases": [
+          {
+           "when": "ampliado",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m9_cargador_ampliado_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
           "type": "minecraft:model",
-          "model": "tresmodos:item/m9_silenciador_fp"
+          "model": "tresmodos:item/m9_cargador_normal_ads_hierro"
          }
         }
-       ],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 3,
-       "cases": [
-        {
-         "when": "laser",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m9_laser_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 4,
-       "cases": [
-        {
-         "when": "linterna",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m9_linterna_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
-      },
-      {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 5,
-       "cases": [
-        {
-         "when": "ampliado",
-         "model": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m9_cargador_ampliado_fp"
-         }
-        }
-       ],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m9_cargador_normal_fp"
-       }
+       ]
       }
-     ]
+     },
+     "on_false": {
+      "type": "minecraft:composite",
+      "models": [
+       {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m9_fp"
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 0,
+        "cases": [],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 1,
+        "cases": [
+         {
+          "when": "silenciador",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m9_silenciador_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 2,
+        "cases": [],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 3,
+        "cases": [
+         {
+          "when": "laser",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m9_laser_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 4,
+        "cases": [
+         {
+          "when": "linterna",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m9_linterna_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 5,
+        "cases": [
+         {
+          "when": "ampliado",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m9_cargador_ampliado_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m9_cargador_normal_fp"
+        }
+       }
+      ]
+     }
     }
    },
    {
@@ -304,5 +405,6 @@
     }
    ]
   }
- }
+ },
+ "hand_animation_on_swap": false
 }

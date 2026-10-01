@@ -42,6 +42,43 @@ def cargar_json(ruta):
         return None
 
 
+TIPOS_MODELO = {"model", "composite", "select", "condition", "empty", "range_dispatch", "special", "bundle/selected_item"}
+
+
+def validar_nodo(nodo, rel):
+    """Estructura de la definición de ítem: cada tipo con los campos que exige."""
+    if not isinstance(nodo, dict):
+        error(f"{rel}: modelo de ítem que no es un objeto")
+        return
+    tipo = nodo.get("type", "").removeprefix("minecraft:")
+    if tipo not in TIPOS_MODELO:
+        error(f"{rel}: tipo de modelo desconocido {nodo.get('type')!r}")
+        return
+    hijos = []
+    if tipo == "model" and "model" not in nodo:
+        error(f"{rel}: modelo sin 'model'")
+    elif tipo == "composite":
+        hijos = nodo.get("models", [])
+    elif tipo == "select":
+        if "property" not in nodo or not isinstance(nodo.get("cases"), list):
+            error(f"{rel}: select sin 'property' o 'cases'")
+        for caso in nodo.get("cases", []):
+            if "when" not in caso or "model" not in caso:
+                error(f"{rel}: caso de select sin 'when' o 'model'")
+            elif caso["when"] == "" or caso["when"] == []:
+                error(f"{rel}: caso de select con 'when' vacío")
+            hijos.append(caso.get("model"))
+        if "fallback" in nodo:
+            hijos.append(nodo["fallback"])
+    elif tipo == "condition":
+        if "property" not in nodo or "on_true" not in nodo or "on_false" not in nodo:
+            error(f"{rel}: condition sin 'property', 'on_true' u 'on_false'")
+        hijos = [nodo.get("on_true"), nodo.get("on_false")]
+    for h in hijos:
+        if h is not None:
+            validar_nodo(h, rel)
+
+
 def modelos_de_item(nodo, acc):
     if isinstance(nodo, dict):
         if nodo.get("type") in ("minecraft:model", "model") and "model" in nodo:
@@ -77,6 +114,9 @@ def validar_modelo(recurso, vistos):
         for p in el["from"] + el["to"]:
             if not -16 <= p <= 32:
                 error(f"{rel}: coordenada {p} fuera de -16..32 en {el.get('name', '?')}")
+        luz = el.get("light_emission", 0)
+        if not (isinstance(luz, int) and 0 <= luz <= 15):
+            error(f"{rel}: light_emission {luz!r} fuera de 0..15 en {el.get('name', '?')}")
         rot = el.get("rotation")
         if rot and rot.get("angle") not in (-45, -22.5, 0, 22.5, 45):
             error(f"{rel}: ángulo {rot.get('angle')} no permitido en {el.get('name', '?')}")
@@ -114,6 +154,18 @@ def validar():
         d = cargar_json(ruta)
         if d is None:
             continue
+        rel = ruta.relative_to(RAIZ)
+        for clave, valor in d.items():
+            if clave == "model":
+                validar_nodo(valor, rel)
+            elif clave in ("hand_animation_on_swap", "oversized_in_gui"):
+                if not isinstance(valor, bool):
+                    error(f"{rel}: {clave} tiene que ser true o false")
+            elif clave == "swap_animation_scale":
+                if not isinstance(valor, (int, float)):
+                    error(f"{rel}: swap_animation_scale tiene que ser un número")
+            else:
+                error(f"{rel}: campo desconocido {clave!r}")
         refs = set()
         modelos_de_item(d.get("model"), refs)
         if not refs:

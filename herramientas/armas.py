@@ -42,6 +42,10 @@ class Arma:
     opciones: dict                 # ranura -> lista de valores permitidos
     silenciador: str = "rifle"     # tamaño del silenciador
     mira_defecto: str = ""         # óptica fija si el arma no tiene miras de hierro
+    # Línea de las miras de hierro: altura de la punta del guion (y) y cara trasera del alza (z).
+    linea_hierro: dict = None
+    # fp / tp / gui: transformaciones; ads: distancia aparente del ojo a la mira trasera, en
+    # bloques a escala 1 ("hierro" y "optica"), ver generar.display_ads.
     config: dict = field(default_factory=dict)
 
 
@@ -133,6 +137,7 @@ def m4a1():
         C(7.65, 11.10, 7.2, 8.35, 11.60, 8.2, negro, "alza_base"),
         C(7.65, 11.60, 7.5, 7.84, 12.25, 7.9, negro, "alza_ala_izq"),
         C(8.16, 11.60, 7.5, 8.35, 12.25, 7.9, negro, "alza_ala_der"),
+        C(7.65, 12.25, 7.5, 8.35, 12.42, 7.9, negro, "alza_anillo"),
     ]
     mira_plegada = [C(7.65, 11.10, 7.0, 8.35, 11.42, 8.4, negro, "alza_plegada")]
     normal = [
@@ -166,10 +171,12 @@ def m4a1():
             "linterna": ["", "linterna"],
             "cargador": ["", "ampliado"],
         },
+        linea_hierro={"y": 11.95, "z": 8.2},
         config={
-            "fp": {"translation": [-5.5, 3.4, 2.0], "scale": 0.86},
-            "tp": {"agarre": (8, 6.5, 8.6), "translation": [0, 0, 0.5], "scale": 0.5},
+            "fp": {"translation": [-5.5, 3.4, 2.0], "scale": 0.99},
+            "tp": {"agarre": (8, 6.5, 8.6), "translation": [0, 0, 0.5], "scale": 0.58},
             "gui": {"scale": 0.45},
+            "ads": {"hierro": 0.15, "optica": 0.24},
         },
     )
 
@@ -198,9 +205,9 @@ def m9():
         C(7.20, 9.30, -1.2, 7.55, 10.70, 2.4, negro, "corredera_lado_izq"),
         C(8.45, 9.30, -1.2, 8.80, 10.70, 2.4, negro, "corredera_lado_der"),
         *cilindro("z", (8, 10.05), 0.40, -1.2, 2.4, canon, "canon_visible"),
-        C(7.85, 11.20, -4.6, 8.15, 11.65, -4.0, negro, "guion"),
-        C(7.55, 11.20, 6.9, 7.80, 11.70, 7.6, negro, "alza_izq"),
-        C(8.20, 11.20, 6.9, 8.45, 11.70, 7.6, negro, "alza_der"),
+        C(7.87, 11.20, -4.6, 8.13, 11.75, -4.0, negro, "guion"),
+        C(7.50, 11.20, 6.9, 7.80, 11.75, 7.6, negro, "alza_izq"),
+        C(8.20, 11.20, 6.9, 8.50, 11.75, 7.6, negro, "alza_der"),
         C(7.10, 10.20, 5.8, 7.20, 10.80, 7.2, negro, "seguro_izq"),
         C(8.80, 10.20, 5.8, 8.90, 10.80, 7.2, negro, "seguro_der"),
         C(7.80, 9.80, 8.4, 8.20, 10.90, 8.9, negro, "martillo"),
@@ -233,10 +240,12 @@ def m9():
         opciones={"mira": [""], "boca": ["", "silenciador"], "bajo": [""],
                   "laser": ["", "laser"], "linterna": ["", "linterna"], "cargador": ["", "ampliado"]},
         silenciador="pistola",
+        linea_hierro={"y": 11.75, "z": 7.6},
         config={
-            "fp": {"translation": [-4.5, 2.8, 1.0], "scale": 0.85},
-            "tp": {"agarre": (8, 5.5, 5.4), "translation": [0, 0, 0.5], "scale": 0.36},
+            "fp": {"translation": [-4.5, 2.8, 1.0], "scale": 0.98},
+            "tp": {"agarre": (8, 5.5, 5.4), "translation": [0, 0, 0.5], "scale": 0.42},
             "gui": {"scale": 0.85},
+            "ads": {"hierro": 0.18},
         },
     )
 
@@ -273,7 +282,6 @@ def mp5():
         # receptor estampado con riel
         C(7.35, 9.20, -2.6, 8.65, 11.40, 7.4, receptor, "receptor"),
         C(7.58, 11.40, -1.0, 8.42, 11.70, 5.4, riel, "riel_receptor"),
-        C(7.40, 11.40, 6.0, 8.60, 12.40, 7.0, negro, "alza_tambor"),
         C(7.45, 8.30, 0.0, 8.55, 9.20, 3.1, receptor, "brocal"),
         # grupo de disparo y empuñadura
         C(7.40, 8.10, 3.4, 8.60, 9.20, 7.6, negro, "caja_gatillo"),
@@ -300,9 +308,16 @@ def mp5():
         C(7.55, 2.10, -1.85, 8.45, 3.50, 1.05, cargador, "cargador_4"),
         C(7.50, 1.70, -2.15, 8.50, 2.10, 0.85, cargador, "cargador_base"),
     ]
+    # alza de tambor con orificio (se saca al montar una óptica)
+    mira_hierro = [
+        C(7.40, 11.40, 6.0, 8.60, 11.78, 7.0, negro, "tambor_base"),
+        C(7.40, 11.78, 6.0, 7.80, 12.42, 7.0, negro, "tambor_izq"),
+        C(8.20, 11.78, 6.0, 8.60, 12.42, 7.0, negro, "tambor_der"),
+        C(7.40, 12.42, 6.0, 8.60, 12.72, 7.0, negro, "tambor_sup"),
+    ]
     return Arma(
         nombre="mp5", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": ampliado},
-        mira_hierro=[], mira_plegada=[], boca=[],
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
         montajes={
             "optica": {"pos": (8, 11.70, 2.2), "lado": "arriba"},
             "boca": {"pos": (8, 10, -12.2), "lado": "arriba"},
@@ -314,10 +329,12 @@ def mp5():
                   "bajo": ["", "empunadura"], "laser": ["", "laser"], "linterna": ["", "linterna"],
                   "cargador": ["", "ampliado"]},
         silenciador="subfusil",
+        linea_hierro={"y": 12.10, "z": 7.0},
         config={
-            "fp": {"translation": [-5.0, 3.0, 0.0], "scale": 0.82},
-            "tp": {"agarre": (8, 6.0, 7.0), "translation": [0, 0, 0.5], "scale": 0.45},
+            "fp": {"translation": [-5.0, 3.2, -3.0], "scale": 0.94},
+            "tp": {"agarre": (8, 6.0, 7.0), "translation": [0, 0, 0.5], "scale": 0.52},
             "gui": {"scale": 0.50},
+            "ads": {"hierro": 0.15, "optica": 0.24},
         },
     )
 
@@ -338,18 +355,16 @@ def m1014():
 
     cuerpo = [
         *cilindro("z", (8, 10.3), 0.36, -16.0, -3.0, canon, "canon"),
-        *cilindro("z", (8, 9.35), 0.38, -12.6, -3.0, negro, "tubo_cargador"),
-        C(7.62, 9.10, -13.2, 8.38, 10.70, -12.6, negro, "abrazadera"),
-        C(7.80, 10.66, -15.4, 8.20, 11.10, -14.9, negro, "guion"),
+        *cilindro("z", (8, 9.35), 0.38, -12.6, -3.05, negro, "tubo_cargador"),
+        C(7.62, 8.80, -13.2, 8.38, 10.85, -12.6, negro, "abrazadera"),
+        C(7.78, 10.70, -15.5, 8.22, 11.02, -14.8, negro, "guion_base"),
+        C(7.94, 11.02, -15.35, 8.06, 11.62, -14.95, negro, "guion"),
         # guardamanos de polímero
         C(7.15, 8.70, -8.0, 8.85, 10.70, -1.0, polimero, "guardamanos_a"),
         C(7.30, 8.55, -7.985, 8.70, 10.85, -1.015, polimero, "guardamanos_b"),
         # receptor con riel y alza de anillo
         C(7.30, 8.40, -1.0, 8.70, 11.00, 7.0, receptor, "receptor"),
         C(7.58, 11.00, -0.6, 8.42, 11.30, 6.4, riel, "riel_receptor"),
-        C(7.50, 11.30, 5.4, 7.70, 12.20, 6.2, negro, "alza_izq"),
-        C(8.30, 11.30, 5.4, 8.50, 12.20, 6.2, negro, "alza_der"),
-        C(7.70, 12.00, 5.4, 8.30, 12.20, 6.2, negro, "alza_sup"),
         C(8.70, 9.80, 2.0, 9.15, 10.20, 2.8, negro, "manija_carga"),
         C(7.40, 7.60, 0.4, 8.60, 8.40, 3.2, negro, "ventana_carga"),
         C(7.75, 6.70, 3.4, 8.25, 6.90, 5.6, negro, "guardamonte"),
@@ -367,9 +382,15 @@ def m1014():
     normal = [*cilindro("z", (8, 9.35), 0.40, -13.6, -12.6, negro, "tapa_tubo")]
     ampliado = [*cilindro("z", (8, 9.35), 0.38, -15.4, -13.2, negro, "extension_tubo"),
                 *cilindro("z", (8, 9.35), 0.42, -15.8, -15.4, negro, "tapa_tubo")]
+    # alza de anillo fantasma (se saca al montar una óptica)
+    mira_hierro = [
+        C(7.50, 11.30, 5.4, 7.70, 12.20, 6.2, negro, "alza_izq"),
+        C(8.30, 11.30, 5.4, 8.50, 12.20, 6.2, negro, "alza_der"),
+        C(7.70, 12.00, 5.4, 8.30, 12.20, 6.2, negro, "alza_sup"),
+    ]
     return Arma(
         nombre="m1014", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": ampliado},
-        mira_hierro=[], mira_plegada=[], boca=[],
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
         montajes={
             "optica": {"pos": (8, 11.30, 2.4), "lado": "arriba"},
             "laser": {"pos": (8.85, 9.70, -5.0), "lado": "derecha"},
@@ -377,10 +398,12 @@ def m1014():
         },
         opciones={"mira": ["", "punto_rojo", "holografica"], "boca": [""], "bajo": [""],
                   "laser": ["", "laser"], "linterna": ["", "linterna"], "cargador": ["", "ampliado"]},
+        linea_hierro={"y": 11.62, "z": 6.2},
         config={
-            "fp": {"translation": [-5.5, 3.0, 2.0], "scale": 0.80},
-            "tp": {"agarre": (8, 6.0, 6.8), "translation": [0, 0, 0.5], "scale": 0.52},
+            "fp": {"translation": [-5.5, 3.0, 2.0], "scale": 0.92},
+            "tp": {"agarre": (8, 6.0, 6.8), "translation": [0, 0, 0.5], "scale": 0.60},
             "gui": {"scale": 0.44},
+            "ads": {"hierro": 0.15, "optica": 0.24},
         },
     )
 
@@ -453,8 +476,8 @@ def barrett():
                   "laser": [""], "linterna": [""], "cargador": [""]},
         silenciador="francotirador", mira_defecto="telescopica",
         config={
-            "fp": {"translation": [-5.5, 2.6, 0.0], "scale": 0.80},
-            "tp": {"agarre": (8, 5.5, 10.8), "translation": [0, 0, 0.5], "scale": 0.62},
+            "fp": {"translation": [-5.5, 2.6, 0.0], "scale": 0.92},
+            "tp": {"agarre": (8, 5.5, 10.8), "translation": [0, 0, 0.5], "scale": 0.70},
             "gui": {"scale": 0.33},
         },
     )
