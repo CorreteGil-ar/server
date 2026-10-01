@@ -1,0 +1,32 @@
+name: Compilar plugin
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Compilar con Maven
+        run: mvn -B -ntp package
+
+      # Plugin compilado + scripts del server, listo para copiar a la VM.
+      - name: Armar paquete
+        run: |
+          mkdir -p paquete
+          cp target/TresModos.jar instalar.sh mc apagado-inactivo.sh paquete/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tresmodos
+          path: paquete/

@@ -1,0 +1,25 @@
+name: TresModos
+version: '${project.version}'
+main: ar.tresmodos.TresModos
+api-version: '${api.version}'
+description: Lobby con tres modos de juego (GTA, COD y RPG/Souls)
+commands:
+  modo:
+    description: Abre el selector de modos o cambia directo
+    usage: /modo [gta|cod|rpg|lobby]
+  lobby:
+    description: Volver al lobby
+    aliases: [hub, l]
+  clase:
+    description: Elegir clase en el modo COD
+  celular:
+    description: Abrir el celular en el modo GTA
+    aliases: [cel, tel]
+  tm:
+    description: Comandos de administracion de TresModos
+    usage: /tm <dinero|almas|buscado|jefe|guardar|info> ...
+    permission: tresmodos.admin
+permissions:
+  tresmodos.admin:
+    description: Acceso a /tm y a construir en los mundos de modo
+    default: op
