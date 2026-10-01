@@ -58,7 +58,7 @@ public class Comandos implements CommandExecutor, TabCompleter {
     private boolean admin(CommandSender s, String[] args) {
         if (args.length == 0) {
             s.sendMessage(Util.mm("<gold>/tm dinero <jugador> <monto> · /tm almas <jugador> <monto> · "
-                    + "/tm buscado <jugador> <0-5> · /tm jefe · /tm guardar · /tm paquete · /tm info"));
+                    + "/tm buscado <jugador> <0-5> · /tm jefe <id> · /tm cazador · /tm guardar · /tm paquete · /tm info"));
             return true;
         }
         switch (args[0].toLowerCase()) {
@@ -94,6 +94,10 @@ public class Comandos implements CommandExecutor, TabCompleter {
                     return uso(s, "/tm jefe <" + String.join("|", plugin.rpg().jefes().ids()) + ">");
                 }
             }
+            case "cazador" -> {
+                if (!(s instanceof Player p) || Modo.de(p.getWorld()) != Modo.RPG) return uso(s, "Usalo dentro del RPG.");
+                plugin.rpg().invasores().invadir(p);
+            }
             case "guardar" -> {
                 plugin.almacen().guardarTodo();
                 s.sendMessage(Util.mm("<green>Datos guardados."));
@@ -127,7 +131,8 @@ public class Comandos implements CommandExecutor, TabCompleter {
         String nombre = cmd.getName().toLowerCase();
         if (nombre.equals("modo") && args.length == 1) l.addAll(List.of("gta", "shooter", "rpg", "lobby"));
         if (nombre.equals("tm")) {
-            if (args.length == 1) l.addAll(List.of("dinero", "almas", "buscado", "jefe", "guardar", "paquete", "info"));
+            if (args.length == 1) l.addAll(List.of("dinero", "almas", "buscado", "jefe", "cazador", "guardar", "paquete", "info"));
+            else if (args.length == 2 && args[0].equalsIgnoreCase("jefe")) l.addAll(plugin.rpg().jefes().ids());
             else if (args.length == 2) for (Player p : Bukkit.getOnlinePlayers()) l.add(p.getName());
         }
         String pref = args.length == 0 ? "" : args[args.length - 1].toLowerCase();

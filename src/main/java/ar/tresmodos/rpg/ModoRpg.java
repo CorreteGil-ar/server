@@ -98,6 +98,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     private final Jefes jefes;
     private final Santuario santuario;
     private final Magia magia;
+    private final Invasores invasores;
     private final MundoRpg mundoRpg;
     private final Enemigos enemigos;
 
@@ -122,6 +123,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         this.jefes = new Jefes(plugin, this);
         this.santuario = new Santuario(plugin, this);
         this.magia = new Magia(plugin, this);
+        this.invasores = new Invasores(plugin, this);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickAguante, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickEter, 10, 10);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickManchas, 10, 10);
@@ -129,7 +131,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     /** Las piezas que también escuchan eventos (las registra TresModos). */
     public List<Listener> escuchas() {
-        return List.of(this, objetos, combate, arbol, habilidades, mundoRpg, enemigos, jefes, santuario, magia);
+        return List.of(this, objetos, combate, arbol, habilidades, mundoRpg, enemigos, jefes, santuario, magia, invasores);
     }
 
     public Buffs buffs() { return buffs; }
@@ -141,6 +143,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     public Jefes jefes() { return jefes; }
     public Santuario santuario() { return santuario; }
     public Magia magia() { return magia; }
+    public Invasores invasores() { return invasores; }
     public MundoRpg mundoRpg() { return mundoRpg; }
     public Enemigos enemigos() { return enemigos; }
 
@@ -335,6 +338,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     public void apagar() {
         jefes.apagar();
+        invasores.apagar();
         habilidades.apagar();
         enemigos.apagar();
         for (Map.Entry<UUID, BossBar> en : barrasEter.entrySet()) {
