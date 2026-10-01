@@ -175,6 +175,18 @@ public class Estructuras implements Listener {
         atajos.put(t.id, t);
         for (int[] p : t.reja) deBloque.put(clave(p[0], p[1], p[2]), t);
         deBloque.put(clave(t.palanca[0], t.palanca[1], t.palanca[2]), t);
+        // Un Campeón custodia el portón desde adentro.
+        int[] c = t.reja.get(t.reja.size() / 2);
+        Zona z = modo.mundoRpg().zona(new Location(mundo(), c[0], c[1], c[2]));
+        if (z != null) {
+            TipoEnemigo guardia = switch (z) {
+                case ALDEA -> TipoEnemigo.HUECO_LANCERO;
+                case BOSQUE -> TipoEnemigo.BESTIA;
+                case COSTA -> TipoEnemigo.PALIDO;
+                default -> TipoEnemigo.CABALLERO;
+            };
+            modo.enemigos().guardian(t.id, z, c[0] + t.nx * 6, c[2] + t.nz * 6, guardia);
+        }
     }
 
     private void registrarIlusoria(String id, List<int[]> bloques) {

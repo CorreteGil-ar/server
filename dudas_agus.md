@@ -199,7 +199,8 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   - Costa Hundida: arena negra, dársena con 3 casas hundidas, muelle y barco a medio hundir, barco
     encallado en la playa y 9 casas de pescadores.
   - **Atajos**: los portones de la Aldea y de la Ciudadela se abren solo desde adentro (palanca o
-    clic a la reja). Se entra por la brecha. Una vez abiertos quedan abiertos para todos, también en
+    clic a la reja). Se entra por la brecha. Adentro de cada portón espera un Campeón fijo (Hueco
+    lancero en la Aldea, Caballero caído en la Ciudadela) que no vuelve una vez derrotado. Una vez abiertos quedan abiertos para todos, también en
     el Ciclo+. **[revisar]** si querés que se cierren al empezar un ciclo nuevo.
   - **Paredes ilusorias**: tras el altar de la iglesia, la corteza del árbol hueco, la entrada de la
     torre del homenaje y la proa del barco encallado. Desaparecen con un golpe y esconden un cofre con

@@ -128,6 +128,17 @@ public class Enemigos implements Listener {
         plugin.getLogger().info("RPG: " + puntos.size() + " encuentros en el mundo.");
     }
 
+    /**
+     * Campeón fijo que custodia algo (un atajo): una vez derrotado no vuelve, como las otras élites.
+     */
+    public void guardian(String id, Zona z, int x, int zz, TipoEnemigo t) {
+        String clave = "guardian_" + id;
+        if (porId.containsKey(clave)) return;
+        Punto p = new Punto(clave, z, x, zz, t, true);
+        puntos.add(p);
+        porId.put(clave, p);
+    }
+
     /** Alguien descansó: los enemigos comunes muertos vuelven a aparecer. */
     public void descanso() {
         ultimoDescanso = Bukkit.getCurrentTick();
