@@ -177,6 +177,8 @@ public class Mundos {
                     w.getBlockAt(px + dx, 64, pz + dz).setType(color[i], false);
         }
 
+        portales(w);
+
         // Carteles flotantes (se regeneran en cada arranque)
         for (Entity e : w.getEntities()) {
             if (e.getPersistentDataContainer().has(Claves.DISPLAY_LOBBY)) e.remove();
@@ -186,11 +188,93 @@ public class Mundos {
                 "<red><bold>SHOOTER</bold></red>\n<gray>Pueblo Atómico · todos contra todos\n<gray>clases, rachas y bomba atómica",
                 "<light_purple><bold>RPG / SOULS</bold></light_purple>\n<gray>Stamina, esquive, hogueras\n<gray>almas y jefes"
         };
+        double[] alturas = {71.0, 70.8, 72.6};
         for (int i = 0; i < PADS.length; i++) {
-            cartel(w, new Location(w, PADS[i][0] + 0.5, 67.6, PADS[i][1] + 0.5), textos[i]);
+            cartel(w, new Location(w, PADS[i][0] + 0.5, alturas[i], PADS[i][1] + 0.5), textos[i]);
         }
         cartel(w, new Location(w, 0.5, 68.2, 0.5),
                 "<white><bold>TRES MODOS</bold></white>\n<gray>Pisá una placa o usá la estrella");
+    }
+
+    /** Lugar del cartel de estadísticas personales de cada portal (Guerra, Shooter, RPG). */
+    public static final double[][] CARTEL_STATS = {{-3.6, 66.6, 6.2}, {4.4, 66.6, -3.6}, {5.8, 66.6, -4.6}};
+
+    private static void poner(World w, int x, int y, int z, String datos) {
+        w.getBlockAt(x, y, z).setBlockData(Bukkit.createBlockData("minecraft:" + datos), false);
+    }
+
+    /**
+     * Portales temáticos alrededor de cada placa: el hangar de Guerra, el contenedor militar del
+     * Shooter y el arco de piedra con fuego del RPG. Se rehacen en cada arranque (son pocos bloques).
+     */
+    private void portales(World w) {
+        // Shooter (0, -8): contenedor de 7 × 5 × 7 abierto hacia el centro.
+        for (int x = -3; x <= 3; x++)
+            for (int z = -11; z <= -5; z++)
+                for (int y = 65; y <= 69; y++) {
+                    boolean lado = Math.abs(x) == 3, fondo = z == -11, techo = y == 69;
+                    boolean marco = (Math.abs(x) == 3 && (z == -11 || z == -5)) || techo && (Math.abs(x) == 3 || z == -11 || z == -5);
+                    if (!lado && !fondo && !techo) continue;
+                    String m = marco ? "gray_concrete" : ((lado ? z : x) & 1) == 0 ? "red_terracotta" : "red_concrete";
+                    poner(w, x, y, z, m);
+                }
+        poner(w, 0, 69, -8, "redstone_lamp[lit=true]");
+        poner(w, 0, 65, -10, "target");
+        poner(w, -2, 65, -10, "barrel[facing=up]");
+        poner(w, 2, 65, -10, "barrel[facing=up]");
+        poner(w, 2, 66, -10, "barrel[facing=up]");
+        for (int x : new int[]{-3, -2, 2, 3}) {
+            poner(w, x, 65, -3, "packed_mud");
+            poner(w, x, 66, -3, "mud_brick_slab[type=bottom]");
+        }
+        poner(w, -4, 65, -6, "iron_bars");
+        poner(w, 4, 65, -6, "iron_bars");
+
+        // Guerra (-8, 0): hangar en arco, abierto hacia el centro, con las banderas de los equipos.
+        int[][] perfil = {{3, 67}, {2, 68}, {1, 69}, {0, 69}};
+        for (int x = -11; x <= -5; x++)
+            for (int[] pz : perfil)
+                for (int s : new int[]{-1, 1}) {
+                    int z = pz[0] * s;
+                    String m = x % 2 == 0 ? "iron_block" : "light_gray_concrete";
+                    if (pz[0] == 3) {
+                        for (int y = 65; y <= pz[1]; y++) poner(w, x, y, z, m);
+                    } else {
+                        poner(w, x, pz[1], z, m);
+                    }
+                }
+        for (int z = -3; z <= 3; z++) {
+            int alto = Math.abs(z) == 3 ? 67 : Math.abs(z) == 2 ? 68 : 69;
+            for (int y = 65; y <= alto; y++) poner(w, -11, y, z, z == 0 && y <= 66 ? "iron_door[facing=east,half="
+                    + (y == 65 ? "lower" : "upper") + "]" : "gray_concrete");
+        }
+        poner(w, -8, 69, 0, "sea_lantern");
+        poner(w, -10, 65, 2, "spruce_planks");
+        poner(w, -10, 66, 2, "barrel[facing=up]");
+        poner(w, -10, 65, -2, "spruce_planks");
+        for (int[] b : new int[][]{{-4, 4, 0}, {-4, -4, 1}}) {
+            for (int y = 65; y <= 70; y++) poner(w, b[0], y, b[1], "iron_bars");
+            poner(w, b[0], 71, b[1], (b[2] == 0 ? "blue" : "red") + "_banner[rotation=4]");
+        }
+
+        // RPG (8, 0): arco de piedra en ruinas con dos fuegos y calaveras.
+        String[] piedra = {"stone_bricks", "mossy_stone_bricks", "cracked_stone_bricks"};
+        java.util.Random r = new java.util.Random(3);
+        for (int x = 7; x <= 9; x++) {
+            for (int s : new int[]{-1, 1}) {
+                for (int y = 65; y <= 69; y++) poner(w, x, y, 3 * s, piedra[r.nextInt(3)]);
+                poner(w, x, 69, 2 * s, "stone_brick_stairs[facing=" + (s > 0 ? "south" : "north") + ",half=top]");
+            }
+            for (int z = -3; z <= 3; z++) poner(w, x, 70, z, z == 0 ? "chiseled_stone_bricks" : piedra[r.nextInt(3)]);
+        }
+        poner(w, 8, 71, 3, "campfire[lit=true]");
+        poner(w, 8, 71, -3, "campfire[lit=true]");
+        poner(w, 8, 69, 0, "iron_chain[axis=y]");
+        poner(w, 8, 68, 0, "soul_lantern[hanging=true]");
+        poner(w, 10, 65, 3, "skeleton_skull[rotation=12]");
+        poner(w, 10, 65, -2, "cobblestone");
+        poner(w, 11, 65, 2, "mossy_cobblestone");
+        poner(w, 10, 65, -4, "candle[candles=3,lit=true]");
     }
 
     private void cartel(World w, Location l, String texto) {

@@ -27,6 +27,15 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
     cambiaría también los otros modos.
 - La barra de acción de los vehículos ahora queda libre para los avisos ("Cañón dañado", etc.).
 
+## Lobby
+
+- **Portales**: hangar en arco (Guerra), contenedor militar (Shooter) y arco de piedra con dos fuegos
+  (RPG) alrededor de cada placa. Se rehacen en cada arranque, así que si los tocás a mano en el juego
+  vuelven a su forma.
+- **Estadísticas**: junto a cada portal hay un cartel con tus números de ese modo (bajas, capturas,
+  B/M, nivel, Señores vencidos, almas). Cada jugador ve solo los suyos; se actualizan al volver al
+  lobby. **[revisar]** si además querés un ranking general.
+
 ## Shooter
 
 - **Regla de los 8 bloques al reaparecer** (la había propuesto yo y estaba pendiente de tu OK):

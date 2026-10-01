@@ -4,7 +4,7 @@ Server de Minecraft con modos: **TresModos**, un plugin para Paper con un lobby 
 
 | Modo | Mundo | Qué es |
 |---|---|---|
-| Lobby | `tm_lobby` | Plataforma con placas para entrar a cada modo y selector (estrella) |
+| Lobby | `tm_lobby` | Plaza con tres portales (hangar de Guerra, contenedor del Shooter y arco con fuego del RPG), carteles con tus estadísticas de cada modo y selector (estrella) |
 | Guerra | `tm_guerra` | Valle de Hierro (512 × 512): captura la bandera Azul contra Rojo, 4 clases de infantería, caído y revivir, 7 vehículos (cuatriciclo, jeep, VCI, tanque, antiaéreo, avión y helicóptero) y armas antitanque |
 | Shooter | `tm_shooter` | Pueblo Atómico (inspirado en Nuketown): todos contra todos estilo Modern Warfare, clases editables, ventajas, equipamiento, rachas hasta la bomba atómica |
 | RPG / Souls | `tm_rpg` | Las Tierras Cenicientas: 6 clases, 7 atributos, árbol de habilidades, combate con parry y postura, 5 zonas con encuentros, 5 jefes con arena, magia, Santuario y Ciclo+ |

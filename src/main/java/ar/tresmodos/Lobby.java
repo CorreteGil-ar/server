@@ -62,10 +62,71 @@ public class Lobby implements ModoJuego, Listener {
     @Override
     public void alEntrar(Player p, boolean primeraVez) {
         p.playSound(p, Sound.BLOCK_BEACON_ACTIVATE, 0.6f, 1.4f);
+        // Un tick después: el jugador ya está en el mundo del lobby.
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (p.isOnline() && enLobby(p)) mostrarEstadisticas(p);
+        });
     }
 
     @Override
-    public void alSalir(Player p) {}
+    public void alSalir(Player p) {
+        quitarEstadisticas(p.getUniqueId());
+    }
+
+    // ------------------------------------------------------------------ estadísticas
+
+    /** Carteles personales junto a cada portal: solo los ve su dueño. */
+    private final java.util.Map<java.util.UUID, List<org.bukkit.entity.TextDisplay>> carteles = new java.util.HashMap<>();
+
+    private List<String> estadisticas(Player p) {
+        DatosJugador d = plugin.almacen().de(p);
+        String guerra = "<dark_green><bold>Tu Guerra</bold>\n<gray>Bajas <white>" + d.guerraBajas + "  <gray>Muertes <white>" + d.guerraMuertes
+                + "\n<gray>Capturas <white>" + d.guerraCapturas + "  <gray>Revividos <white>" + d.guerraRevividos
+                + "\n<gray>Victorias <white>" + d.guerraVictorias;
+        double kd = d.codMuertes == 0 ? d.codBajas : d.codBajas / (double) d.codMuertes;
+        String shooter = "<red><bold>Tu Shooter</bold>\n<gray>Bajas <white>" + d.codBajas + "  <gray>Muertes <white>" + d.codMuertes
+                + "\n<gray>B/M <white>" + String.format(java.util.Locale.ROOT, "%.2f", kd) + "  <gray>Victorias <white>" + d.shooterVictorias
+                + "\n<gray>Bombas atómicas <white>" + d.shooterBombas;
+        long senores = d.jefes.stream().filter(j -> !j.contains("@") && !j.equals("durmiente")).count();
+        boolean durmiente = d.jefes.stream().anyMatch(j -> j.startsWith("durmiente"));
+        String rpg = "<light_purple><bold>Tu RPG</bold>\n<gray>Nivel <white>" + d.nivelRpg() + "  <gray>Ciclo <white>" + (d.ciclo + 1)
+                + "\n<gray>Señores <white>" + senores + "/4" + (durmiente ? "  <dark_purple>Durmiente vencido" : "")
+                + "\n<gray>Almas <white>" + Util.num(d.almas) + "  <gray>Hogueras <white>" + d.hogueras.size();
+        return List.of(guerra, shooter, rpg);
+    }
+
+    private void mostrarEstadisticas(Player p) {
+        quitarEstadisticas(p.getUniqueId());
+        List<String> textos = estadisticas(p);
+        List<org.bukkit.entity.TextDisplay> propios = new ArrayList<>();
+        for (int i = 0; i < textos.size(); i++) {
+            double[] c = Mundos.CARTEL_STATS[i];
+            String texto = textos.get(i);
+            org.bukkit.entity.TextDisplay t = p.getWorld().spawn(new Location(p.getWorld(), c[0], c[1], c[2]),
+                    org.bukkit.entity.TextDisplay.class, d -> {
+                        d.setVisibleByDefault(false);
+                        d.setPersistent(false);
+                        d.text(Util.mm(texto));
+                        d.setBillboard(org.bukkit.entity.Display.Billboard.CENTER);
+                        d.setShadowed(true);
+                        d.setBackgroundColor(org.bukkit.Color.fromARGB(110, 0, 0, 0));
+                        d.getPersistentDataContainer().set(Claves.DISPLAY_LOBBY, org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+                    });
+            p.showEntity(plugin, t);
+            propios.add(t);
+        }
+        carteles.put(p.getUniqueId(), propios);
+    }
+
+    private void quitarEstadisticas(java.util.UUID id) {
+        List<org.bukkit.entity.TextDisplay> l = carteles.remove(id);
+        if (l != null) for (org.bukkit.entity.TextDisplay t : l) t.remove();
+    }
+
+    @EventHandler
+    public void alIrse(org.bukkit.event.player.PlayerQuitEvent e) {
+        quitarEstadisticas(e.getPlayer().getUniqueId());
+    }
 
     @Override
     public String tituloSidebar(Player p) {
