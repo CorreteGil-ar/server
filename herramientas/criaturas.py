@@ -216,6 +216,43 @@ def tentaculos_durmiente():
     return out
 
 
+def cepo():
+    """Cepo de dientes abierto, apoyado en el piso (el piso es y = 8)."""
+    hierro = Material((70, 70, 74), desgaste=0.25, sombra=0.08, patrones=[punteado(0.20, -0.08)])
+    diente = Material((150, 150, 156), desgaste=0.2)
+    cadena = Material((96, 96, 100))
+    out = [
+        C(2.8, 8.1, 7.2, 13.2, 8.5, 8.8, hierro, "eje"),
+        C(6.6, 8.5, 6.6, 9.4, 8.9, 9.4, hierro, "plato"),
+        C(2.0, 8.0, 2.0, 2.8, 8.6, 14.0, hierro, "aro_izq"),
+        C(13.2, 8.0, 2.0, 14.0, 8.6, 14.0, hierro, "aro_der"),
+        C(2.8, 8.0, 2.0, 13.2, 8.6, 2.8, hierro, "aro_frente"),
+        C(2.8, 8.0, 13.2, 13.2, 8.6, 14.0, hierro, "aro_atras"),
+        C(14.0, 8.0, 7.6, 18.0, 8.4, 8.4, cadena, "cadena"),
+    ]
+    for i in range(5):
+        x = 3.2 + i * 2.1
+        out.append(C(x, 8.6, 2.2, x + 0.8, 10.6, 2.6, diente, f"diente_a{i}"))
+        out.append(C(x + 0.9, 8.6, 13.4, x + 1.7, 10.6, 13.8, diente, f"diente_b{i}"))
+    return out
+
+
+def estandarte():
+    """Estandarte de guerra: asta con remate y paño rojo con el emblema de la llama."""
+    madera = Material((92, 64, 40), desgaste=0.1, patrones=[rayas(periodo=3, ancho=1, delta=-0.06, direccion="arriba")])
+    oro = Material((196, 156, 60), desgaste=0.25)
+    pano = Material((150, 30, 32), desgaste=0.05, sombra=0.12, patrones=[rayas(periodo=4, ancho=1, delta=-0.08)])
+    llama = Material((250, 170, 50), ruido=0.0, desgaste=0.0, sombra=0.0, volumen=0.0)
+    return [
+        C(7.4, -12.0, 7.4, 8.6, 28.0, 8.6, madera, "asta"),
+        C(7.0, 28.0, 7.0, 9.0, 30.0, 9.0, oro, "remate"),
+        C(2.0, 26.0, 7.6, 14.0, 26.8, 8.4, madera, "travesano"),
+        C(2.4, 8.0, 7.8, 13.6, 26.0, 8.2, pano, "pano"),
+        C(7.0, 14.0, 7.6, 9.0, 20.0, 8.4, llama, "llama"),
+        C(7.6, 20.0, 7.6, 8.4, 21.6, 8.4, llama, "llama_punta"),
+    ]
+
+
 CASCOS = {
     "capucha_hueca": capucha, "capucha_arquero": lambda: capucha((70, 76, 52)), "yelmo_lancero": yelmo_lancero,
     "yelmo_caido": yelmo_caido, "yelmo_ahogado": yelmo_ahogado, "mascara_vastago": mascara_vastago,
@@ -224,6 +261,7 @@ CASCOS = {
 PIEZAS = {
     "fauces_gloton": fauces_gloton, "caparazon_tejedora": caparazon_tejedora, "cola_vigia": cola_vigia,
     "ala_der": lambda: ala(1), "ala_izq": lambda: ala(-1), "tentaculos_durmiente": tentaculos_durmiente,
+    "cepo": cepo, "estandarte": estandarte,
 }
 
 

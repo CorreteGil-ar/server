@@ -394,7 +394,7 @@ public class Habilidades implements Listener {
             case BENDICION -> {
                 Location l = p.getLocation();
                 ItemDisplay estandarte = w.spawn(l.clone().add(0, 1.5, 0), ItemDisplay.class, d -> {
-                    d.setItemStack(new ItemStack(Material.RED_BANNER));
+                    d.setItemStack(TipoEnemigo.modelo(Material.PAPER, "estandarte"));
                     d.setPersistent(false);
                 });
                 repetir(12, 20, k -> {
@@ -672,7 +672,7 @@ public class Habilidades implements Listener {
             case VIDA -> {
                 Location l = p.getLocation().getBlock().getLocation().add(0.5, 0.02, 0.5);
                 ItemDisplay cepo = w.spawn(l, ItemDisplay.class, d -> {
-                    d.setItemStack(new ItemStack(Material.IRON_TRAPDOOR));
+                    d.setItemStack(TipoEnemigo.modelo(Material.PAPER, "cepo"));
                     d.setPersistent(false);
                 });
                 repetir(300, 2, k -> {
