@@ -38,7 +38,8 @@ public class Comandos implements CommandExecutor, TabCompleter {
             case "lobby" -> plugin.cambio().cambiar(p, Modo.LOBBY, false);
             case "clase" -> {
                 if (Modo.de(p.getWorld()) == Modo.SHOOTER) plugin.shooter().clases().abrirMenu(p);
-                else Util.msg(p, "<red>Las clases son del modo Shooter.");
+                else if (Modo.de(p.getWorld()) == Modo.RPG) plugin.rpg().abrirClases(p);
+                else Util.msg(p, "<red>Las clases son del Shooter y del RPG.");
             }
             case "celular" -> {
                 if (Modo.de(p.getWorld()) == Modo.GTA) plugin.gta().abrirCelular(p);
@@ -89,7 +90,7 @@ public class Comandos implements CommandExecutor, TabCompleter {
             }
             case "jefe" -> {
                 if (!(s instanceof Player p) || Modo.de(p.getWorld()) != Modo.RPG) return uso(s, "Usalo dentro del RPG.");
-                plugin.rpg().invocarJefe(p);
+                plugin.rpg().jefe().invocar(p);
             }
             case "guardar" -> {
                 plugin.almacen().guardarTodo();

@@ -279,7 +279,7 @@ public class Equipamiento implements Listener {
     public void alImpactar(ProjectileHitEvent e) {
         Projectile pr = e.getEntity();
         String tipo = pr.getPersistentDataContainer().get(Claves.EQUIPO, PersistentDataType.STRING);
-        if (tipo == null) return;
+        if (tipo == null || !List.of("semtex", "hacha", "aturdidora", "humo").contains(tipo)) return;
         Player autor = pr.getShooter() instanceof Player p ? p : null;
         Location l = pr.getLocation();
         Entity golpeado = e.getHitEntity();

@@ -6,10 +6,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import ar.tresmodos.rpg.Atributo;
+import ar.tresmodos.rpg.Rama;
+
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -39,8 +44,22 @@ public class DatosJugador {
     public int shooterClase = 0;
     // RPG
     public long almas = 0;
-    public int vigor = 0, aguante = 0, fuerza = 0;
-    public int estusMax = 3;
+    public int vigor = 0, aguante = 0, fuerza = 0, mente = 0, destreza = 0, inteligencia = 0, fe = 0;
+    /** Niveles comprados en las hogueras (el nivel es 1 + esto). */
+    public int nivelesComprados = 0;
+    /** Cargas totales de frascos y cuántas son de Éter (el resto son de Estus). */
+    public int estusMax = 3, eterCargas = 1;
+    public String clase;
+    public final Map<Rama, Integer> arbol = new EnumMap<>(Rama.class);
+    /** Tipo de daño elegido al entrar a la rama Daño (ClaseRpg.TipoDanio). */
+    public String tipoDanio;
+    /** Rama cuya Q y definitiva se usan (cuando hay más de una con nivel 3 o 5). */
+    public Rama ramaQ, ramaDefinitiva;
+    public final Set<String> jefes = new LinkedHashSet<>();
+    public final Set<String> almasJefe = new LinkedHashSet<>();
+    public final Set<String> hogueras = new LinkedHashSet<>();
+    public int ciclo = 0;
+    public int lagrimas = 0;
     public Location hoguera;
     public Location mancha;
     public long almasMancha = 0;
@@ -52,7 +71,35 @@ public class DatosJugador {
     }
 
     public int nivelRpg() {
-        return 1 + vigor + aguante + fuerza;
+        return 1 + nivelesComprados;
+    }
+
+    public int atributo(Atributo a) {
+        return switch (a) {
+            case VIGOR -> vigor;
+            case MENTE -> mente;
+            case AGUANTE -> aguante;
+            case FUERZA -> fuerza;
+            case DESTREZA -> destreza;
+            case INTELIGENCIA -> inteligencia;
+            case FE -> fe;
+        };
+    }
+
+    public void setAtributo(Atributo a, int v) {
+        switch (a) {
+            case VIGOR -> vigor = v;
+            case MENTE -> mente = v;
+            case AGUANTE -> aguante = v;
+            case FUERZA -> fuerza = v;
+            case DESTREZA -> destreza = v;
+            case INTELIGENCIA -> inteligencia = v;
+            case FE -> fe = v;
+        }
+    }
+
+    public int rama(Rama r) {
+        return arbol.getOrDefault(r, 0);
     }
 
     /** Accesorios guardados para un tipo de arma, ya validados para ese arma. */
@@ -78,7 +125,24 @@ public class DatosJugador {
         d.vigor = y.getInt("rpg.vigor");
         d.aguante = y.getInt("rpg.aguante");
         d.fuerza = y.getInt("rpg.fuerza");
+        d.mente = y.getInt("rpg.mente");
+        d.destreza = y.getInt("rpg.destreza");
+        d.inteligencia = y.getInt("rpg.inteligencia");
+        d.fe = y.getInt("rpg.fe");
+        // Datos viejos (antes de las clases): cada punto de atributo era un nivel comprado.
+        d.nivelesComprados = y.getInt("rpg.niveles", d.vigor + d.aguante + d.fuerza);
         d.estusMax = y.getInt("rpg.estusMax", 3);
+        d.eterCargas = y.getInt("rpg.eterCargas", 1);
+        d.clase = y.getString("rpg.clase");
+        d.tipoDanio = y.getString("rpg.tipoDanio");
+        for (Rama r : Rama.values()) d.arbol.put(r, y.getInt("rpg.arbol." + r.name().toLowerCase()));
+        d.ramaQ = rama(y.getString("rpg.ramaQ"));
+        d.ramaDefinitiva = rama(y.getString("rpg.ramaDefinitiva"));
+        d.jefes.addAll(y.getStringList("rpg.jefes"));
+        d.almasJefe.addAll(y.getStringList("rpg.almasJefe"));
+        d.hogueras.addAll(y.getStringList("rpg.hogueras"));
+        d.ciclo = y.getInt("rpg.ciclo");
+        d.lagrimas = y.getInt("rpg.lagrimas");
         d.hoguera = leerLoc(y, "rpg.hoguera");
         d.mancha = leerLoc(y, "rpg.mancha");
         d.almasMancha = y.getLong("rpg.almasMancha");
@@ -123,6 +187,22 @@ public class DatosJugador {
         y.set("rpg.aguante", aguante);
         y.set("rpg.fuerza", fuerza);
         y.set("rpg.estusMax", estusMax);
+        y.set("rpg.mente", mente);
+        y.set("rpg.destreza", destreza);
+        y.set("rpg.inteligencia", inteligencia);
+        y.set("rpg.fe", fe);
+        y.set("rpg.niveles", nivelesComprados);
+        y.set("rpg.eterCargas", eterCargas);
+        y.set("rpg.clase", clase);
+        y.set("rpg.tipoDanio", tipoDanio);
+        for (Rama r : Rama.values()) y.set("rpg.arbol." + r.name().toLowerCase(), rama(r));
+        y.set("rpg.ramaQ", ramaQ == null ? null : ramaQ.name());
+        y.set("rpg.ramaDefinitiva", ramaDefinitiva == null ? null : ramaDefinitiva.name());
+        y.set("rpg.jefes", new java.util.ArrayList<>(jefes));
+        y.set("rpg.almasJefe", new java.util.ArrayList<>(almasJefe));
+        y.set("rpg.hogueras", new java.util.ArrayList<>(hogueras));
+        y.set("rpg.ciclo", ciclo);
+        y.set("rpg.lagrimas", lagrimas);
         escribirLoc(y, "rpg.hoguera", hoguera);
         escribirLoc(y, "rpg.mancha", mancha);
         y.set("rpg.almasMancha", almasMancha);
@@ -145,6 +225,15 @@ public class DatosJugador {
             }
         } catch (IOException ex) {
             log.log(Level.SEVERE, "No pude guardar los datos de " + id, ex);
+        }
+    }
+
+    private static Rama rama(String s) {
+        if (s == null) return null;
+        try {
+            return Rama.valueOf(s);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 

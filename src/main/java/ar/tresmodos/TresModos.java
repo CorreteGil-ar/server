@@ -1,7 +1,7 @@
 package ar.tresmodos;
 
 import ar.tresmodos.modos.ModoGta;
-import ar.tresmodos.modos.ModoRpg;
+import ar.tresmodos.rpg.ModoRpg;
 import ar.tresmodos.shooter.ModoShooter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -60,7 +60,7 @@ public final class TresModos extends JavaPlugin {
         pm.registerEvents(gta, this);
         pm.registerEvents(shooter, this);
         pm.registerEvents(movilidad, this);
-        pm.registerEvents(rpg, this);
+        for (var l : rpg.escuchas()) pm.registerEvents(l, this);
 
         Comandos comandos = new Comandos(this);
         for (String c : new String[]{"modo", "lobby", "clase", "celular", "armero", "tm"}) {
