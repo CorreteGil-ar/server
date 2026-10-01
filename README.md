@@ -80,6 +80,18 @@ journalctl -u minecraft -f
 journalctl -t tresmodos        # avisos del apagado automático
 ```
 
+## Armas
+
+Cinco armas con modelo propio: Beretta M9, H&K MP5, Colt M4A1, Benelli M1014 y Barrett M82A1.
+
+| Control | Acción |
+|---|---|
+| Clic derecho (mantener) | Disparar; M4A1 y MP5 en automático a 800 disp/min |
+| Clic izquierdo | Apuntar / dejar de apuntar (zoom según la óptica) |
+| Q | Recargar |
+
+Accesorios (todos desbloqueados, se eligen en `/armero` y quedan guardados por arma): punto rojo, holográfica, ACOG 4x, mira telescópica (fija en la Barrett), silenciador, empuñadura vertical, láser, linterna y cargador ampliado. Cada arma admite los que tiene en la realidad.
+
 ## Comandos en el juego
 
 | Comando | Para qué |
@@ -87,5 +99,6 @@ journalctl -t tresmodos        # avisos del apagado automático
 | `/modo [gta\|cod\|rpg\|lobby]` | Abre el selector o cambia de modo directo |
 | `/lobby` (`/hub`, `/l`) | Volver al lobby |
 | `/clase` | Elegir clase en COD |
-| `/celular` (`/cel`, `/tel`) | Celular de GTA: armería, concesionaria, misiones, soborno |
+| `/celular` (`/cel`, `/tel`) | Celular de GTA: armería, armero, concesionaria, misiones, soborno |
+| `/armero` (`/accesorios`) | Poner y sacar accesorios al arma (todos desbloqueados) |
 | `/tm <dinero\|almas\|buscado\|jefe\|guardar\|paquete\|info>` | Administración (solo op). `paquete` recarga el paquete de recursos |

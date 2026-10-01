@@ -143,10 +143,13 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 
 ### 1.6 Accesorios y camuflajes
 
-- **Accesorios**: hasta 3 por arma, y el modelo del arma cambia según lo que tenga puesto ✅.
-  - Miras: punto rojo, holográfica, ACOG 4× y mira de francotirador 8×.
-  - Silenciador: no aparecés en el minimapa al disparar y perdés un 15 % de alcance.
-  - Cargador ampliado, empuñadura vertical (−25 % de retroceso), láser (mejor disparo desde la cadera) y culata liviana (apuntás más rápido).
+- **Accesorios**: todos desbloqueados desde el principio; se eligen en el armero (`/armero`, el libro de clases o el celular de GTA) y quedan guardados por arma. El modelo del arma cambia según lo que tenga puesto ✅ (implementado).
+  - Mira: punto rojo, holográfica, ACOG 4x o telescópica 8x (fija en la Barrett). Define el zoom al apuntar.
+  - Silenciador: menos ruido y sin fogonazo; −15 % de alcance.
+  - Empuñadura vertical: −25 % de dispersión.
+  - Láser: −30 % de dispersión sin apuntar y un punto rojo visible para todos.
+  - Linterna: visión nocturna mientras el arma está en la mano.
+  - Cargador ampliado: más balas (M4A1 y MP5 40, M9 20, M1014 9).
 - **Camuflajes**: Bosque, Desierto, Urbano, Tigre y Digital; los de desafío son Oro, Diamante y Atómico (verde brillante) ✅. Se ganan con bajas y headshots de esa arma.
 
 ### 1.7 Equipamiento
