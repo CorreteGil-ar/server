@@ -78,7 +78,7 @@ public class Lobby implements ModoJuego, Listener {
         l.add("<dark_gray>" + java.time.LocalDate.now());
         l.add("");
         l.add("<gold>GTA <white>" + contar(Modo.GTA) + " <gray>jugando");
-        l.add("<red>COD <white>" + contar(Modo.COD) + " <gray>jugando");
+        l.add("<red>Shooter <white>" + contar(Modo.SHOOTER) + " <gray>jugando");
         l.add("<light_purple>RPG <white>" + contar(Modo.RPG) + " <gray>jugando");
         l.add("");
         l.add("<gray>Pisá una placa o usá");
@@ -96,9 +96,10 @@ public class Lobby implements ModoJuego, Listener {
         menu.poner(11, Util.item(Material.GOLD_INGOT, "<gold><bold>GTA",
                 "Ciudad abierta con plata, tienda,", "policía, autos y misiones.", "",
                 "<yellow>" + contar(Modo.GTA) + " jugando"), pl -> ir(pl, Modo.GTA));
-        menu.poner(13, Util.item(Material.DIAMOND_HOE, "<red><bold>COD",
-                "Arena todos contra todos.", "Clases, granadas y rachas.", "Gana el primero a 30 bajas.", "",
-                "<yellow>" + contar(Modo.COD) + " jugando"), pl -> ir(pl, Modo.COD));
+        menu.poner(13, Util.item(Material.DIAMOND_HOE, "<red><bold>SHOOTER · Pueblo Atómico",
+                "Todos contra todos estilo Modern Warfare.", "Clases, rachas y bomba atómica.",
+                "Primero a 20 bajas (30 con 5+) o 15 min.", "",
+                "<yellow>" + contar(Modo.SHOOTER) + " jugando"), pl -> ir(pl, Modo.SHOOTER));
         menu.poner(15, Util.item(Material.NETHERITE_SWORD, "<light_purple><bold>RPG / SOULS",
                 "Stamina, esquive con F, hogueras,", "almas y jefes. Morir cuesta caro.", "",
                 "<yellow>" + contar(Modo.RPG) + " jugando"), pl -> ir(pl, Modo.RPG));

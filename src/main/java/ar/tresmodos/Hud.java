@@ -13,6 +13,8 @@ public final class Hud {
     public static final Key FUENTE = Key.key("tresmodos", "hud");
     private static final String MARCADOR = "";
     private static final String MARCADOR_BAJA = "";
+    /** Cuadro blanco que tapa toda la pantalla (destello de la bomba atómica). */
+    private static final String DESTELLO = "\uE020";
     /** Ícono de bala para usar dentro de textos MiniMessage. */
     public static final String ICONO_BALA = "<font:tresmodos:hud></font>";
 
@@ -25,6 +27,13 @@ public final class Hud {
      * Marcador de impacto sobre la mira: blanco al pegar, rojo al matar.
      * Solo cambia la parte del título, así no borra subtítulos como los de las rachas.
      */
+    /** Pantalla en blanco que se desvanece en 3 s. */
+    public static void destello(Player p) {
+        p.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(900), Duration.ofMillis(2600)));
+        p.sendTitlePart(TitlePart.SUBTITLE, Component.empty());
+        p.sendTitlePart(TitlePart.TITLE, Component.text(DESTELLO).font(FUENTE));
+    }
+
     public static void marcador(Player p, boolean baja) {
         p.sendTitlePart(TitlePart.TIMES, TIEMPOS_MARCADOR);
         p.sendTitlePart(TitlePart.TITLE, Component.text(baja ? MARCADOR_BAJA : MARCADOR).font(FUENTE));

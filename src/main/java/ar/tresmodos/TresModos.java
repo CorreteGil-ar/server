@@ -1,8 +1,8 @@
 package ar.tresmodos;
 
-import ar.tresmodos.modos.ModoCod;
 import ar.tresmodos.modos.ModoGta;
 import ar.tresmodos.modos.ModoRpg;
+import ar.tresmodos.shooter.ModoShooter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,7 +23,8 @@ public final class TresModos extends JavaPlugin {
     private Armero armero;
     private Lobby lobby;
     private ModoGta gta;
-    private ModoCod cod;
+    private ModoShooter shooter;
+    private Movilidad movilidad;
     private ModoRpg rpg;
     private final Map<Modo, ModoJuego> juegos = new EnumMap<>(Modo.class);
 
@@ -41,12 +42,13 @@ public final class TresModos extends JavaPlugin {
         paquete = new PaqueteRecursos(this);
         armero = new Armero(this);
         lobby = new Lobby(this);
+        movilidad = new Movilidad(this);
         gta = new ModoGta(this);
-        cod = new ModoCod(this);
+        shooter = new ModoShooter(this);
         rpg = new ModoRpg(this);
         juegos.put(Modo.LOBBY, lobby);
         juegos.put(Modo.GTA, gta);
-        juegos.put(Modo.COD, cod);
+        juegos.put(Modo.SHOOTER, shooter);
         juegos.put(Modo.RPG, rpg);
 
         var pm = getServer().getPluginManager();
@@ -56,7 +58,8 @@ public final class TresModos extends JavaPlugin {
         pm.registerEvents(paquete, this);
         pm.registerEvents(lobby, this);
         pm.registerEvents(gta, this);
-        pm.registerEvents(cod, this);
+        pm.registerEvents(shooter, this);
+        pm.registerEvents(movilidad, this);
         pm.registerEvents(rpg, this);
 
         Comandos comandos = new Comandos(this);
@@ -78,7 +81,7 @@ public final class TresModos extends JavaPlugin {
             cambio.entrar(p, Modo.LOBBY);
         }
         paquete.cargar();
-        getLogger().info("TresModos listo: lobby, GTA, COD y RPG.");
+        getLogger().info("TresModos listo: lobby, GTA, Shooter y RPG.");
     }
 
     @Override
@@ -123,6 +126,7 @@ public final class TresModos extends JavaPlugin {
     public Armero armero() { return armero; }
     public Lobby lobby() { return lobby; }
     public ModoGta gta() { return gta; }
-    public ModoCod cod() { return cod; }
+    public ModoShooter shooter() { return shooter; }
+    public Movilidad movilidad() { return movilidad; }
     public ModoRpg rpg() { return rpg; }
 }

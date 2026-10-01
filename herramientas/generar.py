@@ -17,6 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
+import equipo
 import hud
 from accesorios import ACCESORIOS, LINEA_MIRA, VISORES, display_visor, montar, silenciador, visor
 from armas import ARMAS
@@ -239,6 +240,7 @@ def main():
         print(f"{nombre}: listo")
     generar_iconos()
     print("íconos de accesorios: listo")
+    equipo.main(PACK)
     (Path(__file__).resolve().parent / "accesorios_por_arma.json").write_text(
         json.dumps(resumen, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 

@@ -8,6 +8,7 @@ public final class Claves {
     public static NamespacedKey ARMA, ARMA_ID, ACCESORIOS, BALAS, GRANADA, CUCHILLO, BOMBARDEO, CLASE_MENU;
     public static NamespacedKey SELECTOR, CELULAR, LLAVE, PAQUETE, AUTO_DUENO, POLICIA;
     public static NamespacedKey ESTUS, CAMPANA, JEFE, SIERVO, DISPLAY_LOBBY, BOTIN;
+    public static NamespacedKey RESERVA, LETAL, TACTICO, EQUIPO, RACHA, DUENIO, MUNICION, MANIQUI, DECORADO;
 
     private Claves() {}
 
@@ -32,5 +33,14 @@ public final class Claves {
         SIERVO = new NamespacedKey(p, "siervo");
         DISPLAY_LOBBY = new NamespacedKey(p, "display_lobby");
         BOTIN = new NamespacedKey(p, "botin");
+        RESERVA = new NamespacedKey(p, "reserva");
+        LETAL = new NamespacedKey(p, "letal");
+        TACTICO = new NamespacedKey(p, "tactico");
+        EQUIPO = new NamespacedKey(p, "equipo");
+        RACHA = new NamespacedKey(p, "racha");
+        DUENIO = new NamespacedKey(p, "duenio");
+        MUNICION = new NamespacedKey(p, "municion");
+        MANIQUI = new NamespacedKey(p, "maniqui");
+        DECORADO = new NamespacedKey(p, "decorado");
     }
 }

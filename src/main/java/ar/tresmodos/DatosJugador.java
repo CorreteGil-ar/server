@@ -32,8 +32,11 @@ public class DatosJugador {
 
     // GTA
     public long dinero = 500;
-    // COD (histórico)
-    public int codBajas, codMuertes;
+    // Shooter (histórico y clases personalizadas)
+    public int codBajas, codMuertes, shooterVictorias, shooterBombas;
+    /** Las 5 clases personalizadas (ClasesShooter.Clase.codigo()); vacío = la clase por defecto. */
+    public final String[] shooterClases = new String[5];
+    public int shooterClase = 0;
     // RPG
     public long almas = 0;
     public int vigor = 0, aguante = 0, fuerza = 0;
@@ -65,8 +68,12 @@ public class DatosJugador {
         YamlConfiguration y = YamlConfiguration.loadConfiguration(archivo);
         d.salidaLimpia = y.getBoolean("salidaLimpia", true);
         d.dinero = y.getLong("gta.dinero", 500);
-        d.codBajas = y.getInt("cod.bajas");
-        d.codMuertes = y.getInt("cod.muertes");
+        d.codBajas = y.getInt("shooter.bajas", y.getInt("cod.bajas"));
+        d.codMuertes = y.getInt("shooter.muertes", y.getInt("cod.muertes"));
+        d.shooterVictorias = y.getInt("shooter.victorias");
+        d.shooterBombas = y.getInt("shooter.bombas");
+        d.shooterClase = Math.max(0, Math.min(4, y.getInt("shooter.clase")));
+        for (int i = 0; i < 5; i++) d.shooterClases[i] = y.getString("shooter.clases." + i);
         d.almas = y.getLong("rpg.almas");
         d.vigor = y.getInt("rpg.vigor");
         d.aguante = y.getInt("rpg.aguante");
@@ -105,8 +112,12 @@ public class DatosJugador {
         YamlConfiguration y = new YamlConfiguration();
         y.set("salidaLimpia", salidaLimpia);
         y.set("gta.dinero", dinero);
-        y.set("cod.bajas", codBajas);
-        y.set("cod.muertes", codMuertes);
+        y.set("shooter.bajas", codBajas);
+        y.set("shooter.muertes", codMuertes);
+        y.set("shooter.victorias", shooterVictorias);
+        y.set("shooter.bombas", shooterBombas);
+        y.set("shooter.clase", shooterClase);
+        for (int i = 0; i < 5; i++) if (shooterClases[i] != null) y.set("shooter.clases." + i, shooterClases[i]);
         y.set("rpg.almas", almas);
         y.set("rpg.vigor", vigor);
         y.set("rpg.aguante", aguante);

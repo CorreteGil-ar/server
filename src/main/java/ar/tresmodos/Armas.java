@@ -57,7 +57,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Armas de disparo instantáneo compartidas por GTA y COD: fuego automático por cadencia real,
+ * Armas de disparo instantáneo compartidas por GTA y el Shooter: fuego automático por cadencia real,
  * apuntado con zoom según la óptica, accesorios, cargador, recarga, headshots y granadas.
  */
 public class Armas implements Listener {
@@ -69,15 +69,15 @@ public class Armas implements Listener {
      * (el paquete de recursos solo trae modelos para esas combinaciones).
      */
     public enum Tipo {
-        PISTOLA("Beretta M9", Material.IRON_HOE, 4.5, 360, Disparo.SEMI, 45, 15, 20, 30, 1, 0.025, "m9",
+        PISTOLA("Beretta M9", Material.IRON_HOE, 6.0, 360, Disparo.SEMI, 45, 15, 20, 30, 1, 0.025, "m9",
                 List.of(Mira.HIERRO), true, false, true, true),
-        MP5("H&K MP5", Material.STONE_HOE, 3.5, 800, Disparo.AUTOMATICO, 35, 30, 40, 40, 1, 0.045, "mp5",
+        MP5("H&K MP5", Material.STONE_HOE, 4.4, 800, Disparo.AUTOMATICO, 35, 30, 40, 40, 1, 0.045, "mp5",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
-        M4A1("Colt M4A1", Material.DIAMOND_HOE, 5.0, 800, Disparo.AUTOMATICO, 70, 30, 40, 45, 1, 0.020, "m4a1",
+        M4A1("Colt M4A1", Material.DIAMOND_HOE, 5.2, 800, Disparo.AUTOMATICO, 70, 30, 40, 45, 1, 0.020, "m4a1",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
-        ESCOPETA("Benelli M1014", Material.GOLDEN_HOE, 3.0, 180, Disparo.SEMI, 18, 7, 9, 60, 8, 0.120, "m1014",
+        ESCOPETA("Benelli M1014", Material.GOLDEN_HOE, 2.8, 180, Disparo.SEMI, 18, 7, 9, 60, 8, 0.120, "m1014",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA), false, false, true, true),
-        FRANCOTIRADOR("Barrett M82A1", Material.NETHERITE_HOE, 30.0, 60, Disparo.SEMI, 150, 10, 0, 70, 1, 0.000, "barrett",
+        FRANCOTIRADOR("Barrett M82A1", Material.NETHERITE_HOE, 24.0, 60, Disparo.SEMI, 150, 10, 0, 70, 1, 0.000, "barrett",
                 List.of(Mira.TELESCOPICA), true, false, false, false);
 
         public final String nombre;
@@ -92,6 +92,8 @@ public class Armas implements Listener {
         public final String modelo;
         public final List<Mira> miras;
         public final boolean admiteSilenciador, admiteEmpunadura, admiteLaser, admiteLinterna;
+        /** Va en el slot de la secundaria (pistolas). */
+        public final boolean secundaria;
 
         Tipo(String nombre, Material material, double danio, int rpm, Disparo disparo, int alcance, int cargador,
              int cargadorAmpliado, int recarga, int perdigones, double dispersion, String modelo, List<Mira> miras,
@@ -113,6 +115,7 @@ public class Armas implements Listener {
             this.admiteEmpunadura = admiteEmpunadura;
             this.admiteLaser = admiteLaser;
             this.admiteLinterna = admiteLinterna;
+            this.secundaria = material == Material.IRON_HOE;
         }
     }
 
@@ -139,11 +142,16 @@ public class Armas implements Listener {
      * agarrarlo. Se escriben en el ítem al recargar, al cambiar de arma y al guardar.
      */
     private final Map<String, Integer> municion = new HashMap<>();
+    /** Reserva de cada arma por id, en memoria igual que las balas del cargador. */
+    private final Map<String, Integer> reservas = new HashMap<>();
     /** true mientras se aplica daño de bala: los listeners de melee lo usan para ignorarlo. */
     public static boolean aplicandoBala = false;
 
+    private static Armas instancia;
+
     public Armas(TresModos plugin) {
         this.plugin = plugin;
+        instancia = this;
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickGatillos, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickRecargas, 2, 2);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickAccesorios, 2, 2);
@@ -234,6 +242,46 @@ public class Armas implements Listener {
         it.setItemMeta(meta);
     }
 
+    // ------------------------------------------------------------------ reserva
+
+    /** Balas de reserva del arma (-1 = infinitas, como en GTA). */
+    private int reserva(ItemStack it) {
+        String id = Util.marca(it, Claves.ARMA_ID);
+        if (id != null && reservas.containsKey(id)) return reservas.get(id);
+        Integer r = it.getItemMeta().getPersistentDataContainer().get(Claves.RESERVA, PersistentDataType.INTEGER);
+        return r == null ? -1 : r;
+    }
+
+    private void setReserva(ItemStack it, int n) {
+        String id = Util.marca(it, Claves.ARMA_ID);
+        if (id != null) reservas.put(id, n);
+        else setReservaItem(it, n);
+    }
+
+    /** Fija la reserva en el ítem (al crearlo para una clase). */
+    public static void setReservaItem(ItemStack it, int n) {
+        ItemMeta meta = it.getItemMeta();
+        meta.getPersistentDataContainer().set(Claves.RESERVA, PersistentDataType.INTEGER, n);
+        it.setItemMeta(meta);
+    }
+
+    /** Llena la reserva de todas las armas del jugador (paquete de ayuda): tres cargadores. */
+    public void rellenarReservas(Player p) {
+        for (ItemStack it : p.getInventory().getContents()) {
+            Tipo t = tipo(it);
+            if (t != null && reserva(it) >= 0) setReserva(it, capacidad(t, accesorios(it)) * 3);
+        }
+    }
+
+    /** Suma un cargador a la reserva de cada arma (Carroñero). */
+    public void sumarCargador(Player p) {
+        for (ItemStack it : p.getInventory().getContents()) {
+            Tipo t = tipo(it);
+            if (t != null && reserva(it) >= 0) setReserva(it, Math.min(reserva(it) + capacidad(t, accesorios(it)),
+                    capacidad(t, accesorios(it)) * 4));
+        }
+    }
+
     private int balas(ItemStack it) {
         String id = Util.marca(it, Claves.ARMA_ID);
         if (id == null) return balasItem(it);
@@ -251,6 +299,8 @@ public class Armas implements Listener {
         String id = Util.marca(it, Claves.ARMA_ID);
         Integer n = id == null ? null : municion.get(id);
         if (n != null && n != balasItem(it)) setBalasItem(it, n);
+        Integer r = id == null ? null : reservas.get(id);
+        if (r != null) setReservaItem(it, r);
     }
 
     /** Pasa al ítem las balas de todas las armas del inventario (antes de guardarlo). */
@@ -280,7 +330,7 @@ public class Armas implements Listener {
 
     private boolean mundoConArmas(Player p) {
         Modo m = Modo.de(p.getWorld());
-        return m == Modo.GTA || m == Modo.COD;
+        return m == Modo.GTA || m == Modo.SHOOTER;
     }
 
     // ------------------------------------------------------------------ gatillo y disparo
@@ -295,7 +345,12 @@ public class Armas implements Listener {
         Action a = e.getAction();
         if (a == Action.RIGHT_CLICK_AIR || a == Action.RIGHT_CLICK_BLOCK) {
             e.setCancelled(true); // evita arar la tierra con la azada
-            if (!mundoConArmas(p) || plugin.cod().bloqueaDisparo(p)) return;
+            if (!mundoConArmas(p) || plugin.shooter().bloqueaDisparo(p)) return;
+            if (p.isSprinting()) {
+                // Como en los shooters: corriendo no se dispara; el clic corta el sprint y el próximo dispara.
+                p.setSprinting(false);
+                return;
+            }
             apretarGatillo(p, it, t);
         } else if (a == Action.LEFT_CLICK_AIR || a == Action.LEFT_CLICK_BLOCK) {
             if (!mundoConArmas(p)) return;
@@ -370,7 +425,9 @@ public class Armas implements Listener {
         } else {
             if (acc.laser()) disp *= 0.7;
             if (p.isSneaking()) disp *= 0.6;
+            if (plugin.shooter().clases().tiene(p, ar.tresmodos.shooter.ClasesShooter.Ventaja.MANO_FIRME)) disp *= 0.65;
         }
+        disp *= plugin.movilidad().factorDispersion(p);
         if (acc.empunadura()) disp *= 0.75;
         if (p.isSprinting()) disp *= 1.8;
         if (!((Entity) p).isOnGround()) disp *= 1.5;
@@ -379,30 +436,68 @@ public class Armas implements Listener {
         Location ojo = p.getEyeLocation();
         Vector dir = ojo.getDirection();
         World w = p.getWorld();
+        boolean endurecido = plugin.shooter().clases().tiene(p, ar.tresmodos.shooter.ClasesShooter.Ventaja.ENDURECIDO);
         for (int i = 0; i < t.perdigones; i++) {
             Vector d = dir.clone().add(new Vector(rnd.nextGaussian() * disp, rnd.nextGaussian() * disp,
                     rnd.nextGaussian() * disp)).normalize();
-            RayTraceResult r = w.rayTrace(ojo, d, alcance, FluidCollisionMode.NEVER, true, 0.15,
-                    ent -> blancoValido(p, ent));
-            double distancia = alcance;
-            if (r != null) {
-                distancia = r.getHitPosition().distance(ojo.toVector());
-                Location punto = r.getHitPosition().toLocation(w);
-                if (r.getHitEntity() instanceof LivingEntity le) {
-                    impactar(p, le, t, r.getHitPosition(), distancia, alcance);
-                } else if (r.getHitBlock() != null) {
-                    w.spawnParticle(Particle.BLOCK, punto, 5, 0.05, 0.05, 0.05, 0, r.getHitBlock().getBlockData());
-                }
-            }
+            double distancia = trazar(p, t, ojo, d, alcance, endurecido);
             trazador(ojo, d, distancia, t);
         }
         sonidoDisparo(p, t, acc.silenciador());
+        if (!acc.silenciador() && Modo.de(w) == Modo.SHOOTER) plugin.shooter().minimapa().marcarDisparo(p);
         if (!acc.silenciador()) {
             w.spawnParticle(Particle.SMOKE, ojo.clone().add(dir.clone().multiply(0.9)), 2, 0.02, 0.02, 0.02, 0.01);
         }
         mostrarBalas(p, it, t);
         if (balas - 1 <= 0) recargar(p, it, t);
         return true;
+    }
+
+    /**
+     * Sigue la bala: atraviesa madera, vidrio, lana y paredes livianas perdiendo daño (Endurecido
+     * atraviesa una más y pierde menos). Devuelve la distancia recorrida.
+     */
+    private double trazar(Player p, Tipo t, Location ojo, Vector d, double alcance, boolean endurecido) {
+        World w = ojo.getWorld();
+        Location desde = ojo.clone();
+        double recorrido = 0, factor = 1;
+        int atraviesa = 0, maximo = endurecido ? 2 : 1;
+        while (recorrido < alcance) {
+            RayTraceResult r = w.rayTrace(desde, d, alcance - recorrido, FluidCollisionMode.NEVER, true, 0.15,
+                    ent -> blancoValido(p, ent));
+            if (r == null) return alcance;
+            double tramo = r.getHitPosition().distance(desde.toVector());
+            recorrido += tramo;
+            Location punto = r.getHitPosition().toLocation(w);
+            if (r.getHitEntity() instanceof LivingEntity le) {
+                impactar(p, le, t, r.getHitPosition(), recorrido, alcance, factor);
+                return recorrido;
+            }
+            if (r.getHitBlock() == null) return recorrido;
+            w.spawnParticle(Particle.BLOCK, punto, 5, 0.05, 0.05, 0.05, 0, r.getHitBlock().getBlockData());
+            if (atraviesa >= maximo || !penetrable(r.getHitBlock().getType())) return recorrido;
+            atraviesa++;
+            factor *= endurecido ? 0.75 : 0.55;
+            // Avanza hasta salir del bloque atravesado.
+            Location salida = punto.clone();
+            int pasos = 0;
+            while (salida.getBlock().equals(r.getHitBlock()) && pasos++ < 12) salida.add(d.clone().multiply(0.15));
+            recorrido += salida.distance(punto);
+            desde = salida;
+        }
+        return alcance;
+    }
+
+    private static boolean penetrable(Material m) {
+        String n = m.name();
+        return n.contains("GLASS") || n.endsWith("_WOOL") || n.endsWith("_PLANKS") || n.endsWith("_FENCE")
+                || n.endsWith("_TRAPDOOR") || n.endsWith("_DOOR") || n.endsWith("_LEAVES") || n.endsWith("TERRACOTTA")
+                || m == Material.BARREL || m == Material.HAY_BLOCK || m == Material.BOOKSHELF || n.endsWith("_SLAB");
+    }
+
+    /** true si el tirador puede pegarle a esa entidad (lo usan el cuchillo y lo arrojadizo). */
+    public boolean blanco(Player tirador, LivingEntity ent) {
+        return blancoValido(tirador, ent);
     }
 
     private boolean blancoValido(Player tirador, Entity ent) {
@@ -413,19 +508,20 @@ public class Armas implements Listener {
         return true;
     }
 
-    private void impactar(Player tirador, LivingEntity blanco, Tipo t, Vector punto, double distancia, double alcance) {
-        double danio = t.danio;
-        if (t != Tipo.FRANCOTIRADOR && distancia > alcance * 0.6) danio *= 0.7;
+    private void impactar(Player tirador, LivingEntity blanco, Tipo t, Vector punto, double distancia, double alcance,
+                          double factor) {
         boolean cabeza = punto.getY() >= blanco.getEyeLocation().getY() - 0.3;
-        if (cabeza) danio *= (t == Tipo.FRANCOTIRADOR ? 1.3 : 1.8);
-        impactos.put(blanco.getUniqueId(), new Impacto(tirador.getUniqueId(), t.nombre, cabeza, Bukkit.getCurrentTick()));
-        blanco.setNoDamageTicks(0);
-        aplicandoBala = true;
-        try {
-            blanco.damage(danio, tirador);
-        } finally {
-            aplicandoBala = false;
+        if (blanco.getPersistentDataContainer().has(Claves.MANIQUI)) {
+            plugin.shooter().maniquiAlcanzado(tirador, blanco, cabeza);
+            return;
         }
+        double danio = t.danio * factor;
+        // Pierde daño pasado el alcance efectivo (el 60 % del máximo).
+        if (t != Tipo.FRANCOTIRADOR && distancia > alcance * 0.6) danio *= 0.7;
+        boolean piernas = punto.getY() < blanco.getLocation().getY() + blanco.getHeight() * 0.42;
+        if (cabeza) danio *= t == Tipo.FRANCOTIRADOR ? 2.0 : 1.5;
+        else if (piernas) danio *= 0.8;
+        danioDirecto(blanco, danio, tirador, t.nombre, cabeza);
         Hud.marcador(tirador, blanco.isDead());
         blanco.getWorld().spawnParticle(Particle.BLOCK, punto.toLocation(blanco.getWorld()), 6, 0.1, 0.1, 0.1, 0,
                 Material.REDSTONE_BLOCK.createBlockData());
@@ -468,7 +564,9 @@ public class Armas implements Listener {
         int b = balas(it);
         int cap = capacidad(t, accesorios(it));
         String color = b == 0 ? "<red>" : b <= cap / 4 ? "<yellow>" : "<white>";
-        Util.barra(p, "<gray>" + t.nombre + "  " + Hud.ICONO_BALA + " " + color + "<bold>" + b + "</bold><gray> / " + cap);
+        int res = reserva(it);
+        Util.barra(p, "<gray>" + t.nombre + "  " + Hud.ICONO_BALA + " " + color + "<bold>" + b + "</bold><gray> / "
+                + (res < 0 ? String.valueOf(cap) : "<white>" + res));
     }
 
     // ------------------------------------------------------------------ apuntado (ADS)
@@ -573,8 +671,17 @@ public class Armas implements Listener {
     public void recargar(Player p, ItemStack it, Tipo t) {
         UUID id = p.getUniqueId();
         if (recargando.containsKey(id) || balas(it) >= capacidad(t, accesorios(it))) return;
+        if (reserva(it) == 0) {
+            Util.barra(p, "<red>Sin munición de reserva");
+            p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 0.6f, 1.2f);
+            return;
+        }
         int ahora = Bukkit.getCurrentTick();
-        recargando.put(id, new Recarga(p.getInventory().getHeldItemSlot(), t, ahora, ahora + t.recarga));
+        int duracion = t.recarga;
+        if (plugin.shooter().clases().tiene(p, ar.tresmodos.shooter.ClasesShooter.Ventaja.PRESTIDIGITACION)) {
+            duracion = (int) Math.round(duracion * 0.6);
+        }
+        recargando.put(id, new Recarga(p.getInventory().getHeldItemSlot(), t, ahora, ahora + duracion));
         gatilloHasta.remove(id);
         p.playSound(p, Sound.ITEM_CROSSBOW_LOADING_START, 0.8f, 1.2f);
         dejarDeApuntar(p);
@@ -597,7 +704,15 @@ public class Armas implements Listener {
                 continue;
             }
             if (ahora >= r.fin()) {
-                setBalas(it, capacidad(r.tipo(), accesorios(it)));
+                int cap = capacidad(r.tipo(), accesorios(it));
+                int res = reserva(it);
+                if (res < 0) {
+                    setBalas(it, cap);
+                } else {
+                    int pone = Math.min(cap - balas(it), res);
+                    setBalas(it, balas(it) + pone);
+                    setReserva(it, res - pone);
+                }
                 persistir(it);
                 p.playSound(p, Sound.ITEM_CROSSBOW_LOADING_END, 0.8f, 1.3f);
                 mostrarBalas(p, it, r.tipo());
@@ -686,6 +801,26 @@ public class Armas implements Listener {
             }
         }
         l.getWorld().createExplosion(l, potencia, false, false, autor);
+    }
+
+    // ------------------------------------------------------------------ daño de otras fuentes
+
+    /** Registra quién le pegó a la entidad (para acreditar la baja y el killfeed). */
+    public void registrarImpacto(LivingEntity blanco, Player autor, String arma, boolean cabeza) {
+        impactos.put(blanco.getUniqueId(), new Impacto(autor.getUniqueId(), arma, cabeza, Bukkit.getCurrentTick()));
+    }
+
+    /** Daño de arma (bala, cuchillo, hacha, bomba) acreditado al autor, sin invulnerabilidad entre golpes. */
+    public static void danioDirecto(LivingEntity blanco, double danio, Player autor, String arma, boolean cabeza) {
+        if (autor != null) instancia.registrarImpacto(blanco, autor, arma, cabeza);
+        blanco.setNoDamageTicks(0);
+        aplicandoBala = true;
+        try {
+            if (autor != null) blanco.damage(danio, autor);
+            else blanco.damage(danio);
+        } finally {
+            aplicandoBala = false;
+        }
     }
 
     // ------------------------------------------------------------------ consultas

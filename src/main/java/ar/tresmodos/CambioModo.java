@@ -49,7 +49,7 @@ public class CambioModo implements Listener {
 
     public boolean enCombate(Player p) {
         Modo m = Modo.de(p.getWorld());
-        if (m == null || m == Modo.LOBBY || m == Modo.COD) return false;
+        if (m == null || m == Modo.LOBBY || m == Modo.SHOOTER) return false;
         Long t = ultimoGolpe.get(p.getUniqueId());
         return t != null && System.currentTimeMillis() - t < COMBATE_MS;
     }
@@ -141,7 +141,7 @@ public class CambioModo implements Listener {
         d.salidaLimpia = false;
         limpiar(p);
         entrar(p, Modo.LOBBY);
-        Util.titulo(p, "<white><bold>TRES MODOS</bold>", "<gray>GTA · COD · RPG", 300, 2500, 700);
+        Util.titulo(p, "<white><bold>TRES MODOS</bold>", "<gray>GTA · Shooter · RPG", 300, 2500, 700);
     }
 
     @EventHandler

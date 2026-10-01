@@ -26,6 +26,15 @@
       "chars": [
         "\ue010"
       ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tresmodos:font/destello.png",
+      "ascent": 77,
+      "height": 160,
+      "chars": [
+        "\ue020"
+      ]
     }
   ]
 }

@@ -21,7 +21,7 @@ public interface ModoJuego {
     /** Ajustes de atributos antes de restaurar la vida (p. ej. vida máxima por Vigor). */
     default void prepararAtributos(Player p) {}
 
-    /** Ítems iniciales: la primera vez en GTA/RPG, siempre en COD y lobby. */
+    /** Ítems iniciales: la primera vez en GTA/RPG, siempre en Shooter y lobby. */
     void kitInicial(Player p);
 
     /** Después de teletransportar y restaurar el estado. */

@@ -31,14 +31,14 @@ public class Comandos implements CommandExecutor, TabCompleter {
                     plugin.lobby().abrirMenu(p);
                 } else {
                     Modo m = Modo.parse(args[0]);
-                    if (m == null) Util.msg(p, "<red>Modos: gta, cod, rpg, lobby");
+                    if (m == null) Util.msg(p, "<red>Modos: gta, shooter, rpg, lobby");
                     else plugin.cambio().cambiar(p, m, false);
                 }
             }
             case "lobby" -> plugin.cambio().cambiar(p, Modo.LOBBY, false);
             case "clase" -> {
-                if (Modo.de(p.getWorld()) == Modo.COD) plugin.cod().abrirMenuClases(p);
-                else Util.msg(p, "<red>Las clases son del modo COD.");
+                if (Modo.de(p.getWorld()) == Modo.SHOOTER) plugin.shooter().clases().abrirMenu(p);
+                else Util.msg(p, "<red>Las clases son del modo Shooter.");
             }
             case "celular" -> {
                 if (Modo.de(p.getWorld()) == Modo.GTA) plugin.gta().abrirCelular(p);
@@ -46,8 +46,8 @@ public class Comandos implements CommandExecutor, TabCompleter {
             }
             case "armero" -> {
                 Modo m = Modo.de(p.getWorld());
-                if (m == Modo.GTA || m == Modo.COD) plugin.armero().abrir(p);
-                else Util.msg(p, "<red>El armero se usa en los modos con armas (GTA y COD).");
+                if (m == Modo.GTA || m == Modo.SHOOTER) plugin.armero().abrir(p);
+                else Util.msg(p, "<red>El armero se usa en los modos con armas (GTA y Shooter).");
             }
             default -> { return false; }
         }
@@ -122,7 +122,7 @@ public class Comandos implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender s, Command cmd, String alias, String[] args) {
         List<String> l = new ArrayList<>();
         String nombre = cmd.getName().toLowerCase();
-        if (nombre.equals("modo") && args.length == 1) l.addAll(List.of("gta", "cod", "rpg", "lobby"));
+        if (nombre.equals("modo") && args.length == 1) l.addAll(List.of("gta", "shooter", "rpg", "lobby"));
         if (nombre.equals("tm")) {
             if (args.length == 1) l.addAll(List.of("dinero", "almas", "buscado", "jefe", "guardar", "paquete", "info"));
             else if (args.length == 2) for (Player p : Bukkit.getOnlinePlayers()) l.add(p.getName());

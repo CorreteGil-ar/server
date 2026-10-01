@@ -1,8 +1,9 @@
 package ar.tresmodos;
 
-import ar.tresmodos.mundo.GeneradorArena;
 import ar.tresmodos.mundo.GeneradorBase;
 import ar.tresmodos.mundo.GeneradorCiudad;
+import ar.tresmodos.mundo.GeneradorPueblo;
+import ar.tresmodos.mundo.PuebloAtomico;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -41,12 +42,12 @@ public class Mundos {
                 .generateStructures(false).createWorld();
         World gta = new WorldCreator(Modo.GTA.mundo).generator(new GeneradorCiudad())
                 .generateStructures(false).createWorld();
-        World cod = new WorldCreator(Modo.COD.mundo).generator(new GeneradorArena())
+        World shooter = new WorldCreator(Modo.SHOOTER.mundo).generator(new GeneradorPueblo(PuebloAtomico.plano()))
                 .generateStructures(false).createWorld();
         World rpg = new WorldCreator(Modo.RPG.mundo).type(WorldType.NORMAL).createWorld();
         mundos.put(Modo.LOBBY, lobby);
         mundos.put(Modo.GTA, gta);
-        mundos.put(Modo.COD, cod);
+        mundos.put(Modo.SHOOTER, shooter);
         mundos.put(Modo.RPG, rpg);
 
         // ---- Lobby ----
@@ -66,17 +67,18 @@ public class Mundos {
         gta.getWorldBorder().setCenter(0, 0);
         gta.getWorldBorder().setSize(2000);
 
-        // ---- COD: arena de día fijo, regeneración propia ----
-        comunes(cod, false);
-        cod.setDifficulty(Difficulty.EASY);
-        cod.setGameRule(GameRules.ADVANCE_TIME, false);
-        cod.setTime(6000);
-        cod.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
-        cod.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
-        cod.setGameRule(GameRules.FALL_DAMAGE, false);
-        cod.setSpawnLocation(0, GeneradorArena.SUELO + 1, 0);
-        cod.getWorldBorder().setCenter(0, 0);
-        cod.getWorldBorder().setSize(GeneradorArena.RADIO * 2 + 4);
+        // ---- Shooter: Pueblo Atómico a mediodía, sin daño por caída, regeneración propia ----
+        comunes(shooter, false);
+        shooter.setDifficulty(Difficulty.EASY);
+        shooter.setGameRule(GameRules.ADVANCE_TIME, false);
+        shooter.setTime(6000);
+        shooter.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
+        shooter.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
+        shooter.setGameRule(GameRules.FALL_DAMAGE, false);
+        shooter.setGameRule(GameRules.KEEP_INVENTORY, false);
+        shooter.setSpawnLocation(-30, PuebloAtomico.SUELO + 1, 0);
+        shooter.getWorldBorder().setCenter(0, 0);
+        shooter.getWorldBorder().setSize(352);
 
         // ---- RPG: mundo vanilla en difícil, sin regeneración natural ----
         rpg.setDifficulty(Difficulty.HARD);
@@ -116,8 +118,8 @@ public class Mundos {
     // ------------------------------------------------------------------ lobby
 
     /** Pads del lobby: el jugador pisa la placa y entra al modo. */
-    public static final int[][] PADS = {{-8, 0}, {0, -8}, {8, 0}}; // GTA, COD, RPG
-    public static final Modo[] PAD_MODO = {Modo.GTA, Modo.COD, Modo.RPG};
+    public static final int[][] PADS = {{-8, 0}, {0, -8}, {8, 0}}; // GTA, Shooter, RPG
+    public static final Modo[] PAD_MODO = {Modo.GTA, Modo.SHOOTER, Modo.RPG};
 
     private void construirLobby(World w) {
         w.getChunkAt(0, 0).load(true);
@@ -159,7 +161,7 @@ public class Mundos {
         }
         String[] textos = {
                 "<gold><bold>GTA</bold></gold>\n<gray>Ciudad, plata, policía\n<gray>autos y misiones",
-                "<red><bold>COD</bold></red>\n<gray>Arena todos contra todos\n<gray>armas, clases y rachas",
+                "<red><bold>SHOOTER</bold></red>\n<gray>Pueblo Atómico · todos contra todos\n<gray>clases, rachas y bomba atómica",
                 "<light_purple><bold>RPG / SOULS</bold></light_purple>\n<gray>Stamina, esquive, hogueras\n<gray>almas y jefes"
         };
         for (int i = 0; i < PADS.length; i++) {

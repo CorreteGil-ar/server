@@ -5,3 +5,8 @@ paquete-recursos:
   activo: true
   url: "https://github.com/CorreteGil-ar/server/releases/download/pack/tresmodos-pack.zip"
   mensaje: "<gold>TresModos</gold> <gray>usa modelos y texturas propios. Aceptá el paquete para jugar.<newline><dark_gray>Para apuntar estable: Opciones → Gráficos → Movimiento de la visión: NO."
+
+# Shooter (Pueblo Atómico)
+shooter:
+  # Nunca reaparecer a menos de 8 bloques de un enemigo que te tenga a la vista.
+  reaparicion-segura: true

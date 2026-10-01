@@ -6,7 +6,7 @@ import org.bukkit.World;
 public enum Modo {
     LOBBY("tm_lobby", "<white><bold>LOBBY</bold>"),
     GTA("tm_gta", "<gold><bold>GTA</bold>"),
-    COD("tm_cod", "<red><bold>COD</bold>"),
+    SHOOTER("tm_shooter", "<red><bold>SHOOTER</bold>"),
     RPG("tm_rpg", "<dark_purple><bold>RPG</bold>");
 
     public final String mundo;
@@ -30,7 +30,7 @@ public enum Modo {
         return switch (s.toLowerCase()) {
             case "lobby", "hub", "l" -> LOBBY;
             case "gta", "ciudad" -> GTA;
-            case "cod", "mw", "guerra" -> COD;
+            case "shooter", "cod", "mw", "s" -> SHOOTER;
             case "rpg", "souls", "dark" -> RPG;
             default -> null;
         };

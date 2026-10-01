@@ -38,6 +38,8 @@ ORIENTACIONES = {
     "tp": np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]]),
     # Inventario: perfil derecho visto desde +Z, cañón hacia la derecha (+X).
     "gui": np.array([[0, 0, -1], [0, 1, 0], [1, 0, 0]]),
+    # Objetos del mundo (ItemDisplay, contexto "none"): el frente mira a +Z, como la entidad.
+    "mundo": np.array([[-1, 0, 0], [0, 1, 0], [0, 0, -1]]),
 }
 
 ADELANTE = np.array([0, 0, -1])

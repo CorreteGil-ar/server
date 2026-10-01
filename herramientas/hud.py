@@ -3,6 +3,7 @@
 Los glifos se dibujan con Pillow y se referencian desde assets/tresmodos/font/hud.json.
 Caracteres usados por el plugin (ver Hud.java):
   U+E000 marcador de impacto · U+E001 marcador de baja · U+E010 ícono de bala
+  U+E020 destello (pantalla en blanco de la bomba atómica)
 """
 import json
 from pathlib import Path
@@ -51,6 +52,11 @@ def bala():
     return im
 
 
+def destello():
+    """Rectángulo blanco: dibujado como título (x4) tapa toda la pantalla."""
+    return Image.new("RGBA", (64, 16), (255, 255, 255, 255))
+
+
 def icono_pack():
     """Ícono del paquete: tres franjas (Shooter, Guerra, RPG) sobre fondo oscuro."""
     im = Image.new("RGBA", (128, 128), (24, 24, 28, 255))
@@ -68,6 +74,7 @@ def main():
     marcador((255, 255, 255, 255)).save(FUENTES / "marcador.png")
     marcador((232, 52, 44, 255)).save(FUENTES / "marcador_baja.png")
     bala().save(FUENTES / "bala.png")
+    destello().save(FUENTES / "destello.png")
     icono_pack().save(PACK / "pack.png")
 
     # El título se dibuja escalado x4 con su borde superior 10 unidades arriba del centro.
@@ -79,11 +86,14 @@ def main():
          "chars": [""]},
         {"type": "bitmap", "file": "tresmodos:font/bala.png", "ascent": 7, "height": 8,
          "chars": [""]},
+        # Alto 160 y ascent 77: centrado sobre la mira como el marcador (centro = ascent - alto/2 = -3).
+        {"type": "bitmap", "file": "tresmodos:font/destello.png", "ascent": 77, "height": 160,
+         "chars": ["\ue020"]},
     ]}
     ruta = PACK / "assets" / "tresmodos" / "font" / "hud.json"
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(json.dumps(fuente, indent=2) + "\n", encoding="utf-8")
-    print("hud: marcador, marcador_baja, bala, pack.png")
+    print("hud: marcador, marcador_baja, bala, destello, pack.png")
 
 
 if __name__ == "__main__":
