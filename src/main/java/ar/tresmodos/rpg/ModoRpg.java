@@ -99,6 +99,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
     private final Santuario santuario;
     private final Magia magia;
     private final Invasores invasores;
+    private final Estructuras estructuras;
     private final MundoRpg mundoRpg;
     private final Enemigos enemigos;
 
@@ -127,6 +128,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         this.santuario = new Santuario(plugin, this);
         this.magia = new Magia(plugin, this);
         this.invasores = new Invasores(plugin, this);
+        this.estructuras = new Estructuras(plugin, this);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickAguante, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickEter, 10, 10);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickPanel, 2, 2);
@@ -135,7 +137,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     /** Las piezas que también escuchan eventos (las registra TresModos). */
     public List<Listener> escuchas() {
-        return List.of(this, objetos, combate, arbol, habilidades, mundoRpg, enemigos, jefes, santuario, magia, invasores);
+        return List.of(this, objetos, combate, arbol, habilidades, mundoRpg, enemigos, jefes, santuario, magia, invasores, estructuras);
     }
 
     public Buffs buffs() { return buffs; }
@@ -314,6 +316,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         ultimoEsquive.remove(id);
         panel.ocultar(p);
         vidaMostrada.remove(id);
+        estructuras.olvidar(id);
         magia.olvidar(id);
         mundoRpg.olvidar(p);
         estados.olvidar(id);

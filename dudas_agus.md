@@ -164,6 +164,28 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
 
   El **Ciclo+** conserva todo (nivel, equipo y árbol); suben los enemigos y las almas.
 
+- **Estructuras de las zonas** (`ConstructorZonas`): se construyen una sola vez, la primera vez que
+  arranca el server con esta versión (una zona por segundo; en el log queda cuánto tardó cada una).
+  Quedan registradas en `plugins/TresModos/rpg-estructuras.yml`; si se borra ese archivo, se vuelven a
+  construir encima de lo que haya.
+  - Aldea Hueca: empalizada con portón, brecha y salida trasera; plaza con pozo y horcas; iglesia con
+    torre y cripta; cementerio; 14 casas quemadas; campos de trigo podrido.
+  - Bosque Podrido: 22 árboles muertos gigantes, hongos gigantes que brillan, 3 pantanos (el agua
+    envenena) y la choza de la herbolaria.
+  - Ciudadela Desmoronada: muralla con 4 torres, portón con 2 torres, brecha al costado, torre del
+    homenaje de 60 bloques (se ve de lejos) y catedral en ruinas.
+  - Costa Hundida: arena negra, dársena con 3 casas hundidas, muelle y barco a medio hundir, barco
+    encallado en la playa y 9 casas de pescadores.
+  - **Atajos**: los portones de la Aldea y de la Ciudadela se abren solo desde adentro (palanca o
+    clic a la reja). Se entra por la brecha. Una vez abiertos quedan abiertos para todos, también en
+    el Ciclo+. **[revisar]** si querés que se cierren al empezar un ciclo nuevo.
+  - **Paredes ilusorias**: tras el altar de la iglesia, la corteza del árbol hueco, la entrada de la
+    torre del homenaje y la proa del barco encallado. Desaparecen con un golpe y esconden un cofre con
+    un arma mejorada, materiales y un pergamino. Las notas de cada zona dan la pista.
+  - **Notas**: 5 libros en atriles (Santuario, iglesia, choza, catedral y casa del capitán del puerto).
+  - Lo revisé volcando las estructuras sobre un terreno de prueba fuera del juego; **para probar en
+    el juego** cómo quedan sobre el relieve real (por ejemplo, una muralla que cruza un barranco).
+
 ## Guerra (reemplaza a GTA)
 
 - **GTA eliminado**: el diseño dice que Guerra reemplaza al GTA, así que borré `ModoGta`, la
