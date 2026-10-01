@@ -141,7 +141,7 @@ public class CambioModo implements Listener {
         d.salidaLimpia = false;
         limpiar(p);
         entrar(p, Modo.LOBBY);
-        Util.titulo(p, "<white><bold>TRES MODOS</bold>", "<gray>GTA · Shooter · RPG", 300, 2500, 700);
+        Util.titulo(p, "<white><bold>TRES MODOS</bold>", "<gray>Guerra · Shooter · RPG", 300, 2500, 700);
     }
 
     @EventHandler

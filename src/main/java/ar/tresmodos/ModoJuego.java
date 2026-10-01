@@ -10,7 +10,7 @@ import java.util.List;
 public interface ModoJuego {
     Modo modo();
 
-    /** true si el modo guarda inventario/vida/posición al salir (GTA y RPG). */
+    /** true si el modo guarda inventario/vida/posición al salir (RPG). */
     boolean guardaEstado();
 
     GameMode modoJuego();
@@ -21,7 +21,7 @@ public interface ModoJuego {
     /** Ajustes de atributos antes de restaurar la vida (p. ej. vida máxima por Vigor). */
     default void prepararAtributos(Player p) {}
 
-    /** Ítems iniciales: la primera vez en GTA/RPG, siempre en Shooter y lobby. */
+    /** Ítems iniciales: la primera vez en RPG, siempre en Guerra, Shooter y lobby. */
     void kitInicial(Player p);
 
     /** Después de teletransportar y restaurar el estado. */

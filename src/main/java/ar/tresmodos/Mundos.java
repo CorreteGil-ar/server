@@ -1,9 +1,10 @@
 package ar.tresmodos;
 
 import ar.tresmodos.mundo.GeneradorBase;
-import ar.tresmodos.mundo.GeneradorCiudad;
+import ar.tresmodos.mundo.GeneradorValle;
 import ar.tresmodos.mundo.GeneradorPueblo;
 import ar.tresmodos.mundo.PuebloAtomico;
+import ar.tresmodos.mundo.ValleDeHierro;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -40,13 +41,13 @@ public class Mundos {
     public void crear() {
         World lobby = new WorldCreator(Modo.LOBBY.mundo).generator(new GeneradorBase.Vacio())
                 .generateStructures(false).createWorld();
-        World gta = new WorldCreator(Modo.GTA.mundo).generator(new GeneradorCiudad())
+        World guerra = new WorldCreator(Modo.GUERRA.mundo).generator(new GeneradorValle())
                 .generateStructures(false).createWorld();
         World shooter = new WorldCreator(Modo.SHOOTER.mundo).generator(new GeneradorPueblo(PuebloAtomico.plano()))
                 .generateStructures(false).createWorld();
         World rpg = new WorldCreator(Modo.RPG.mundo).type(WorldType.NORMAL).createWorld();
         mundos.put(Modo.LOBBY, lobby);
-        mundos.put(Modo.GTA, gta);
+        mundos.put(Modo.GUERRA, guerra);
         mundos.put(Modo.SHOOTER, shooter);
         mundos.put(Modo.RPG, rpg);
 
@@ -58,14 +59,18 @@ public class Mundos {
         lobby.setSpawnLocation(0, 65, 0);
         construirLobby(lobby);
 
-        // ---- GTA: ciudad sin mobs naturales, se conserva el inventario ----
-        comunes(gta, false);
-        gta.setDifficulty(Difficulty.NORMAL);
-        gta.setGameRule(GameRules.KEEP_INVENTORY, true);
-        gta.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
-        gta.setSpawnLocation(5, GeneradorCiudad.SUELO + 1, 5);
-        gta.getWorldBorder().setCenter(0, 0);
-        gta.getWorldBorder().setSize(2000);
+        // ---- Guerra: Valle de Hierro, 512 × 512, sin mobs; el clima lo elige cada partida ----
+        comunes(guerra, false);
+        guerra.setDifficulty(Difficulty.NORMAL);
+        guerra.setGameRule(GameRules.ADVANCE_TIME, false);
+        guerra.setGameRule(GameRules.KEEP_INVENTORY, false);
+        guerra.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
+        guerra.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, true);
+        guerra.setGameRule(GameRules.FALL_DAMAGE, true);
+        guerra.setTime(6000);
+        guerra.setSpawnLocation(-ValleDeHierro.BASE_X - 26, ValleDeHierro.SUELO + 1, 0);
+        guerra.getWorldBorder().setCenter(0, 0);
+        guerra.getWorldBorder().setSize(ValleDeHierro.MITAD * 2);
 
         // ---- Shooter: Pueblo Atómico a mediodía, sin daño por caída, regeneración propia ----
         comunes(shooter, false);
@@ -131,8 +136,8 @@ public class Mundos {
     // ------------------------------------------------------------------ lobby
 
     /** Pads del lobby: el jugador pisa la placa y entra al modo. */
-    public static final int[][] PADS = {{-8, 0}, {0, -8}, {8, 0}}; // GTA, Shooter, RPG
-    public static final Modo[] PAD_MODO = {Modo.GTA, Modo.SHOOTER, Modo.RPG};
+    public static final int[][] PADS = {{-8, 0}, {0, -8}, {8, 0}}; // Guerra, Shooter, RPG
+    public static final Modo[] PAD_MODO = {Modo.GUERRA, Modo.SHOOTER, Modo.RPG};
 
     private void construirLobby(World w) {
         w.getChunkAt(0, 0).load(true);
@@ -153,13 +158,8 @@ public class Mundos {
                     if (borde) w.getBlockAt(x, 65, z).setType(Material.QUARTZ_SLAB, false);
                 }
             }
-            Material[] color = {Material.GOLD_BLOCK, Material.REDSTONE_BLOCK, Material.AMETHYST_BLOCK};
             for (int i = 0; i < PADS.length; i++) {
-                int px = PADS[i][0], pz = PADS[i][1];
-                for (int dx = -1; dx <= 1; dx++)
-                    for (int dz = -1; dz <= 1; dz++)
-                        w.getBlockAt(px + dx, 64, pz + dz).setType(color[i], false);
-                w.getBlockAt(px, 65, pz).setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE, false);
+                w.getBlockAt(PADS[i][0], 65, PADS[i][1]).setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE, false);
             }
             w.getBlockAt(0, 64, 0).setType(Material.BEACON, false);
             w.getBlockAt(0, 65, 0).setType(Material.AIR, false);
@@ -168,12 +168,21 @@ public class Mundos {
                     w.getBlockAt(x, 63, z).setType(Material.IRON_BLOCK, false);
         }
 
+        // Color de cada placa (se repinta siempre: el primer modo pasó de GTA a Guerra).
+        Material[] color = {Material.EMERALD_BLOCK, Material.REDSTONE_BLOCK, Material.AMETHYST_BLOCK};
+        for (int i = 0; i < PADS.length; i++) {
+            int px = PADS[i][0], pz = PADS[i][1];
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dz = -1; dz <= 1; dz++)
+                    w.getBlockAt(px + dx, 64, pz + dz).setType(color[i], false);
+        }
+
         // Carteles flotantes (se regeneran en cada arranque)
         for (Entity e : w.getEntities()) {
             if (e.getPersistentDataContainer().has(Claves.DISPLAY_LOBBY)) e.remove();
         }
         String[] textos = {
-                "<gold><bold>GTA</bold></gold>\n<gray>Ciudad, plata, policía\n<gray>autos y misiones",
+                "<dark_green><bold>GUERRA</bold></dark_green>\n<gray>Valle de Hierro · captura la bandera\n<gray>Azul contra Rojo, tanques y aviones",
                 "<red><bold>SHOOTER</bold></red>\n<gray>Pueblo Atómico · todos contra todos\n<gray>clases, rachas y bomba atómica",
                 "<light_purple><bold>RPG / SOULS</bold></light_purple>\n<gray>Stamina, esquive, hogueras\n<gray>almas y jefes"
         };

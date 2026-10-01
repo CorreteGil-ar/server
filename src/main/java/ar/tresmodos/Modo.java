@@ -2,10 +2,10 @@ package ar.tresmodos;
 
 import org.bukkit.World;
 
-/** Los cuatro espacios del server. El modo de un jugador se deduce del mundo en el que está. */
+/** Los cuatro espacios del server (Guerra reemplazó al viejo GTA). El modo de un jugador se deduce del mundo en el que está. */
 public enum Modo {
     LOBBY("tm_lobby", "<white><bold>LOBBY</bold>"),
-    GTA("tm_gta", "<gold><bold>GTA</bold>"),
+    GUERRA("tm_guerra", "<dark_green><bold>GUERRA</bold>"),
     SHOOTER("tm_shooter", "<red><bold>SHOOTER</bold>"),
     RPG("tm_rpg", "<dark_purple><bold>RPG</bold>");
 
@@ -29,7 +29,7 @@ public enum Modo {
         if (s == null) return null;
         return switch (s.toLowerCase()) {
             case "lobby", "hub", "l" -> LOBBY;
-            case "gta", "ciudad" -> GTA;
+            case "guerra", "war", "ctf", "g", "gta" -> GUERRA;
             case "shooter", "cod", "mw", "s" -> SHOOTER;
             case "rpg", "souls", "dark" -> RPG;
             default -> null;

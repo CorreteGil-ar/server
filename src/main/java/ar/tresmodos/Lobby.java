@@ -77,7 +77,7 @@ public class Lobby implements ModoJuego, Listener {
         List<String> l = new ArrayList<>();
         l.add("<dark_gray>" + java.time.LocalDate.now());
         l.add("");
-        l.add("<gold>GTA <white>" + contar(Modo.GTA) + " <gray>jugando");
+        l.add("<dark_green>Guerra <white>" + contar(Modo.GUERRA) + " <gray>jugando");
         l.add("<red>Shooter <white>" + contar(Modo.SHOOTER) + " <gray>jugando");
         l.add("<light_purple>RPG <white>" + contar(Modo.RPG) + " <gray>jugando");
         l.add("");
@@ -93,9 +93,10 @@ public class Lobby implements ModoJuego, Listener {
     /** Menú de modos: se abre desde el lobby o con /modo desde cualquier lado. */
     public void abrirMenu(Player p) {
         Menu menu = new Menu(3, "<dark_gray>Elegí un modo");
-        menu.poner(11, Util.item(Material.GOLD_INGOT, "<gold><bold>GTA",
-                "Ciudad abierta con plata, tienda,", "policía, autos y misiones.", "",
-                "<yellow>" + contar(Modo.GTA) + " jugando"), pl -> ir(pl, Modo.GTA));
+        menu.poner(11, Util.item(Material.GREEN_BANNER, "<dark_green><bold>GUERRA · Valle de Hierro",
+                "Captura la bandera, Azul contra Rojo.", "Infantería, tanques, aviones y helicópteros.",
+                "3 capturas o 15 min.", "",
+                "<yellow>" + contar(Modo.GUERRA) + " jugando"), pl -> ir(pl, Modo.GUERRA));
         menu.poner(13, Util.item(Material.DIAMOND_HOE, "<red><bold>SHOOTER · Pueblo Atómico",
                 "Todos contra todos estilo Modern Warfare.", "Clases, rachas y bomba atómica.",
                 "Primero a 20 bajas (30 con 5+) o 15 min.", "",

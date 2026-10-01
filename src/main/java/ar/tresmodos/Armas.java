@@ -16,7 +16,6 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -57,7 +56,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Armas de disparo instantáneo compartidas por GTA y el Shooter: fuego automático por cadencia real,
+ * Armas de disparo instantáneo compartidas por Guerra y el Shooter: fuego automático por cadencia real,
  * apuntado con zoom según la óptica, accesorios, cargador, recarga, headshots y granadas.
  */
 public class Armas implements Listener {
@@ -244,7 +243,7 @@ public class Armas implements Listener {
 
     // ------------------------------------------------------------------ reserva
 
-    /** Balas de reserva del arma (-1 = infinitas, como en GTA). */
+    /** Balas de reserva del arma (-1 = infinitas). */
     private int reserva(ItemStack it) {
         String id = Util.marca(it, Claves.ARMA_ID);
         if (id != null && reservas.containsKey(id)) return reservas.get(id);
@@ -330,7 +329,7 @@ public class Armas implements Listener {
 
     private boolean mundoConArmas(Player p) {
         Modo m = Modo.de(p.getWorld());
-        return m == Modo.GTA || m == Modo.SHOOTER;
+        return m == Modo.GUERRA || m == Modo.SHOOTER;
     }
 
     // ------------------------------------------------------------------ gatillo y disparo
@@ -345,7 +344,7 @@ public class Armas implements Listener {
         Action a = e.getAction();
         if (a == Action.RIGHT_CLICK_AIR || a == Action.RIGHT_CLICK_BLOCK) {
             e.setCancelled(true); // evita arar la tierra con la azada
-            if (!mundoConArmas(p) || plugin.shooter().bloqueaDisparo(p)) return;
+            if (!mundoConArmas(p) || plugin.shooter().bloqueaDisparo(p) || plugin.guerra().bloqueaDisparo(p)) return;
             if (p.isSprinting()) {
                 // Como en los shooters: corriendo no se dispara; el clic corta el sprint y el próximo dispara.
                 p.setSprinting(false);
@@ -525,7 +524,7 @@ public class Armas implements Listener {
         if (ent == tirador || !(ent instanceof LivingEntity le) || le.isDead()) return false;
         if (ent instanceof ArmorStand) return false;
         if (ent instanceof Player op && (op.getGameMode() == GameMode.SPECTATOR)) return false;
-        if (ent instanceof AbstractHorse && ent.getPersistentDataContainer().has(Claves.AUTO_DUENO)) return false;
+        if (ent instanceof Player op && plugin.guerra().aliados(tirador, op)) return false;
         return true;
     }
 

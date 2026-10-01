@@ -76,7 +76,8 @@ public class Equipamiento implements Listener {
     }
 
     private static boolean activo(Player p) {
-        return Modo.de(p.getWorld()) == Modo.SHOOTER;
+        Modo m = Modo.de(p.getWorld());
+        return m == Modo.SHOOTER || m == Modo.GUERRA;
     }
 
     // ------------------------------------------------------------------ ítems

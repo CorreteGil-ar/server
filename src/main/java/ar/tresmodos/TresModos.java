@@ -1,6 +1,6 @@
 package ar.tresmodos;
 
-import ar.tresmodos.modos.ModoGta;
+import ar.tresmodos.guerra.ModoGuerra;
 import ar.tresmodos.rpg.ModoRpg;
 import ar.tresmodos.shooter.ModoShooter;
 import org.bukkit.Bukkit;
@@ -22,7 +22,7 @@ public final class TresModos extends JavaPlugin {
     private PaqueteRecursos paquete;
     private Armero armero;
     private Lobby lobby;
-    private ModoGta gta;
+    private ModoGuerra guerra;
     private ModoShooter shooter;
     private Movilidad movilidad;
     private ModoRpg rpg;
@@ -43,11 +43,11 @@ public final class TresModos extends JavaPlugin {
         armero = new Armero(this);
         lobby = new Lobby(this);
         movilidad = new Movilidad(this);
-        gta = new ModoGta(this);
+        guerra = new ModoGuerra(this);
         shooter = new ModoShooter(this);
         rpg = new ModoRpg(this);
         juegos.put(Modo.LOBBY, lobby);
-        juegos.put(Modo.GTA, gta);
+        juegos.put(Modo.GUERRA, guerra);
         juegos.put(Modo.SHOOTER, shooter);
         juegos.put(Modo.RPG, rpg);
 
@@ -57,13 +57,14 @@ public final class TresModos extends JavaPlugin {
         pm.registerEvents(armas, this);
         pm.registerEvents(paquete, this);
         pm.registerEvents(lobby, this);
-        pm.registerEvents(gta, this);
+        pm.registerEvents(guerra, this);
+        pm.registerEvents(guerra.arsenal(), this);
         pm.registerEvents(shooter, this);
         pm.registerEvents(movilidad, this);
         for (var l : rpg.escuchas()) pm.registerEvents(l, this);
 
         Comandos comandos = new Comandos(this);
-        for (String c : new String[]{"modo", "lobby", "clase", "celular", "armero", "tm"}) {
+        for (String c : new String[]{"modo", "lobby", "clase", "armero", "tm"}) {
             var cmd = getCommand(c);
             if (cmd != null) {
                 cmd.setExecutor(comandos);
@@ -81,7 +82,7 @@ public final class TresModos extends JavaPlugin {
             cambio.entrar(p, Modo.LOBBY);
         }
         paquete.cargar();
-        getLogger().info("TresModos listo: lobby, GTA, Shooter y RPG.");
+        getLogger().info("TresModos listo: lobby, Guerra, Shooter y RPG.");
     }
 
     @Override
@@ -95,7 +96,7 @@ public final class TresModos extends JavaPlugin {
                 getLogger().warning("Error guardando a " + p.getName() + ": " + ex.getMessage());
             }
         }
-        if (gta != null) gta.apagar();
+        if (guerra != null) guerra.apagar();
         if (rpg != null) rpg.apagar();
         almacen.guardarTodo();
     }
@@ -125,7 +126,7 @@ public final class TresModos extends JavaPlugin {
     public PaqueteRecursos paquete() { return paquete; }
     public Armero armero() { return armero; }
     public Lobby lobby() { return lobby; }
-    public ModoGta gta() { return gta; }
+    public ModoGuerra guerra() { return guerra; }
     public ModoShooter shooter() { return shooter; }
     public Movilidad movilidad() { return movilidad; }
     public ModoRpg rpg() { return rpg; }

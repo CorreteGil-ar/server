@@ -35,8 +35,11 @@ public class DatosJugador {
     /** false mientras el jugador está conectado: si el server se cae, al volver se rescata su inventario. */
     public boolean salidaLimpia = true;
 
-    // GTA
+    // GTA (modo retirado: se conserva la plata por si vuelve)
     public long dinero = 500;
+    // Guerra
+    public int guerraBajas, guerraMuertes, guerraCapturas, guerraVictorias, guerraRevividos;
+    public String guerraClase;
     // Shooter (histórico y clases personalizadas)
     public int codBajas, codMuertes, shooterVictorias, shooterBombas;
     /** Las 5 clases personalizadas (ClasesShooter.Clase.codigo()); vacío = la clase por defecto. */
@@ -118,6 +121,12 @@ public class DatosJugador {
         YamlConfiguration y = YamlConfiguration.loadConfiguration(archivo);
         d.salidaLimpia = y.getBoolean("salidaLimpia", true);
         d.dinero = y.getLong("gta.dinero", 500);
+        d.guerraBajas = y.getInt("guerra.bajas");
+        d.guerraMuertes = y.getInt("guerra.muertes");
+        d.guerraCapturas = y.getInt("guerra.capturas");
+        d.guerraVictorias = y.getInt("guerra.victorias");
+        d.guerraRevividos = y.getInt("guerra.revividos");
+        d.guerraClase = y.getString("guerra.clase");
         d.codBajas = y.getInt("shooter.bajas", y.getInt("cod.bajas"));
         d.codMuertes = y.getInt("shooter.muertes", y.getInt("cod.muertes"));
         d.shooterVictorias = y.getInt("shooter.victorias");
@@ -156,7 +165,7 @@ public class DatosJugador {
         ConfigurationSection est = y.getConfigurationSection("estados");
         if (est != null) {
             for (String k : est.getKeys(false)) {
-                Modo m = Modo.parse(k);
+                Modo m = k.equals("gta") ? null : Modo.parse(k);
                 if (m == null) continue;
                 ConfigurationSection s = est.getConfigurationSection(k);
                 if (s == null) continue;
@@ -181,6 +190,12 @@ public class DatosJugador {
         YamlConfiguration y = new YamlConfiguration();
         y.set("salidaLimpia", salidaLimpia);
         y.set("gta.dinero", dinero);
+        y.set("guerra.bajas", guerraBajas);
+        y.set("guerra.muertes", guerraMuertes);
+        y.set("guerra.capturas", guerraCapturas);
+        y.set("guerra.victorias", guerraVictorias);
+        y.set("guerra.revividos", guerraRevividos);
+        y.set("guerra.clase", guerraClase);
         y.set("shooter.bajas", codBajas);
         y.set("shooter.muertes", codMuertes);
         y.set("shooter.victorias", shooterVictorias);

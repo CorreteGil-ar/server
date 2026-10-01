@@ -49,6 +49,8 @@ public class Movilidad implements Listener {
     private final Map<UUID, Integer> tacticoListo = new HashMap<>();
     private final Map<UUID, Boolean> adelanteAntes = new HashMap<>();
     private final Map<UUID, Integer> soltoAdelante = new HashMap<>();
+    /** Tendidos a la fuerza (caídos en Guerra): no se paran con salto ni con Shift. */
+    private final java.util.Set<UUID> forzados = new java.util.HashSet<>();
 
     public Movilidad(TresModos plugin) {
         this.plugin = plugin;
@@ -57,7 +59,8 @@ public class Movilidad implements Listener {
 
     /** Modos con esta movilidad. */
     public static boolean activa(Player p) {
-        return Modo.de(p.getWorld()) == Modo.SHOOTER && p.getGameMode() == GameMode.ADVENTURE;
+        Modo m = Modo.de(p.getWorld());
+        return (m == Modo.SHOOTER || m == Modo.GUERRA) && p.getGameMode() == GameMode.ADVENTURE && !p.isInsideVehicle();
     }
 
     public boolean sprintTactico(Player p) {
@@ -80,7 +83,7 @@ public class Movilidad implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void alAgacharse(PlayerToggleSneakEvent e) {
         Player p = e.getPlayer();
-        if (!activa(p) || !e.isSneaking()) return;
+        if (!activa(p) || !e.isSneaking() || forzados.contains(p.getUniqueId())) return;
         UUID id = p.getUniqueId();
         int ahora = Bukkit.getCurrentTick();
         boolean corria = p.isSprinting() || ahora - ultimoSprint.getOrDefault(id, -100) <= 3;
@@ -116,7 +119,7 @@ public class Movilidad implements Listener {
                 && ahora - ultimoSprint.getOrDefault(id, -100) <= 8) {
             sprintTactico(p, ahora);
         }
-        if (in.isJump() && tendido(p)) levantarse(p);
+        if (in.isJump() && tendido(p) && !forzados.contains(id)) levantarse(p);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -125,7 +128,7 @@ public class Movilidad implements Listener {
         if (!activa(p)) return;
         if (tendido(p)) {
             e.setCancelled(true);
-            levantarse(p);
+            if (!forzados.contains(p.getUniqueId())) levantarse(p);
             return;
         }
         trepar(p);
@@ -258,12 +261,28 @@ public class Movilidad implements Listener {
                 delfin.remove(id);
                 if (activa(p)) tenderse(p);
             }
-            if (tendido(p) && (!activa(p) || p.isSprinting())) levantarse(p);
+            if (tendido(p) && (!activa(p) || (p.isSprinting() && !forzados.contains(id)))) {
+                forzados.remove(id);
+                levantarse(p);
+            }
         }
+    }
+
+    /** Tira al jugador al piso sin que se pueda parar (caído esperando que lo revivan). */
+    public void tirar(Player p) {
+        forzados.add(p.getUniqueId());
+        tenderse(p);
+    }
+
+    /** Lo levanta (revivido o muerto). */
+    public void levantar(Player p) {
+        forzados.remove(p.getUniqueId());
+        if (tendido(p)) levantarse(p);
     }
 
     public void olvidar(Player p) {
         UUID id = p.getUniqueId();
+        forzados.remove(id);
         if (tendido(p)) levantarse(p);
         terminarTactico(p);
         deslizando.remove(id);

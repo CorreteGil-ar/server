@@ -31,24 +31,22 @@ public class Comandos implements CommandExecutor, TabCompleter {
                     plugin.lobby().abrirMenu(p);
                 } else {
                     Modo m = Modo.parse(args[0]);
-                    if (m == null) Util.msg(p, "<red>Modos: gta, shooter, rpg, lobby");
+                    if (m == null) Util.msg(p, "<red>Modos: guerra, shooter, rpg, lobby");
                     else plugin.cambio().cambiar(p, m, false);
                 }
             }
             case "lobby" -> plugin.cambio().cambiar(p, Modo.LOBBY, false);
             case "clase" -> {
-                if (Modo.de(p.getWorld()) == Modo.SHOOTER) plugin.shooter().clases().abrirMenu(p);
-                else if (Modo.de(p.getWorld()) == Modo.RPG) plugin.rpg().abrirClases(p);
-                else Util.msg(p, "<red>Las clases son del Shooter y del RPG.");
-            }
-            case "celular" -> {
-                if (Modo.de(p.getWorld()) == Modo.GTA) plugin.gta().abrirCelular(p);
-                else Util.msg(p, "<red>El celular es del modo GTA.");
+                Modo m = Modo.de(p.getWorld());
+                if (m == Modo.SHOOTER) plugin.shooter().clases().abrirMenu(p);
+                else if (m == Modo.RPG) plugin.rpg().abrirClases(p);
+                else if (m == Modo.GUERRA) plugin.guerra().abrirClases(p);
+                else Util.msg(p, "<red>Las clases son de Guerra, Shooter y RPG.");
             }
             case "armero" -> {
                 Modo m = Modo.de(p.getWorld());
-                if (m == Modo.GTA || m == Modo.SHOOTER) plugin.armero().abrir(p);
-                else Util.msg(p, "<red>El armero se usa en los modos con armas (GTA y Shooter).");
+                if (m == Modo.GUERRA || m == Modo.SHOOTER) plugin.armero().abrir(p);
+                else Util.msg(p, "<red>El armero se usa en los modos con armas (Guerra y Shooter).");
             }
             default -> { return false; }
         }
@@ -57,12 +55,12 @@ public class Comandos implements CommandExecutor, TabCompleter {
 
     private boolean admin(CommandSender s, String[] args) {
         if (args.length == 0) {
-            s.sendMessage(Util.mm("<gold>/tm dinero <jugador> <monto> · /tm almas <jugador> <monto> · "
-                    + "/tm buscado <jugador> <0-5> · /tm jefe <id> · /tm cazador · /tm guardar · /tm paquete · /tm info"));
+            s.sendMessage(Util.mm("<gold>/tm almas <jugador> <monto> · "
+                    + "/tm jefe <id> · /tm cazador · /tm guardar · /tm paquete · /tm info"));
             return true;
         }
         switch (args[0].toLowerCase()) {
-            case "dinero", "almas" -> {
+            case "almas" -> {
                 if (args.length < 3) return uso(s, "/tm " + args[0] + " <jugador> <monto>");
                 Player obj = Bukkit.getPlayerExact(args[1]);
                 if (obj == null) return uso(s, "Jugador no conectado.");
@@ -73,20 +71,8 @@ public class Comandos implements CommandExecutor, TabCompleter {
                     return uso(s, "Monto inválido.");
                 }
                 DatosJugador d = plugin.almacen().de(obj);
-                if (args[0].equalsIgnoreCase("dinero")) d.dinero = Math.max(0, d.dinero + monto);
-                else d.almas = Math.max(0, d.almas + monto);
-                s.sendMessage(Util.mm("<green>Listo. " + obj.getName() + ": " + Util.plata(d.dinero) + " · " + d.almas + " almas"));
-            }
-            case "buscado" -> {
-                if (args.length < 3) return uso(s, "/tm buscado <jugador> <0-5>");
-                Player obj = Bukkit.getPlayerExact(args[1]);
-                if (obj == null) return uso(s, "Jugador no conectado.");
-                try {
-                    plugin.gta().setBuscado(obj, Integer.parseInt(args[2]));
-                } catch (NumberFormatException e) {
-                    return uso(s, "Número inválido.");
-                }
-                s.sendMessage(Util.mm("<green>Nivel de búsqueda actualizado."));
+                d.almas = Math.max(0, d.almas + monto);
+                s.sendMessage(Util.mm("<green>Listo. " + obj.getName() + ": " + Util.num(d.almas) + " almas"));
             }
             case "jefe" -> {
                 if (!(s instanceof Player p) || Modo.de(p.getWorld()) != Modo.RPG) return uso(s, "Usalo dentro del RPG.");
@@ -129,9 +115,9 @@ public class Comandos implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender s, Command cmd, String alias, String[] args) {
         List<String> l = new ArrayList<>();
         String nombre = cmd.getName().toLowerCase();
-        if (nombre.equals("modo") && args.length == 1) l.addAll(List.of("gta", "shooter", "rpg", "lobby"));
+        if (nombre.equals("modo") && args.length == 1) l.addAll(List.of("guerra", "shooter", "rpg", "lobby"));
         if (nombre.equals("tm")) {
-            if (args.length == 1) l.addAll(List.of("dinero", "almas", "buscado", "jefe", "cazador", "guardar", "paquete", "info"));
+            if (args.length == 1) l.addAll(List.of("almas", "jefe", "cazador", "guardar", "paquete", "info"));
             else if (args.length == 2 && args[0].equalsIgnoreCase("jefe")) l.addAll(plugin.rpg().jefes().ids());
             else if (args.length == 2) for (Player p : Bukkit.getOnlinePlayers()) l.add(p.getName());
         }
