@@ -94,18 +94,19 @@ journalctl -t tresmodos        # avisos del apagado automático
 
 ## Armas
 
-Doce armas con modelo propio:
+Veintiuna armas con modelo propio:
 
 | Tipo | Armas |
 |---|---|
-| Pistolas (secundaria) | Beretta M9, Desert Eagle |
-| Subfusiles | H&K MP5, FN P90, KRISS Vector |
-| Fusiles de asalto | Colt M4A1, AK-47 |
-| Ametralladora ligera | M249 SAW (caja de 100) |
-| Escopetas | Benelli M1014 (semi), Remington 870 (bombeo) |
+| Pistolas (secundaria) | Beretta M9, Colt M1911, Desert Eagle, revólver .44 |
+| Subfusiles | H&K MP5, HK MP7, FN P90, KRISS Vector |
+| Fusiles de asalto | Colt M4A1, AK-47, FN SCAR-H, HK G36K |
+| Ametralladoras | M249 SAW, PKM (cajas de 100) |
+| Escopetas | Benelli M1014 (semi), Remington 870 (bombeo), AA-12 (automática) |
+| Tirador designado | SVD Dragunov, Mk 14 EBR |
 | Francotirador | Barrett M82A1, Remington M24 (cerrojo) |
 
-En el Shooter se eligen en el editor de clases (`/clase`); en Guerra, cada clase de infantería tiene sus opciones (el Fusilero puede llevar M4A1, AK-47 o M249, el Tirador Barrett o M24, etc.).
+En el Shooter se eligen en el editor de clases (`/clase`); en Guerra, cada clase de infantería tiene sus opciones (el Fusilero puede llevar M4A1, AK-47, SCAR-H, M249 o PKM; el Tirador, Barrett, M24, SVD o Mk 14, etc.).
 
 | Control | Acción |
 |---|---|
@@ -115,7 +116,7 @@ En el Shooter se eligen en el editor de clases (`/clase`); en Guerra, cada clase
 
 Para apuntar estable al caminar conviene desactivar **Movimiento de la visión** (Opciones → Gráficos): ese balanceo mueve el arma en la mano. El zoom usa **Efectos de FOV** (Opciones → Accesibilidad), que tiene que estar en más de 0 %.
 
-Accesorios (todos desbloqueados, se eligen en `/armero` y quedan guardados por arma): punto rojo, holográfica, ACOG 4x, mira telescópica (fija en la Barrett y la M24), silenciador, empuñadura vertical, láser, linterna y cargador ampliado. Cada arma admite los que tiene en la realidad.
+Accesorios (todos desbloqueados, se eligen en `/armero` y quedan guardados por arma): punto rojo, holográfica, ACOG 4x, mira telescópica (fija en la Barrett, la M24 y la SVD), silenciador, empuñadura vertical, láser, linterna y cargador ampliado. Cada arma admite los que tiene en la realidad.
 
 Camuflajes (también en `/armero`): Bosque, Desierto, Urbano, Tigre y Digital se ganan con bajas y tiros a la cabeza de esa arma; Oro, Diamante y Atómico son de desafío (el Atómico pide además haber tirado una bomba atómica).
 

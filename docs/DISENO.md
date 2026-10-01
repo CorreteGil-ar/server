@@ -141,7 +141,7 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 | RPG-7 | Lanzacohetes | 150 en el centro, radio 3 | 1 tiro | 1 | 3,5 s | 60 | Secundaria explosiva |
 | Cuchillo de combate | Cuerpo a cuerpo | 55; por la espalda mata | — | — | — | 2,5 | Siempre equipado (F) |
 
-Con modelo y en el juego ✅: M4A1, AK-47, MP5, KRISS Vector, P90, M249 SAW, Barrett M82A1, M24, Benelli M4 (M1014), Remington 870, Beretta M9 y Desert Eagle. El resto de la tabla (SCAR-H, G36K, MP7, PKM, SVD, Mk 14, AA-12, M1911, Revólver, M79 y RPG-7 como secundaria) queda para más adelante.
+Con modelo y en el juego ✅: M4A1, AK-47, SCAR-H, G36K, MP5, MP7, KRISS Vector, P90, M249 SAW, PKM, Barrett M82A1, M24, SVD, Mk 14 EBR, Benelli M4 (M1014), Remington 870, AA-12, Beretta M9, Colt M1911, Desert Eagle y el revólver .44. Faltan el M79 y el RPG-7 como secundarias explosivas.
 
 ### 1.6 Accesorios y camuflajes
 
@@ -257,10 +257,10 @@ Usa el mismo sistema de armas y movilidad del Shooter (deslizarse, cuerpo a tier
 
 | Clase | Principal | Secundaria y equipo | Rol |
 |---|---|---|---|
-| Fusilero | M4A1 / AK-47 / M249 ✅ (SCAR-H pendiente) | Pistola, granadas, granada antitanque (se pega al vehículo), humo, botiquín | Combate de infantería, revive |
-| Antitanque | Carabina (G36K) | RPG-7 (sin guía), AT4 (descartable, un solo tiro fuerte), Javelin (fija un blanco terrestre en 2 s y ataca desde arriba), minas antitanque | Cazar tanques |
+| Fusilero | M4A1 / AK-47 / SCAR-H / M249 / PKM ✅ | Pistola, granadas, granada antitanque (se pega al vehículo), humo, botiquín | Combate de infantería, revive |
+| Antitanque | Carabina (G36K ✅, MP5 o P90) | RPG-7 (sin guía), AT4 (descartable, un solo tiro fuerte), Javelin (fija un blanco terrestre en 2 s y ataca desde arriba), minas antitanque | Cazar tanques |
 | Ingeniero | Subfusil | Llave de reparación, C4 (hasta 3 cargas con detonador), Stinger (fija aviones y helicópteros en 2 s) | Reparar, demoler, antiaéreo |
-| Tirador | M24 / Barrett M82A1 ✅ (antimaterial: daña vehículos ligeros y helicópteros; SVD pendiente) | Pistola, binoculares (marca blancos para el equipo por 10 s), claymore | Reconocimiento, cubrir la bandera |
+| Tirador | M24 / SVD / Mk 14 / Barrett M82A1 ✅ (la Barrett es antimaterial: daña vehículos ligeros y helicópteros) | Pistola, binoculares (marca blancos para el equipo por 10 s), claymore | Reconocimiento, cubrir la bandera |
 
 **A pie contra vehículos**:
 - **Cajas de munición** en el pueblo, el bosque y las trincheras: recargan cohetes, C4, minas y granadas ✅.
@@ -755,7 +755,7 @@ Cada etapa se compila en GitHub Actions y se prueba en la VM.
 
 | Modo | Hecho | Falta |
 |---|---|---|
-| Shooter | Mapa Pueblo Atómico; reglas (meta 20/30, 15 min, espectador 5 s, reaparición segura); movilidad completa; clases editables con 9 ventajas; equipamiento (7); rachas hasta la bomba atómica; 12 armas con modelo, accesorios, apuntado y 8 camuflajes | El resto del arsenal (12 armas: SCAR-H, G36K, MP7, PKM, SVD, Mk 14, AA-12, M1911, revólver, M79, RPG-7 secundaria) |
+| Shooter | Mapa Pueblo Atómico; reglas (meta 20/30, 15 min, espectador 5 s, reaparición segura); movilidad completa; clases editables con 9 ventajas; equipamiento (7); rachas hasta la bomba atómica; 21 armas con modelo, accesorios, apuntado y 8 camuflajes | Las secundarias explosivas (M79 y RPG-7) |
 | RPG | Barras estilo Souls (vida, aguante, éter y estados); 6 clases, 7 atributos, árbol de 3 ramas con 54 habilidades, combate (pesado, parry, postura, críticos, estados), carga y voltereta, éter y frascos, 5 zonas con bioma, hora y nivel, 180 encuentros con 13 enemigos y Campeones, Noche Roja, 15 hogueras con viaje, 5 jefes con arena y niebla, Puerta del Abismo, Santuario (herrero, mercader, Guardiana, altar), 9 hechizos, Cazador Carmesí, mímicos y Ciclo+; 15 armas con modelo propio; estructuras de cada zona (aldea, bosque, ciudadela, puerto), 2 atajos, 4 paredes ilusorias con tesoro y 5 notas de lore | Modelos propios de armaduras, enemigos y jefes (hoy son mobs vanilla); arco, ballesta y lanzas con modelo propio; ajustar las estructuras sobre el relieve real; minijefes que custodien los atajos |
 | Guerra | Mapa Valle de Hierro; captura la bandera con muerte súbita; 4 clases; caído y revivir; puesto avanzado; cajas de munición; 7 vehículos con física, torretas, armas, blindaje por zonas, módulos e incendio; RPG-7, AT4, Javelin, Stinger, C4, minas, granada antitanque, llave y binoculares; modelos de vehículos y equipo; tablero de vehículo con letra propia; restauración del mapa | Ajustar el manejo jugando; sonidos propios |
 

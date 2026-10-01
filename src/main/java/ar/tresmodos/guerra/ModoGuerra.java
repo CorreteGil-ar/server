@@ -111,13 +111,14 @@ public class ModoGuerra implements ModoJuego, Listener {
 
     public enum Clase {
         FUSILERO("Fusilero", "Infantería: revive y cura. Fusil, granadas, granada antitanque y botiquín.", Material.IRON_SWORD,
-                List.of(Armas.Tipo.M4A1, Armas.Tipo.AK47, Armas.Tipo.M249)),
+                List.of(Armas.Tipo.M4A1, Armas.Tipo.AK47, Armas.Tipo.SCAR_H, Armas.Tipo.M249, Armas.Tipo.PKM)),
         ANTITANQUE("Antitanque", "Caza tanques: carabina, RPG-7, AT4 y minas antitanque.", Material.FIRE_CHARGE,
-                List.of(Armas.Tipo.MP5, Armas.Tipo.P90)),
+                List.of(Armas.Tipo.G36K, Armas.Tipo.MP5, Armas.Tipo.P90)),
         INGENIERO("Ingeniero", "Repara, demuele y derriba aviones: subfusil, llave, C4 y Stinger.", Material.ANVIL,
-                List.of(Armas.Tipo.MP5, Armas.Tipo.VECTOR, Armas.Tipo.P90, Armas.Tipo.REMINGTON, Armas.Tipo.ESCOPETA)),
+                List.of(Armas.Tipo.MP5, Armas.Tipo.MP7, Armas.Tipo.VECTOR, Armas.Tipo.P90, Armas.Tipo.REMINGTON,
+                        Armas.Tipo.ESCOPETA, Armas.Tipo.AA12)),
         TIRADOR("Tirador", "Reconocimiento: fusil de precisión, binoculares y claymore.", Material.SPYGLASS,
-                List.of(Armas.Tipo.FRANCOTIRADOR, Armas.Tipo.M24));
+                List.of(Armas.Tipo.FRANCOTIRADOR, Armas.Tipo.M24, Armas.Tipo.SVD, Armas.Tipo.MK14));
 
         public final String nombre, desc;
         public final Material icono;

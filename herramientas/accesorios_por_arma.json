@@ -295,5 +295,228 @@
    "",
    "ampliado"
   ]
+ },
+ "scarh": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "g36k": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "mp7": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "pkm": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "svd": {
+  "mira": [
+   "telescopica"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "mk14": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "aa12": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica"
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "m1911": {
+  "mira": [
+   ""
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "revolver": {
+  "mira": [
+   ""
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
  }
 }
