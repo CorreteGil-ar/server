@@ -1,0 +1,6 @@
+target/
+paquete/
+*.class
+.idea/
+.vscode/
+*.iml

@@ -1,0 +1,208 @@
+package ar.tresmodos;
+
+import ar.tresmodos.mundo.GeneradorArena;
+import ar.tresmodos.mundo.GeneradorBase;
+import ar.tresmodos.mundo.GeneradorCiudad;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.TextDisplay;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
+
+/** Crea y configura los cuatro mundos, construye el lobby y la hoguera inicial del RPG. */
+public class Mundos {
+    private final TresModos plugin;
+    private final Map<Modo, World> mundos = new EnumMap<>(Modo.class);
+
+    public Mundos(TresModos plugin) {
+        this.plugin = plugin;
+    }
+
+    public World de(Modo m) {
+        return mundos.get(m);
+    }
+
+    public void crear() {
+        World lobby = new WorldCreator(Modo.LOBBY.mundo).generator(new GeneradorBase.Vacio())
+                .generateStructures(false).createWorld();
+        World gta = new WorldCreator(Modo.GTA.mundo).generator(new GeneradorCiudad())
+                .generateStructures(false).createWorld();
+        World cod = new WorldCreator(Modo.COD.mundo).generator(new GeneradorArena())
+                .generateStructures(false).createWorld();
+        World rpg = new WorldCreator(Modo.RPG.mundo).type(WorldType.NORMAL).createWorld();
+        mundos.put(Modo.LOBBY, lobby);
+        mundos.put(Modo.GTA, gta);
+        mundos.put(Modo.COD, cod);
+        mundos.put(Modo.RPG, rpg);
+
+        // ---- Lobby ----
+        comunes(lobby, false);
+        lobby.setDifficulty(Difficulty.PEACEFUL);
+        lobby.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        lobby.setTime(6000);
+        lobby.setSpawnLocation(0, 65, 0);
+        construirLobby(lobby);
+
+        // ---- GTA: ciudad sin mobs naturales, se conserva el inventario ----
+        comunes(gta, false);
+        gta.setDifficulty(Difficulty.NORMAL);
+        gta.setGameRule(GameRule.KEEP_INVENTORY, true);
+        gta.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        gta.setSpawnLocation(5, GeneradorCiudad.SUELO + 1, 5);
+        gta.getWorldBorder().setCenter(0, 0);
+        gta.getWorldBorder().setSize(2000);
+
+        // ---- COD: arena de día fijo, regeneración propia ----
+        comunes(cod, false);
+        cod.setDifficulty(Difficulty.EASY);
+        cod.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        cod.setTime(6000);
+        cod.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        cod.setGameRule(GameRule.NATURAL_REGENERATION, false);
+        cod.setGameRule(GameRule.FALL_DAMAGE, false);
+        cod.setSpawnLocation(0, GeneradorArena.SUELO + 1, 0);
+        cod.getWorldBorder().setCenter(0, 0);
+        cod.getWorldBorder().setSize(GeneradorArena.RADIO * 2 + 4);
+
+        // ---- RPG: mundo vanilla en difícil, sin regeneración natural ----
+        rpg.setDifficulty(Difficulty.HARD);
+        rpg.setGameRule(GameRule.KEEP_INVENTORY, true);
+        rpg.setGameRule(GameRule.NATURAL_REGENERATION, false);
+        rpg.setGameRule(GameRule.DO_INSOMNIA, false);
+        rpg.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        rpg.getWorldBorder().setCenter(rpg.getSpawnLocation());
+        rpg.getWorldBorder().setSize(8000);
+        hogueraInicial(rpg);
+    }
+
+    private void comunes(World w, boolean mobs) {
+        w.setGameRule(GameRule.DO_MOB_SPAWNING, mobs);
+        w.setGameRule(GameRule.SPAWN_MONSTERS, mobs);
+        w.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
+        w.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
+        w.setGameRule(GameRule.DO_WARDEN_SPAWNING, false);
+        w.setGameRule(GameRule.DISABLE_RAIDS, true);
+        w.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        w.setGameRule(GameRule.DO_FIRE_TICK, false);
+        w.setGameRule(GameRule.MOB_GRIEFING, false);
+        w.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        w.setGameRule(GameRule.DO_INSOMNIA, false);
+        w.setStorm(false);
+        w.setThundering(false);
+        w.setClearWeatherDuration(Integer.MAX_VALUE / 2);
+    }
+
+    public Location spawn(Modo m) {
+        World w = de(m);
+        Location s = w.getSpawnLocation().toCenterLocation();
+        s.setY(Math.floor(s.getY()));
+        return s;
+    }
+
+    // ------------------------------------------------------------------ lobby
+
+    /** Pads del lobby: el jugador pisa la placa y entra al modo. */
+    public static final int[][] PADS = {{-8, 0}, {0, -8}, {8, 0}}; // GTA, COD, RPG
+    public static final Modo[] PAD_MODO = {Modo.GTA, Modo.COD, Modo.RPG};
+
+    private void construirLobby(World w) {
+        w.getChunkAt(0, 0).load(true);
+        w.getChunkAt(-1, 0).load(true);
+        w.getChunkAt(0, -1).load(true);
+        w.getChunkAt(-1, -1).load(true);
+
+        if (w.getBlockAt(0, 64, 0).getType() == Material.AIR) {
+            int r = 12;
+            for (int x = -r; x <= r; x++) {
+                for (int z = -r; z <= r; z++) {
+                    boolean borde = Math.abs(x) == r || Math.abs(z) == r;
+                    Material m;
+                    if (borde) m = Material.QUARTZ_BRICKS;
+                    else if ((Math.abs(x) + Math.abs(z)) % 6 == 0) m = Material.SEA_LANTERN;
+                    else m = ((x + z) & 1) == 0 ? Material.POLISHED_DEEPSLATE : Material.DEEPSLATE_TILES;
+                    w.getBlockAt(x, 64, z).setType(m, false);
+                    if (borde) w.getBlockAt(x, 65, z).setType(Material.QUARTZ_SLAB, false);
+                }
+            }
+            Material[] color = {Material.GOLD_BLOCK, Material.REDSTONE_BLOCK, Material.AMETHYST_BLOCK};
+            for (int i = 0; i < PADS.length; i++) {
+                int px = PADS[i][0], pz = PADS[i][1];
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dz = -1; dz <= 1; dz++)
+                        w.getBlockAt(px + dx, 64, pz + dz).setType(color[i], false);
+                w.getBlockAt(px, 65, pz).setType(Material.LIGHT_WEIGHTED_PRESSURE_PLATE, false);
+            }
+            w.getBlockAt(0, 64, 0).setType(Material.BEACON, false);
+            w.getBlockAt(0, 65, 0).setType(Material.AIR, false);
+            for (int x = -1; x <= 1; x++)
+                for (int z = -1; z <= 1; z++)
+                    w.getBlockAt(x, 63, z).setType(Material.IRON_BLOCK, false);
+        }
+
+        // Carteles flotantes (se regeneran en cada arranque)
+        for (Entity e : w.getEntities()) {
+            if (e.getPersistentDataContainer().has(Claves.DISPLAY_LOBBY)) e.remove();
+        }
+        String[] textos = {
+                "<gold><bold>GTA</bold></gold>\n<gray>Ciudad, plata, policía\n<gray>autos y misiones",
+                "<red><bold>COD</bold></red>\n<gray>Arena todos contra todos\n<gray>armas, clases y rachas",
+                "<light_purple><bold>RPG / SOULS</bold></light_purple>\n<gray>Stamina, esquive, hogueras\n<gray>almas y jefes"
+        };
+        for (int i = 0; i < PADS.length; i++) {
+            cartel(w, new Location(w, PADS[i][0] + 0.5, 67.6, PADS[i][1] + 0.5), textos[i]);
+        }
+        cartel(w, new Location(w, 0.5, 68.2, 0.5),
+                "<white><bold>TRES MODOS</bold></white>\n<gray>Pisá una placa o usá la estrella");
+    }
+
+    private void cartel(World w, Location l, String texto) {
+        w.spawn(l, TextDisplay.class, t -> {
+            t.text(Util.mm(texto));
+            t.setBillboard(Display.Billboard.CENTER);
+            t.setShadowed(true);
+            t.setBackgroundColor(org.bukkit.Color.fromARGB(90, 0, 0, 0));
+            t.getPersistentDataContainer().set(Claves.DISPLAY_LOBBY, PersistentDataType.BYTE, (byte) 1);
+        });
+    }
+
+    // ------------------------------------------------------------------ RPG
+
+    private void hogueraInicial(World rpg) {
+        File marca = new File(plugin.getDataFolder(), "hoguera-inicial.txt");
+        if (marca.exists()) return;
+        Location s = rpg.getSpawnLocation();
+        Block suelo = rpg.getHighestBlockAt(s.getBlockX(), s.getBlockZ());
+        Block fuego = suelo.getRelative(0, 1, 0);
+        for (int dx = -2; dx <= 2; dx++)
+            for (int dz = -2; dz <= 2; dz++)
+                if (Math.abs(dx) + Math.abs(dz) <= 3) suelo.getRelative(dx, 0, dz).setType(Material.COBBLESTONE, false);
+        fuego.setType(Material.CAMPFIRE, false);
+        rpg.setSpawnLocation(fuego.getX() + 2, fuego.getY(), fuego.getZ());
+        rpg.getWorldBorder().setCenter(rpg.getSpawnLocation());
+        rpg.spawn(fuego.getLocation().add(0.5, 1.6, 0.5), TextDisplay.class, t -> {
+            t.text(Component.text("Hoguera del Santuario").color(net.kyori.adventure.text.format.NamedTextColor.GOLD));
+            t.setBillboard(Display.Billboard.CENTER);
+        });
+        try {
+            plugin.getDataFolder().mkdirs();
+            if (!marca.createNewFile()) plugin.getLogger().warning("No pude crear " + marca);
+        } catch (IOException e) {
+            plugin.getLogger().warning("No pude marcar la hoguera inicial: " + e.getMessage());
+        }
+        Bukkit.getLogger().info("[TresModos] Hoguera inicial del RPG en " + fuego.getLocation());
+    }
+}
