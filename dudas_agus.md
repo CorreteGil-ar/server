@@ -198,6 +198,11 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   (tensar, cargar, embestir) dependen de él. Las armas que ya tenías en el inventario toman el modelo
   nuevo al entrar al RPG. **Para probar en el juego**: que la mano agarre el puño (en las armas de
   asta larga, como la alabarda y la guadaña, el agarre queda en la mitad del asta).
+- **Armaduras con textura propia** (`herramientas/armaduras.py`): los 6 sets de clase, la Seda de la
+  Tejedora, el set del Abismo y el del Cazador Carmesí usan el componente `equippable` con un asset
+  propio (placas con remaches, cuero con costuras, túnicas con ribete y el laminado del ronin). Cada
+  set se reconoce por su adorno de vanilla, así las piezas que ya tenían los jugadores se actualizan
+  al entrar al RPG. **Para probar en el juego** cómo se ven puestas.
 - **Aspecto de enemigos y jefes** (`herramientas/criaturas.py`): no reemplacé los mobs (perderían
   sus animaciones de caminar y atacar). Los Huecos, arqueros, caballeros caídos, ahogados y vástagos
   llevan cascos propios en la ranura de la cabeza (capucha, capacete, yelmo de cubo, yelmo de buzo,

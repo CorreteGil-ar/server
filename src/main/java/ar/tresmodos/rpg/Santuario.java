@@ -321,6 +321,7 @@ public class Santuario implements Listener {
             if (meta instanceof LeatherArmorMeta lm && cuero != null) lm.setColor(cuero);
             if (meta instanceof ArmorMeta am) am.setTrim(new ArmorTrim(mat, patron));
             it.setItemMeta(meta);
+            Armaduras.actualizar(it);
             l.add(it);
         }
         return l;

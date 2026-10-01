@@ -1,0 +1,14 @@
+{
+ "layers": {
+  "humanoid": [
+   {
+    "texture": "tresmodos:carmesi"
+   }
+  ],
+  "humanoid_leggings": [
+   {
+    "texture": "tresmodos:carmesi"
+   }
+  ]
+ }
+}

@@ -277,6 +277,7 @@ public class Invasores implements Listener {
             if (m instanceof LeatherArmorMeta lm) lm.setColor(i % 2 == 0 ? Color.fromRGB(25, 20, 22) : Color.fromRGB(120, 12, 18));
             if (m instanceof ArmorMeta am) am.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.DUNE));
             it.setItemMeta(m);
+            Armaduras.actualizar(it);
             l.add(it);
         }
         return l;

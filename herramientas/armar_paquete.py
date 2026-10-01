@@ -173,6 +173,19 @@ def validar():
         for r in refs:
             validar_modelo(r, vistos)
 
+    for ruta in PACK.glob("assets/*/equipment/*.json"):
+        d = cargar_json(ruta)
+        if d is None:
+            continue
+        for capa, lista in d.get("layers", {}).items():
+            for l in lista:
+                ns, path = l["texture"].split(":", 1) if ":" in l["texture"] else ("minecraft", l["texture"])
+                png = PACK / "assets" / ns / "textures" / "entity" / "equipment" / capa / f"{path}.png"
+                if not png.exists():
+                    error(f"{ruta.relative_to(RAIZ)}: falta {png.relative_to(RAIZ)}")
+                elif png_tam(png) != (64, 32):
+                    error(f"{png.relative_to(RAIZ)}: tiene que medir 64 × 32")
+
     for ruta in PACK.glob("assets/*/sounds.json"):
         d = cargar_json(ruta)
         if d is None:

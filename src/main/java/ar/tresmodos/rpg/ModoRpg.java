@@ -287,7 +287,11 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     @Override
     public void alEntrar(Player p, boolean primeraVez) {
-        for (ItemStack it : p.getInventory().getContents()) if (it != null) ArmaRpg.actualizarModelo(it);
+        for (ItemStack it : p.getInventory().getContents()) {
+            if (it == null) continue;
+            ArmaRpg.actualizarModelo(it);
+            Armaduras.actualizar(it);
+        }
         if (!mundo().getWorldBorder().isInside(p.getLocation())) p.teleport(respawn(p));
         aguante.put(p.getUniqueId(), aguanteMax(p));
         eter.put(p.getUniqueId(), eterMax(p));

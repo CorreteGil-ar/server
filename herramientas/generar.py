@@ -21,6 +21,7 @@ import numpy as np
 import camuflajes
 import equipo
 import hud
+import armaduras
 import criaturas
 import rpg
 import sonidos
@@ -262,6 +263,7 @@ def main():
     vehiculos.main(PACK)
     rpg.main(PACK)
     criaturas.main(PACK)
+    armaduras.main(PACK)
     sonidos.main(PACK)
     (Path(__file__).resolve().parent / "accesorios_por_arma.json").write_text(
         json.dumps(resumen, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
