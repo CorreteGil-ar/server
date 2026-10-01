@@ -13,132 +13,96 @@
      "property": "minecraft:custom_model_data",
      "index": 0,
      "on_true": {
-      "type": "minecraft:select",
-      "property": "minecraft:custom_model_data",
-      "index": 0,
-      "cases": [],
-      "fallback": {
-       "type": "minecraft:composite",
-       "models": [
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 6,
-         "cases": [
-          {
-           "when": "bosque",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_bosque_ads_hierro"
-           }
-          },
-          {
-           "when": "desierto",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_desierto_ads_hierro"
-           }
-          },
-          {
-           "when": "urbano",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_urbano_ads_hierro"
-           }
-          },
-          {
-           "when": "tigre",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_tigre_ads_hierro"
-           }
-          },
-          {
-           "when": "digital",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_digital_ads_hierro"
-           }
-          },
-          {
-           "when": "oro",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_oro_ads_hierro"
-           }
-          },
-          {
-           "when": "diamante",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_diamante_ads_hierro"
-           }
-          },
-          {
-           "when": "atomico",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/m79_camo_atomico_ads_hierro"
-           }
+      "type": "minecraft:composite",
+      "models": [
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 6,
+        "cases": [
+         {
+          "when": "bosque",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_bosque_ads_hierro"
           }
-         ],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m79_ads_hierro"
+         },
+         {
+          "when": "desierto",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_desierto_ads_hierro"
+          }
+         },
+         {
+          "when": "urbano",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_urbano_ads_hierro"
+          }
+         },
+         {
+          "when": "tigre",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_tigre_ads_hierro"
+          }
+         },
+         {
+          "when": "digital",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_digital_ads_hierro"
+          }
+         },
+         {
+          "when": "oro",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_oro_ads_hierro"
+          }
+         },
+         {
+          "when": "diamante",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_diamante_ads_hierro"
+          }
+         },
+         {
+          "when": "atomico",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m79_camo_atomico_ads_hierro"
+          }
          }
-        },
-        {
+        ],
+        "fallback": {
          "type": "minecraft:model",
-         "model": "tresmodos:item/m79_mira_hierro_ads_hierro"
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 1,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 2,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 3,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 4,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 5,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/m79_cargador_normal_ads_hierro"
-         }
+         "model": "tresmodos:item/m79_ads_hierro"
         }
-       ]
-      }
+       },
+       {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m79_mira_hierro_ads_hierro"
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m79_cargador_normal_ads_hierro"
+       }
+      ]
      },
      "on_false": {
       "type": "minecraft:composite",
@@ -211,60 +175,24 @@
         }
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 0,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:model",
-         "model": "tresmodos:item/m79_mira_hierro_fp"
-        }
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m79_mira_hierro_fp"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 1,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 2,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 3,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 4,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 5,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:model",
-         "model": "tresmodos:item/m79_cargador_normal_fp"
-        }
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m79_cargador_normal_fp"
        }
       ]
      }
@@ -346,60 +274,24 @@
        }
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 0,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m79_mira_hierro_tp"
-       }
+       "type": "minecraft:model",
+       "model": "tresmodos:item/m79_mira_hierro_tp"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 3,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 4,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 5,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m79_cargador_normal_tp"
-       }
+       "type": "minecraft:model",
+       "model": "tresmodos:item/m79_cargador_normal_tp"
       }
      ]
     }
@@ -476,60 +368,24 @@
      }
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 0,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:model",
-      "model": "tresmodos:item/m79_mira_hierro_gui"
-     }
+     "type": "minecraft:model",
+     "model": "tresmodos:item/m79_mira_hierro_gui"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 1,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 2,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 3,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 4,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 5,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:model",
-      "model": "tresmodos:item/m79_cargador_normal_gui"
-     }
+     "type": "minecraft:model",
+     "model": "tresmodos:item/m79_cargador_normal_gui"
     }
    ]
   }

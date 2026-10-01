@@ -77,7 +77,8 @@ def materiales(sufijo):
     goma = Material(GOMA, ruido=0.03, desgaste=0.02, sombra=0.05, patrones=[rayas(periodo=3, ancho=1, delta=-0.15)])
     acero = Material(ACERO, desgaste=0.16, sombra=0.08)
     negro = Material(NEGRO, desgaste=0.06)
-    vidrio = Material(VIDRIO, ruido=0.01, desgaste=0.02, sombra=0.02, volumen=0.12)
+    # Translúcido: si no, el parabrisas y la cabina tapan la vista del que maneja.
+    vidrio = Material(VIDRIO, ruido=0.01, desgaste=0.02, sombra=0.02, volumen=0.12, alfa=0.38)
     oruga = Material((48, 46, 42), ruido=0.04, desgaste=0.05, sombra=0.08,
                      patrones=[rayas(periodo=4, ancho=2, delta=-0.18)])
     return dict(pintura=pintura, lisa=lisa, franja=franja, goma=goma, acero=acero, negro=negro, vidrio=vidrio,

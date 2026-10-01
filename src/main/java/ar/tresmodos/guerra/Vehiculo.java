@@ -304,6 +304,9 @@ public class Vehiculo {
                 case ROTOR_COLA -> rot.rotateX((float) Math.toRadians(rotor * 1.7f));
                 default -> { }
             }
+            // El ItemDisplay dibuja el modelo girado 180° en Y (probado con el cliente 26.3): sin esto
+            // todos los vehículos quedaban con la trompa hacia atrás y andaban marcha atrás.
+            rot.rotateY((float) Math.PI);
             q.transform(pos);
             float s = (float) p.escala();
             Transformation t = new Transformation(pos, rot, new Vector3f(s, s, s), new Quaternionf());

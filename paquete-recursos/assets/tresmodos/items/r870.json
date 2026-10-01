@@ -94,22 +94,10 @@
            "model": "tresmodos:item/r870_punto_rojo_ads_punto_rojo"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 1,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 2,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
            "type": "minecraft:select",
@@ -146,14 +134,8 @@
            }
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 5,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/r870_cargador_normal_ads_punto_rojo"
-           }
+           "type": "minecraft:model",
+           "model": "tresmodos:item/r870_cargador_normal_ads_punto_rojo"
           }
          ]
         }
@@ -233,22 +215,10 @@
          "type": "minecraft:empty"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 1,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 2,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
          "type": "minecraft:select",
@@ -285,14 +255,8 @@
          }
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 5,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/r870_cargador_normal_ads_hierro"
-         }
+         "type": "minecraft:model",
+         "model": "tresmodos:item/r870_cargador_normal_ads_hierro"
         }
        ]
       }
@@ -385,22 +349,10 @@
         }
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 1,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 2,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
         "type": "minecraft:select",
@@ -437,14 +389,8 @@
         }
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 5,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:model",
-         "model": "tresmodos:item/r870_cargador_normal_fp"
-        }
+        "type": "minecraft:model",
+        "model": "tresmodos:item/r870_cargador_normal_fp"
        }
       ]
      }
@@ -543,22 +489,10 @@
        }
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
        "type": "minecraft:select",
@@ -595,14 +529,8 @@
        }
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 5,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/r870_cargador_normal_tp"
-       }
+       "type": "minecraft:model",
+       "model": "tresmodos:item/r870_cargador_normal_tp"
       }
      ]
     }
@@ -696,22 +624,10 @@
      }
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 1,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 2,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
      "type": "minecraft:select",
@@ -748,14 +664,8 @@
      }
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 5,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:model",
-      "model": "tresmodos:item/r870_cargador_normal_gui"
-     }
+     "type": "minecraft:model",
+     "model": "tresmodos:item/r870_cargador_normal_gui"
     }
    ]
   }

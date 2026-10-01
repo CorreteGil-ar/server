@@ -94,22 +94,10 @@
            "model": "tresmodos:item/m1014_punto_rojo_ads_punto_rojo"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 1,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 2,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
            "type": "minecraft:select",
@@ -243,22 +231,10 @@
            "model": "tresmodos:item/m1014_holografica_ads_holografica"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 1,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 2,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
            "type": "minecraft:select",
@@ -391,22 +367,10 @@
          "model": "tresmodos:item/m1014_mira_hierro_ads_hierro"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 1,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 2,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
          "type": "minecraft:select",
@@ -559,22 +523,10 @@
         }
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 1,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 2,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
         "type": "minecraft:select",
@@ -733,22 +685,10 @@
        }
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
        "type": "minecraft:select",
@@ -902,22 +842,10 @@
      }
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 1,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 2,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
      "type": "minecraft:select",

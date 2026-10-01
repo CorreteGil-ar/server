@@ -13,155 +13,137 @@
      "property": "minecraft:custom_model_data",
      "index": 0,
      "on_true": {
-      "type": "minecraft:select",
-      "property": "minecraft:custom_model_data",
-      "index": 0,
-      "cases": [],
-      "fallback": {
-       "type": "minecraft:composite",
-       "models": [
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 6,
-         "cases": [
-          {
-           "when": "bosque",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_bosque_ads_hierro"
-           }
-          },
-          {
-           "when": "desierto",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_desierto_ads_hierro"
-           }
-          },
-          {
-           "when": "urbano",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_urbano_ads_hierro"
-           }
-          },
-          {
-           "when": "tigre",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_tigre_ads_hierro"
-           }
-          },
-          {
-           "when": "digital",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_digital_ads_hierro"
-           }
-          },
-          {
-           "when": "oro",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_oro_ads_hierro"
-           }
-          },
-          {
-           "when": "diamante",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_diamante_ads_hierro"
-           }
-          },
-          {
-           "when": "atomico",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_camo_atomico_ads_hierro"
-           }
+      "type": "minecraft:composite",
+      "models": [
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 6,
+        "cases": [
+         {
+          "when": "bosque",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_bosque_ads_hierro"
           }
-         ],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/deagle_ads_hierro"
-         }
-        },
-        {
-         "type": "minecraft:empty"
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 1,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 2,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 3,
-         "cases": [
-          {
-           "when": "laser",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_laser_ads_hierro"
-           }
+         },
+         {
+          "when": "desierto",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_desierto_ads_hierro"
           }
-         ],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 4,
-         "cases": [
-          {
-           "when": "linterna",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_linterna_ads_hierro"
-           }
+         },
+         {
+          "when": "urbano",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_urbano_ads_hierro"
           }
-         ],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
-        },
-        {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 5,
-         "cases": [
-          {
-           "when": "ampliado",
-           "model": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/deagle_cargador_ampliado_ads_hierro"
-           }
+         },
+         {
+          "when": "tigre",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_tigre_ads_hierro"
           }
-         ],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/deagle_cargador_normal_ads_hierro"
+         },
+         {
+          "when": "digital",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_digital_ads_hierro"
+          }
+         },
+         {
+          "when": "oro",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_oro_ads_hierro"
+          }
+         },
+         {
+          "when": "diamante",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_diamante_ads_hierro"
+          }
+         },
+         {
+          "when": "atomico",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_camo_atomico_ads_hierro"
+          }
          }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/deagle_ads_hierro"
         }
-       ]
-      }
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:empty"
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 3,
+        "cases": [
+         {
+          "when": "laser",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_laser_ads_hierro"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 4,
+        "cases": [
+         {
+          "when": "linterna",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_linterna_ads_hierro"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:empty"
+        }
+       },
+       {
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 5,
+        "cases": [
+         {
+          "when": "ampliado",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/deagle_cargador_ampliado_ads_hierro"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/deagle_cargador_normal_ads_hierro"
+        }
+       }
+      ]
      },
      "on_false": {
       "type": "minecraft:composite",
@@ -234,31 +216,13 @@
         }
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 0,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 1,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 2,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
         "type": "minecraft:select",
@@ -392,31 +356,13 @@
        }
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 0,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
        "type": "minecraft:select",
@@ -545,31 +491,13 @@
      }
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 0,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 1,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 2,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
      "type": "minecraft:select",

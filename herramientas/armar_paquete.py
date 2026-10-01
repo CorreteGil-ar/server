@@ -62,6 +62,9 @@ def validar_nodo(nodo, rel):
     elif tipo == "select":
         if "property" not in nodo or not isinstance(nodo.get("cases"), list):
             error(f"{rel}: select sin 'property' o 'cases'")
+        elif not nodo["cases"]:
+            # El cliente descarta el ítem entero: "Empty case list".
+            error(f"{rel}: select con 'cases' vacío (usá directamente el fallback)")
         for caso in nodo.get("cases", []):
             if "when" not in caso or "model" not in caso:
                 error(f"{rel}: caso de select sin 'when' o 'model'")

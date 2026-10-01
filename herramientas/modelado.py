@@ -594,7 +594,21 @@ def _modelo(recurso):
     return {"type": "minecraft:model", "model": recurso}
 
 
+def podar_selects(nodo):
+    """Reemplaza cada select sin casos por su fallback: el cliente rechaza el ítem entero si
+    encuentra un select con "cases" vacío ("Empty case list") y el arma se ve sin modelo."""
+    if isinstance(nodo, list):
+        return [podar_selects(v) for v in nodo]
+    if not isinstance(nodo, dict):
+        return nodo
+    nodo = {k: podar_selects(v) for k, v in nodo.items()}
+    if nodo.get("type") in ("minecraft:select", "select") and not nodo.get("cases"):
+        return nodo.get("fallback", {"type": "minecraft:empty"})
+    return nodo
+
+
 def _escribir_item(nombre, definicion, carpeta_pack, namespace):
+    definicion = podar_selects(definicion)
     ruta = Path(carpeta_pack) / "assets" / namespace / "items" / f"{nombre}.json"
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(json.dumps(definicion, indent=1) + "\n", encoding="utf-8")

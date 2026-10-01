@@ -94,51 +94,21 @@
            "model": "tresmodos:item/pkm_punto_rojo_ads_punto_rojo"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 1,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/pkm_boca_ads_punto_rojo"
-           }
+           "type": "minecraft:model",
+           "model": "tresmodos:item/pkm_boca_ads_punto_rojo"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 2,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 3,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 4,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 5,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/pkm_cargador_normal_ads_punto_rojo"
-           }
+           "type": "minecraft:model",
+           "model": "tresmodos:item/pkm_cargador_normal_ads_punto_rojo"
           }
          ]
         }
@@ -220,51 +190,21 @@
            "model": "tresmodos:item/pkm_holografica_ads_holografica"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 1,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/pkm_boca_ads_holografica"
-           }
+           "type": "minecraft:model",
+           "model": "tresmodos:item/pkm_boca_ads_holografica"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 2,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 3,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 4,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:empty"
-           }
+           "type": "minecraft:empty"
           },
           {
-           "type": "minecraft:select",
-           "property": "minecraft:custom_model_data",
-           "index": 5,
-           "cases": [],
-           "fallback": {
-            "type": "minecraft:model",
-            "model": "tresmodos:item/pkm_cargador_normal_ads_holografica"
-           }
+           "type": "minecraft:model",
+           "model": "tresmodos:item/pkm_cargador_normal_ads_holografica"
           }
          ]
         }
@@ -352,51 +292,21 @@
          "model": "tresmodos:item/pkm_mira_hierro_ads_hierro"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 1,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/pkm_boca_ads_hierro"
-         }
+         "type": "minecraft:model",
+         "model": "tresmodos:item/pkm_boca_ads_hierro"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 2,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 3,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 4,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:empty"
-         }
+         "type": "minecraft:empty"
         },
         {
-         "type": "minecraft:select",
-         "property": "minecraft:custom_model_data",
-         "index": 5,
-         "cases": [],
-         "fallback": {
-          "type": "minecraft:model",
-          "model": "tresmodos:item/pkm_cargador_normal_ads_hierro"
-         }
+         "type": "minecraft:model",
+         "model": "tresmodos:item/pkm_cargador_normal_ads_hierro"
         }
        ]
       }
@@ -504,51 +414,21 @@
         }
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 1,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:model",
-         "model": "tresmodos:item/pkm_boca_fp"
-        }
+        "type": "minecraft:model",
+        "model": "tresmodos:item/pkm_boca_fp"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 2,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 3,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 4,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:empty"
-        }
+        "type": "minecraft:empty"
        },
        {
-        "type": "minecraft:select",
-        "property": "minecraft:custom_model_data",
-        "index": 5,
-        "cases": [],
-        "fallback": {
-         "type": "minecraft:model",
-         "model": "tresmodos:item/pkm_cargador_normal_fp"
-        }
+        "type": "minecraft:model",
+        "model": "tresmodos:item/pkm_cargador_normal_fp"
        }
       ]
      }
@@ -662,51 +542,21 @@
        }
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 1,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/pkm_boca_tp"
-       }
+       "type": "minecraft:model",
+       "model": "tresmodos:item/pkm_boca_tp"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 2,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 3,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 4,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:empty"
-       }
+       "type": "minecraft:empty"
       },
       {
-       "type": "minecraft:select",
-       "property": "minecraft:custom_model_data",
-       "index": 5,
-       "cases": [],
-       "fallback": {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/pkm_cargador_normal_tp"
-       }
+       "type": "minecraft:model",
+       "model": "tresmodos:item/pkm_cargador_normal_tp"
       }
      ]
     }
@@ -815,51 +665,21 @@
      }
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 1,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:model",
-      "model": "tresmodos:item/pkm_boca_gui"
-     }
+     "type": "minecraft:model",
+     "model": "tresmodos:item/pkm_boca_gui"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 2,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 3,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 4,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:empty"
-     }
+     "type": "minecraft:empty"
     },
     {
-     "type": "minecraft:select",
-     "property": "minecraft:custom_model_data",
-     "index": 5,
-     "cases": [],
-     "fallback": {
-      "type": "minecraft:model",
-      "model": "tresmodos:item/pkm_cargador_normal_gui"
-     }
+     "type": "minecraft:model",
+     "model": "tresmodos:item/pkm_cargador_normal_gui"
     }
    ]
   }

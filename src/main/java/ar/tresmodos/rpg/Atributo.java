@@ -23,6 +23,6 @@ public enum Atributo {
     }
 
     public String abreviatura() {
-        return nombre.substring(0, 3).toUpperCase();
+        return nombre.substring(0, Math.min(3, nombre.length())).toUpperCase();
     }
 }
