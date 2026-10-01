@@ -465,6 +465,16 @@ public class Armas implements Listener {
         while (recorrido < alcance) {
             RayTraceResult r = w.rayTrace(desde, d, alcance - recorrido, FluidCollisionMode.NEVER, true, 0.15,
                     ent -> blancoValido(p, ent));
+            // En Guerra, la bala puede pegar antes en un vehículo.
+            if (Modo.de(w) == Modo.GUERRA) {
+                var vs = plugin.guerra().arsenal().vehiculos();
+                double hasta = r == null ? alcance - recorrido : r.getHitPosition().distance(desde.toVector());
+                var g = vs.rayo(desde.toVector(), d, hasta, vs.de(p));
+                if (g != null) {
+                    vs.impactoBala(g.vehiculo(), p, t, d);
+                    return recorrido + g.distancia();
+                }
+            }
             if (r == null) return alcance;
             double tramo = r.getHitPosition().distance(desde.toVector());
             recorrido += tramo;
@@ -524,7 +534,8 @@ public class Armas implements Listener {
         if (ent == tirador || !(ent instanceof LivingEntity le) || le.isDead()) return false;
         if (ent instanceof ArmorStand) return false;
         if (ent instanceof Player op && (op.getGameMode() == GameMode.SPECTATOR)) return false;
-        if (ent instanceof Player op && plugin.guerra().aliados(tirador, op)) return false;
+        if (ent instanceof Player op && (plugin.guerra().aliados(tirador, op)
+                || plugin.guerra().arsenal().vehiculos().protegido(op))) return false;
         return true;
     }
 

@@ -1076,7 +1076,7 @@ public class ModoGuerra implements ModoJuego, Listener {
     public void apagar() {
         for (Bandera b : banderas.values()) if (b.visual != null) b.visual.remove();
         for (Entity e : decorado) e.remove();
-        arsenal.reiniciar();
+        arsenal.apagar();
         restaurarMapa();
         if (barraPuesto != null) for (Player p : Bukkit.getOnlinePlayers()) p.hideBossBar(barraPuesto);
     }

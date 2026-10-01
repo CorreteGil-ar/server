@@ -59,6 +59,7 @@ public final class TresModos extends JavaPlugin {
         pm.registerEvents(lobby, this);
         pm.registerEvents(guerra, this);
         pm.registerEvents(guerra.arsenal(), this);
+        pm.registerEvents(guerra.arsenal().vehiculos(), this);
         pm.registerEvents(shooter, this);
         pm.registerEvents(movilidad, this);
         for (var l : rpg.escuchas()) pm.registerEvents(l, this);
