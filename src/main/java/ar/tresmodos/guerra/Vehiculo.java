@@ -139,7 +139,13 @@ public class Vehiculo {
         Vector3f rel = new Vector3f((float) (p.x() - t.x()), (float) (p.y() - t.y()), (float) (p.z() - t.z()));
         new Quaternionf().rotateY((float) Math.toRadians(-torreta)).transform(rel);
         Vector base = mundo(t.x() + rel.x, t.y() + rel.y, t.z() + rel.z);
-        return base.add(direccionCanon().multiply(2.2 * p.escala() / 2));
+        double largo = switch (tipo) {
+            case TANQUE -> 4.6;
+            case ANTIAEREO -> 2.6;
+            case VCI -> 1.8;
+            default -> 1.5;
+        };
+        return base.add(direccionCanon().multiply(largo));
     }
 
     Pieza pieza(Rol r) {

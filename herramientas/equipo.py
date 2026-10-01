@@ -222,6 +222,144 @@ def misil():
     ]
 
 
+# ---------------------------------------------------------------- Guerra
+
+def rpg7():
+    """RPG-7: tubo con empuñaduras y la ojiva del cohete asomando adelante."""
+    tubo = Material((88, 92, 70), desgaste=0.14, sombra=0.08)
+    madera = Material((120, 78, 42), desgaste=0.10, patrones=[rayas(periodo=3, ancho=1, delta=-0.05)])
+    ojiva = Material((70, 80, 60), desgaste=0.12)
+    return [
+        *cilindro("z", (8, 9), 0.9, -2.0, 18.0, tubo, "tubo"),
+        *cilindro("z", (8, 9), 1.2, 15.0, 18.6, tubo, "tobera"),
+        *cilindro("z", (8, 9), 1.7, -6.5, -2.0, ojiva, "ojiva"),
+        *cilindro("z", (8, 9), 0.7, -8.0, -6.5, ojiva, "punta"),
+        C(7.4, 9.6, 2.0, 8.6, 10.2, 8.0, madera, "protector"),
+        C(7.5, 5.6, 6.0, 8.5, 8.2, 7.0, madera, "empunadura"),
+        C(7.5, 5.6, 10.0, 8.5, 8.2, 11.0, madera, "empunadura_2"),
+        C(8.9, 9.6, 6.0, 9.6, 10.6, 7.6, Material(NEGRO), "mira"),
+    ]
+
+
+def at4():
+    """AT4: tubo descartable verde con miras abatibles."""
+    tubo = Material((98, 104, 64), desgaste=0.10, sombra=0.08, patrones=[rayas(periodo=8, ancho=1, delta=-0.05)])
+    return [
+        *cilindro("z", (8, 9), 1.3, -6.0, 16.0, tubo, "tubo"),
+        C(7.5, 5.8, 3.0, 8.5, 7.8, 4.0, Material(NEGRO), "gatillo"),
+        C(7.7, 10.2, -4.0, 8.3, 11.0, -3.4, Material(NEGRO), "mira_frontal"),
+        C(7.6, 10.2, 6.0, 8.4, 11.2, 6.6, Material(NEGRO), "mira_trasera"),
+        C(7.3, 9.6, 12.0, 8.7, 10.6, 15.0, Material((60, 60, 50)), "hombrera"),
+    ]
+
+
+def javelin():
+    """Javelin: tubo grueso con la unidad de mando (CLU) a un costado."""
+    tubo = Material((96, 100, 70), desgaste=0.10, sombra=0.08)
+    clu = Material((70, 74, 56), desgaste=0.12)
+    return [
+        *cilindro("z", (8, 9), 1.7, -6.0, 15.0, tubo, "tubo"),
+        C(9.4, 6.5, 2.0, 12.6, 10.5, 7.0, clu, "clu"),
+        C(12.6, 8.0, 3.0, 13.2, 9.5, 5.0, Material(VIDRIO_OSC), "visor"),
+        C(9.6, 5.0, 4.0, 10.6, 6.5, 5.0, Material(NEGRO), "empunadura"),
+    ]
+
+
+def stinger():
+    """Stinger: tubo largo y fino con antena IFF y empuñadura."""
+    tubo = Material((96, 100, 70), desgaste=0.10, sombra=0.08)
+    return [
+        *cilindro("z", (8, 9), 1.1, -7.0, 15.0, tubo, "tubo"),
+        C(9.0, 7.0, 0.0, 9.6, 10.0, 0.6, Material(NEGRO), "antena_base"),
+        C(8.8, 10.0, -2.0, 11.6, 10.4, 1.0, Material(NEGRO), "antena"),
+        C(7.5, 5.0, 3.0, 8.5, 7.9, 4.2, Material(NEGRO), "empunadura"),
+        C(6.6, 9.8, 2.0, 7.4, 11.0, 5.0, Material(ACERO), "mira"),
+    ]
+
+
+def c4():
+    """C4: dos bloques de explosivo con cinta, detonador y cables."""
+    pasta = Material((205, 196, 160), desgaste=0.05, sombra=0.08, patrones=[punteado(0.15, -0.04)])
+    cinta = Material((60, 64, 50), desgaste=0.05)
+    return [
+        C(5.0, 6.0, 5.5, 11.0, 7.4, 10.5, pasta, "bloque_1"),
+        C(5.2, 7.4, 5.7, 10.8, 8.8, 10.3, pasta, "bloque_2"),
+        C(4.95, 5.95, 7.4, 11.05, 8.85, 8.4, cinta, "cinta"),
+        C(7.2, 8.8, 6.8, 8.8, 9.4, 8.2, Material(NEGRO), "detonador"),
+        C(7.6, 9.4, 7.2, 7.9, 9.6, 7.5, Material((230, 30, 30), ruido=0, volumen=0), "luz"),
+    ]
+
+
+def detonador():
+    """Detonador de mano (clacker) con antena."""
+    cuerpo = Material((70, 74, 56), desgaste=0.12)
+    return [
+        C(6.4, 4.0, 6.6, 9.6, 10.0, 9.0, cuerpo, "cuerpo"),
+        C(6.9, 10.0, 7.2, 9.1, 10.6, 8.4, Material((200, 40, 30)), "boton"),
+        C(9.0, 10.05, 8.6, 9.4, 14.0, 9.0, Material(NEGRO), "antena"),
+    ]
+
+
+def mina():
+    """Mina antitanque (tipo TM-62): disco chato verde con espoleta."""
+    cuerpo = Material((80, 88, 56), desgaste=0.10, sombra=0.10)
+    return [
+        *cilindro("y", (8, 8), 5.0, 6.0, 8.2, cuerpo, "disco"),
+        *cilindro("y", (8, 8), 1.3, 8.2, 9.0, Material(ACERO), "espoleta"),
+        C(4.0, 7.2, 7.6, 12.0, 7.6, 8.4, cuerpo.con(color=(64, 70, 46)), "asa"),
+    ]
+
+
+def granada_at():
+    """Granada antitanque (tipo RKG-3): cabeza cilíndrica y mango con estabilizador."""
+    cabeza = Material((86, 92, 52), desgaste=0.10, sombra=0.10)
+    mango = Material((110, 80, 46), desgaste=0.08)
+    return [
+        *cilindro("y", (8, 8), 1.6, 8.0, 11.5, cabeza, "cabeza"),
+        *cilindro("y", (8, 8), 0.8, 2.5, 8.0, mango, "mango"),
+        *cilindro("y", (8, 8), 1.0, 2.0, 2.6, Material(ACERO), "tapa"),
+    ]
+
+
+def llave():
+    """Llave de reparación grande."""
+    acero = Material((150, 152, 156), desgaste=0.18, sombra=0.06)
+    goma = Material((180, 40, 30), desgaste=0.04)
+    return [
+        C(7.4, 1.0, 7.4, 8.6, 9.0, 8.6, goma, "mango"),
+        C(7.5, 9.0, 7.5, 8.5, 11.0, 8.5, acero, "cuello"),
+        C(5.6, 11.0, 7.4, 10.4, 12.4, 8.6, acero, "cabeza"),
+        C(5.6, 12.4, 7.4, 6.8, 14.4, 8.6, acero, "boca_i"),
+        C(9.2, 12.4, 7.4, 10.4, 14.4, 8.6, acero, "boca_d"),
+    ]
+
+
+def binoculares():
+    """Binoculares: dos tubos unidos."""
+    cuerpo = Material((50, 54, 46), desgaste=0.10)
+    return [
+        *cilindro("z", (6.3, 8), 1.4, 4.0, 11.0, cuerpo, "tubo_i"),
+        *cilindro("z", (9.7, 8), 1.4, 4.0, 11.0, cuerpo, "tubo_d"),
+        C(6.6, 7.4, 6.0, 9.4, 8.6, 9.0, cuerpo, "puente"),
+        *cilindro("z", (6.3, 8), 1.0, 3.6, 4.0, Material(VIDRIO_OSC), "lente_i"),
+        *cilindro("z", (9.7, 8), 1.0, 3.6, 4.0, Material(VIDRIO_OSC), "lente_d"),
+    ]
+
+
+def botiquin():
+    """Botiquín: bolso verde con cruz blanca."""
+    bolso = Material((70, 84, 52), desgaste=0.08, sombra=0.10)
+    cruz = Material((235, 235, 235), ruido=0.005, desgaste=0, sombra=0)
+    return [
+        C(4.5, 5.0, 6.0, 11.5, 10.0, 10.0, bolso, "bolso"),
+        C(7.4, 6.0, 5.95, 8.6, 9.0, 6.0, cruz, "cruz_v"),
+        C(6.5, 6.9, 5.94, 9.5, 8.1, 5.99, cruz, "cruz_h"),
+        C(6.0, 10.0, 7.6, 10.0, 10.6, 8.4, Material(NEGRO), "manija"),
+    ]
+
+
+VIDRIO_OSC = (40, 52, 60)
+
 # nombre -> (función, en el mundo con ItemDisplay)
 OBJETOS = {
     "granada": (granada, False), "semtex": (semtex, False), "hacha": (hacha, False),
@@ -229,6 +367,10 @@ OBJETOS = {
     "sensor": (sensor, False), "uav": (lambda: tablet((40, 90, 150)), False), "bengala": (bengala, False),
     "predator": (laptop, False), "radio": (radio, False), "silbato": (silbato, False),
     "bomba": (maletin, False), "municion": (municion, False), "paquete": (paquete, True), "misil": (misil, True),
+    # Guerra
+    "rpg7": (rpg7, False), "at4": (at4, False), "javelin": (javelin, False), "stinger": (stinger, False),
+    "c4": (c4, True), "detonador": (detonador, False), "mina": (mina, True), "granada_at": (granada_at, False),
+    "llave": (llave, False), "binoculares": (binoculares, False), "botiquin": (botiquin, False),
 }
 
 

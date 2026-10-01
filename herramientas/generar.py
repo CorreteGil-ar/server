@@ -13,12 +13,14 @@ holográfica el arma se centra con la línea de mira sobre la mira de la pantall
 telescópica se ve el visor del ocular.
 """
 import json
+import shutil
 from pathlib import Path
 
 import numpy as np
 
 import equipo
 import hud
+import vehiculos
 from accesorios import ACCESORIOS, LINEA_MIRA, VISORES, display_visor, montar, silenciador, visor
 from armas import ARMAS
 from modelado import ORIENTACIONES, definicion_arma, definicion_simple, engrosar, exportar, modelo_hijo
@@ -231,7 +233,10 @@ def main():
     # Se regenera todo: se borran los modelos, texturas e ítems generados antes.
     for carpeta in ("models/item", "textures/item", "items"):
         for f in (PACK / "assets" / "tresmodos" / carpeta).glob("*"):
-            f.unlink()
+            if f.is_dir():
+                shutil.rmtree(f)
+            else:
+                f.unlink()
     visores = generar_visores()
     print("visores: listo")
     resumen = {}
@@ -241,6 +246,7 @@ def main():
     generar_iconos()
     print("íconos de accesorios: listo")
     equipo.main(PACK)
+    vehiculos.main(PACK)
     (Path(__file__).resolve().parent / "accesorios_por_arma.json").write_text(
         json.dumps(resumen, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
