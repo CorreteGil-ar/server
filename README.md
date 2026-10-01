@@ -17,7 +17,10 @@ Versión de destino: **Paper 26.3** (build 140) y **Java 25**. El instalador agr
 src/main/java/ar/tresmodos/   código del plugin
   modos/                      ModoGta, ModoCod, ModoRpg
   mundo/                      generadores de la ciudad y la arena
-src/main/resources/plugin.yml comandos y permisos
+src/main/resources/           plugin.yml (comandos y permisos) y config.yml
+paquete-recursos/             paquete de recursos: modelos, texturas y fuente del HUD
+herramientas/                 generador de modelos y texturas, vista previa y empaquetado del paquete
+docs/DISENO.md                diseño de los modos
 pom.xml                       build de Maven
 instalar.sh                   instala Paper + plugin como servicio systemd (Ubuntu 24.04)
 mc                            manda comandos a la consola por RCON
@@ -28,13 +31,32 @@ dist/tresmodos-0.1.0.zip      paquete 0.1.0 ya compilado (jar + instalador viejo
 
 ## Compilar
 
-GitHub Actions compila el plugin en cada push (`.github/workflows/compilar.yml`). En la pestaña **Actions**, la última corrida deja un artefacto `tresmodos` con `TresModos.jar` y los tres scripts.
+GitHub Actions compila el plugin y valida el paquete de recursos en cada push (`.github/workflows/compilar.yml`). En la pestaña **Actions**, la última corrida deja un artefacto `tresmodos` con `TresModos.jar`, `tresmodos-pack.zip` y los tres scripts.
 
 En tu máquina necesitás JDK 25 y Maven:
 
 ```bash
 mvn package          # genera target/TresModos.jar
 ```
+
+## Paquete de recursos
+
+Los modelos, texturas y el HUD viven en `paquete-recursos/`. En cada push a `main`, GitHub Actions lo valida, lo empaqueta y lo publica en el release [`pack`](https://github.com/CorreteGil-ar/server/releases/tag/pack). El plugin lo baja al iniciar, calcula su SHA-1 y se lo manda obligatorio a cada jugador que entra.
+
+- La URL está en `plugins/TresModos/config.yml` (`paquete-recursos.url`); con `activo: false` se desactiva.
+- Si se publica una versión nueva con el server prendido, `/tm paquete` la vuelve a bajar y se la reenvía a todos.
+- Quien rechace el paquete queda afuera con un mensaje que explica cómo activarlo.
+
+Los modelos y texturas se generan por código con las herramientas de `herramientas/` (Python 3 con Pillow y numpy):
+
+```bash
+pip install -r herramientas/requirements.txt
+python3 herramientas/generar.py          # regenera modelos, texturas y glifos del HUD
+python3 herramientas/armar_paquete.py    # valida y arma target/tresmodos-pack.zip
+python3 herramientas/vista_previa.py tresmodos:item/m4a1_fp fp vista.png   # cómo se ve en primera persona
+```
+
+Los archivos que salen de `generar.py` se versionan en el repo; si retocás un modelo en Blockbench, guardalo en `paquete-recursos/` y no vuelvas a correr el generador para esa arma.
 
 ## Instalar en una VM de Azure
 
@@ -66,4 +88,4 @@ journalctl -t tresmodos        # avisos del apagado automático
 | `/lobby` (`/hub`, `/l`) | Volver al lobby |
 | `/clase` | Elegir clase en COD |
 | `/celular` (`/cel`, `/tel`) | Celular de GTA: armería, concesionaria, misiones, soborno |
-| `/tm <dinero\|almas\|buscado\|jefe\|guardar\|info>` | Administración (solo op) |
+| `/tm <dinero\|almas\|buscado\|jefe\|guardar\|paquete\|info>` | Administración (solo op). `paquete` recarga el paquete de recursos |
