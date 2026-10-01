@@ -139,3 +139,42 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   - Altar: canjea las almas de jefe.
 
   El **Ciclo+** conserva todo (nivel, equipo y árbol); suben los enemigos y las almas.
+
+## Guerra (reemplaza a GTA)
+
+- **GTA eliminado**: el diseño dice que Guerra reemplaza al GTA, así que borré `ModoGta`, la
+  ciudad, el celular y los comandos `/tm dinero` y `/tm buscado`. La plata de los jugadores queda
+  guardada en sus datos por si algún día vuelve. El mundo viejo `tm_gta` queda en disco sin usar.
+  `/modo gta` ahora lleva a Guerra.
+- **Pueblo**: el diseño decía reaprovechar el generador de la ciudad del GTA, pero eran rascacielos
+  modernos. Hice un pueblo europeo nuevo (casas de 2 y 3 pisos, iglesia, fábrica y estación).
+- **Mapa como función pura** (`ValleDeHierro.bloque(x, y, z)`): cuando termina la partida, todo lo
+  que rompieron las explosiones vuelve a su bloque original sin tener que guardar copias.
+  También se puede volcar a imágenes fuera del juego (así lo revisé).
+- **Explosiones que rompen**: el HE, los cohetes, el C4, las bombas, las minas y las granadas
+  antitanque rompen bloques en todo el mapa menos en las bases. Así se pueden volar los puentes
+  y abrir paredes del pueblo.
+- **Infantería**: usa las 5 armas que hoy tienen modelo. La carabina G36K del Antitanque es una MP5
+  y el Fusilero lleva M4A1. **[revisar]** si querés que el arsenal nuevo (AK-47, SCAR-H, SVD, etc.)
+  llegue primero a Guerra.
+- **Vehículos**:
+  - Controles:
+    - **Clic derecho mantenido**: el arma automática (ametralladora o cañón).
+    - **Clic izquierdo**: el arma pesada (cañón del tanque, TOW, misiles, cohetes y bombas).
+    - **F**: cambia la munición AP/HE o el arma secundaria del avión.
+    - **Q**: extintor.
+    - **1-4**: cambia de asiento.
+    - **Shift 1 s**: bajar. En el avión, Shift eyecta al toque.
+  - El avión es uno solo, con cañón, 2 misiles aire-aire y 2 bombas. El diseño pedía elegir caza o
+    ataque en el hangar; lo junté para no sumar un menú.
+  - **No se puede subir a vehículos enemigos.**
+- **Para probar en el juego** (sin cliente no pude verificarlo):
+  - Que el jugador quede bien sentado sobre los asientos (son ItemDisplay vacíos que se mueven cada
+    tick) y que la cámara no tiemble. Si tiembla, la alternativa es subir el
+    `setTeleportDuration` de 2 a 3.
+  - La orientación de los modelos de los vehículos dentro del ItemDisplay: si aparecen mirando para
+    atrás, hay que girar 180° la exportación en `herramientas/vehiculos.py`.
+  - El manejo del helicóptero y del avión con teclado. Los números (aceleración, giro, pérdida a
+    15 b/s, despegue a 18 b/s) son una primera pasada.
+  - El clic izquierdo estando montado: el plugin lo toma del balanceo del brazo
+    (`LEFT_CLICK_AIR`).
