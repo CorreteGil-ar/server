@@ -69,7 +69,9 @@ public class Armas implements Listener {
      */
     /** Familia del arma: define el retroceso, el sonido, la caída de daño y el slot. */
     public enum Categoria {
-        PISTOLA(1.6), SUBFUSIL(0.55), FUSIL(0.7), AMETRALLADORA(0.85), ESCOPETA(3.6), TIRADOR(2.4), FRANCOTIRADOR(6.5);
+        PISTOLA(1.6), SUBFUSIL(0.55), FUSIL(0.7), AMETRALLADORA(0.85), ESCOPETA(3.6), TIRADOR(2.4), FRANCOTIRADOR(6.5),
+        /** Secundarias explosivas del Shooter: disparan un proyectil en vez de una bala. */
+        LANZADOR(3.0);
 
         /** Grados que sube la mira con cada disparo (antes de empuñadura, apuntado, etc.). */
         public final double retroceso;
@@ -88,6 +90,10 @@ public class Armas implements Listener {
                 List.of(Mira.HIERRO), false, false, false, false),
         DEAGLE("Desert Eagle", Categoria.PISTOLA, Material.IRON_HOE, 11.0, 150, Disparo.SEMI, 50, 7, 10, 36, 1, 0.030, "deagle",
                 List.of(Mira.HIERRO), false, false, true, true),
+        M79("M79", Categoria.LANZADOR, Material.IRON_HOE, 20.0, 60, Disparo.SEMI, 40, 1, 0, 50, 0, 0.0, "m79",
+                List.of(Mira.HIERRO), false, false, false, false),
+        RPG7("RPG-7", Categoria.LANZADOR, Material.IRON_HOE, 30.0, 30, Disparo.SEMI, 60, 1, 0, 70, 0, 0.0, "rpg7s",
+                List.of(Mira.HIERRO), false, false, false, false),
         MP5("H&K MP5", Categoria.SUBFUSIL, Material.STONE_HOE, 4.4, 800, Disparo.AUTOMATICO, 35, 30, 40, 40, 1, 0.045, "mp5",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
         P90("FN P90", Categoria.SUBFUSIL, Material.STONE_HOE, 3.8, 900, Disparo.AUTOMATICO, 32, 50, 0, 52, 1, 0.050, "p90",
@@ -161,7 +167,7 @@ public class Armas implements Listener {
             this.admiteEmpunadura = admiteEmpunadura;
             this.admiteLaser = admiteLaser;
             this.admiteLinterna = admiteLinterna;
-            this.secundaria = categoria == Categoria.PISTOLA;
+            this.secundaria = categoria == Categoria.PISTOLA || categoria == Categoria.LANZADOR;
         }
 
         public boolean francotirador() {
@@ -471,6 +477,13 @@ public class Armas implements Listener {
         setBalas(it, balas - 1);
 
         Accesorios acc = accesorios(it);
+        if (t.categoria == Categoria.LANZADOR) {
+            lanzar(p, t);
+            retroceso(p, t, apuntando.containsKey(id), acc);
+            mostrarBalas(p, it, t);
+            if (balas - 1 <= 0) recargar(p, it, t);
+            return true;
+        }
         boolean apunta = apuntando.containsKey(id);
         double disp = t.dispersion;
         if (t.francotirador()) {
@@ -903,9 +916,80 @@ public class Armas implements Listener {
         e.getProjectile().getPersistentDataContainer().set(Claves.GRANADA, PersistentDataType.BYTE, (byte) 1);
     }
 
+    // ------------------------------------------------------------------ lanzadores
+
+    private static final NamespacedKey LANZADOR = new NamespacedKey("tresmodos", "lanzador");
+    /** Proyectil -> lugar de salida (la granada del M79 se arma recién a los 5 bloques). */
+    private final Map<UUID, Location> salidas = new HashMap<>();
+
+    private void lanzar(Player p, Tipo t) {
+        boolean cohete = t == Tipo.RPG7;
+        Location ojo = p.getEyeLocation();
+        org.bukkit.entity.Snowball s = p.launchProjectile(org.bukkit.entity.Snowball.class,
+                ojo.getDirection().multiply(cohete ? 2.6 : 1.5));
+        ItemStack vis = new ItemStack(cohete ? Material.FIRE_CHARGE : Material.CLAY_BALL);
+        if (!cohete) {
+            ItemMeta m = vis.getItemMeta();
+            m.setItemModel(new NamespacedKey("tresmodos", "granada"));
+            vis.setItemMeta(m);
+        }
+        s.setItem(vis);
+        s.setGravity(!cohete);
+        s.getPersistentDataContainer().set(LANZADOR, PersistentDataType.STRING, t.name());
+        salidas.put(s.getUniqueId(), ojo.clone());
+        World w = p.getWorld();
+        if (cohete) {
+            w.playSound(ojo, Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1.6f, 0.6f);
+            w.playSound(ojo, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.8f);
+            w.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, ojo.clone().subtract(ojo.getDirection().multiply(1.2)), 8, 0.2, 0.2, 0.2, 0.02);
+            // Estela, y si no pega en nada explota sola a los 3 s.
+            Bukkit.getScheduler().runTaskTimer(plugin, tarea -> {
+                if (!s.isValid()) {
+                    tarea.cancel();
+                    return;
+                }
+                if (s.getTicksLived() > 60) {
+                    tarea.cancel();
+                    detonar(s, s.getLocation());
+                    return;
+                }
+                w.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, s.getLocation(), 1, 0.03, 0.03, 0.03, 0.01);
+                w.spawnParticle(Particle.FLAME, s.getLocation(), 1, 0.02, 0.02, 0.02, 0.01);
+            }, 1, 1);
+        } else {
+            w.playSound(ojo, Sound.BLOCK_PISTON_EXTEND, 1.0f, 0.5f);
+            w.playSound(ojo, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.8f, 0.6f);
+        }
+        if (Modo.de(w) == Modo.SHOOTER) plugin.shooter().minimapa().marcarDisparo(p);
+    }
+
+    private void detonar(Projectile pr, Location l) {
+        Location salida = salidas.remove(pr.getUniqueId());
+        Tipo t;
+        try {
+            t = Tipo.valueOf(pr.getPersistentDataContainer().get(LANZADOR, PersistentDataType.STRING));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            pr.remove();
+            return;
+        }
+        Player autor = pr.getShooter() instanceof Player p ? p : null;
+        pr.remove();
+        if (t == Tipo.M79 && salida != null && salida.getWorld() == l.getWorld() && salida.distance(l) < 5) {
+            // Sin armar: rebota y no explota (como el de verdad).
+            l.getWorld().playSound(l, Sound.BLOCK_ANVIL_LAND, 0.6f, 1.6f);
+            return;
+        }
+        explotar(l, t == Tipo.RPG7 ? 3.4f : 2.8f, autor, t.nombre);
+    }
+
     @EventHandler
     public void alImpactarProyectil(ProjectileHitEvent e) {
         Projectile pr = e.getEntity();
+        if (pr.getPersistentDataContainer().has(LANZADOR)) {
+            e.setCancelled(true);
+            detonar(pr, pr.getLocation());
+            return;
+        }
         if (!pr.getPersistentDataContainer().has(Claves.GRANADA)) return;
         Player autor = pr.getShooter() instanceof Player p ? p : null;
         explotar(pr.getLocation(), 2.8f, autor, "Granada");

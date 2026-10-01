@@ -94,7 +94,7 @@ journalctl -t tresmodos        # avisos del apagado automático
 
 ## Armas
 
-Veintiuna armas con modelo propio:
+Veintitrés armas con modelo propio:
 
 | Tipo | Armas |
 |---|---|
@@ -105,6 +105,7 @@ Veintiuna armas con modelo propio:
 | Escopetas | Benelli M1014 (semi), Remington 870 (bombeo), AA-12 (automática) |
 | Tirador designado | SVD Dragunov, Mk 14 EBR |
 | Francotirador | Barrett M82A1, Remington M24 (cerrojo) |
+| Secundarias explosivas (Shooter) | M79 (granada de 40 mm, se arma a los 5 bloques), RPG-7 |
 
 En el Shooter se eligen en el editor de clases (`/clase`); en Guerra, cada clase de infantería tiene sus opciones (el Fusilero puede llevar M4A1, AK-47, SCAR-H, M249 o PKM; el Tirador, Barrett, M24, SVD o Mk 14, etc.).
 

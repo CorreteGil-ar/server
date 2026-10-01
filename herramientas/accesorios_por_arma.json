@@ -518,5 +518,45 @@
   "cargador": [
    ""
   ]
+ },
+ "m79": {
+  "mira": [
+   ""
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "rpg7s": {
+  "mira": [
+   ""
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
  }
 }

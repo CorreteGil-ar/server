@@ -1430,7 +1430,91 @@ def revolver():
     )
 
 
+# ---------------------------------------------------------------- M79
+
+def m79():
+    """M79: lanzagranadas de 40 mm de quiebre, 731 mm, madera y cañón grueso. 1 u = 2,5 cm."""
+    acero = Material((62, 66, 60), desgaste=0.14, sombra=0.08)
+    madera = Material((118, 74, 42), desgaste=0.10, sombra=0.12, patrones=[rayas(periodo=3, ancho=1, delta=-0.05, direccion="adelante")])
+    negro = Material(NEGRO, desgaste=0.14)
+    cuerpo = [
+        *cilindro("z", (8, 10), 0.90, -12.0, 2.0, acero, "canon"),
+        C(7.30, 8.80, 2.0, 8.70, 10.60, 4.6, acero, "cajon"),
+        C(7.20, 8.30, -6.0, 8.80, 9.10, 1.6, madera, "guardamanos"),
+        C(7.75, 7.60, 3.6, 8.25, 7.80, 4.6, negro, "guardamonte"),
+        C(7.75, 7.80, 3.6, 8.25, 8.80, 3.82, negro, "guardamonte_frente"),
+        C(7.92, 8.00, 4.3, 8.08, 8.80, 4.5, negro, "disparador"),
+        C(7.30, 7.60, 4.6, 8.70, 10.20, 8.4, madera, "garganta"),
+        C(7.30, 7.00, 8.4, 8.70, 10.00, 13.6, madera, "culata"),
+        C(7.25, 6.80, 13.6, 8.75, 10.20, 14.2, Material(GOMA), "cantonera"),
+        C(7.85, 10.90, -11.6, 8.15, 11.40, -11.0, negro, "guion"),
+    ]
+    normal = [C(7.70, 10.60, 2.6, 8.30, 10.90, 3.4, negro, "traba")]
+    mira_hierro = [
+        C(7.50, 10.90, 0.0, 8.50, 11.10, 0.6, negro, "alza_base"),
+        C(7.50, 11.10, 0.0, 7.82, 11.70, 0.6, negro, "alza_izq"),
+        C(8.18, 11.10, 0.0, 8.50, 11.70, 0.6, negro, "alza_der"),
+    ]
+    return Arma(
+        nombre="m79", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": normal},
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
+        montajes={"boca": {"pos": (8, 10, -12.0), "lado": "arriba"}},
+        opciones={"mira": [""], "boca": [""], "bajo": [""], "laser": [""], "linterna": [""], "cargador": [""]},
+        linea_hierro={"y": 11.40, "z": 0.6},
+        config={
+            "fp": {"translation": [-5.0, 3.0, 0.0], "scale": 0.95},
+            "tp": {"agarre": (8, 7.2, 6.6), "translation": [0, 0, 0.5], "scale": 0.55},
+            "gui": {"scale": 0.5},
+            "ads": {"hierro": 0.16},
+        },
+    )
+
+
+# ---------------------------------------------------------------- RPG-7
+
+def rpg7s():
+    """RPG-7 del Shooter: tubo con protector de madera, dos empuñaduras y la cabeza PG-7V. 1 u = 3,3 cm."""
+    acero = Material((70, 76, 62), desgaste=0.14, sombra=0.08)
+    madera = Material((128, 80, 44), desgaste=0.10, sombra=0.12, patrones=[rayas(periodo=3, ancho=1, delta=-0.05, direccion="adelante")])
+    negro = Material(NEGRO, desgaste=0.14)
+    ojiva = Material((82, 92, 60), desgaste=0.12, sombra=0.10)
+    cuerpo = [
+        *cilindro("z", (8, 10), 0.75, -10.0, 10.0, acero, "tubo"),
+        *cilindro("z", (8, 10), 0.95, -2.0, 4.0, madera, "protector"),
+        *cilindro("z", (8, 10), 1.10, 10.0, 12.0, acero, "tobera"),
+        C(7.50, 7.20, -3.6, 8.50, 9.25, -2.4, madera, "empunadura_frente"),
+        C(7.50, 7.00, 1.0, 8.50, 9.25, 2.4, madera, "empunadura"),
+        C(7.75, 7.80, -0.6, 8.25, 8.00, 1.0, negro, "guardamonte"),
+        C(7.92, 8.10, 0.2, 8.08, 9.25, 0.4, negro, "disparador"),
+        C(7.85, 10.75, -8.2, 8.15, 11.60, -7.6, negro, "guion"),
+    ]
+    normal = [
+        *cilindro("z", (8, 10), 0.55, -12.5, -10.0, acero, "motor"),
+        *cilindro("z", (8, 10), 1.20, -16.0, -12.5, ojiva, "ojiva"),
+        *cilindro("z", (8, 10), 0.80, -17.0, -16.0, ojiva, "nariz"),
+        *cilindro("z", (8, 10), 0.35, -18.0, -17.0, negro, "espoleta"),
+    ]
+    mira_hierro = [
+        C(7.50, 10.75, 1.6, 8.50, 11.00, 2.2, negro, "alza_base"),
+        C(7.50, 11.00, 1.6, 7.84, 11.80, 2.2, negro, "alza_izq"),
+        C(8.16, 11.00, 1.6, 8.50, 11.80, 2.2, negro, "alza_der"),
+    ]
+    return Arma(
+        nombre="rpg7s", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": normal},
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
+        montajes={"boca": {"pos": (8, 10, -10.0), "lado": "arriba"}},
+        opciones={"mira": [""], "boca": [""], "bajo": [""], "laser": [""], "linterna": [""], "cargador": [""]},
+        linea_hierro={"y": 11.60, "z": 2.2},
+        config={
+            "fp": {"translation": [-5.5, 2.6, 1.0], "scale": 0.95},
+            "tp": {"agarre": (8, 7.4, 1.7), "translation": [0, 0, 0.5], "scale": 0.55},
+            "gui": {"scale": 0.42},
+            "ads": {"hierro": 0.16},
+        },
+    )
+
+
 ARMAS = {"m4a1": m4a1, "m9": m9, "mp5": mp5, "m1014": m1014, "barrett": barrett,
          "ak47": ak47, "p90": p90, "vector": vector, "m249": m249, "m24": m24, "r870": r870, "deagle": deagle,
          "scarh": scarh, "g36k": g36k, "mp7": mp7, "pkm": pkm, "svd": svd, "mk14": mk14, "aa12": aa12,
-         "m1911": m1911, "revolver": revolver}
+         "m1911": m1911, "revolver": revolver, "m79": m79, "rpg7s": rpg7s}

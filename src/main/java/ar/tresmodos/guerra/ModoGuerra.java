@@ -410,6 +410,10 @@ public class ModoGuerra implements ModoJuego, Listener {
         plugin.armas().rellenarReservas(p);
     }
 
+    /** En Guerra la secundaria es siempre una pistola (los lanzadores son del Antitanque). */
+    private static final List<Armas.Tipo> PISTOLAS = java.util.Arrays.stream(Armas.Tipo.values())
+            .filter(t -> t.categoria == Armas.Categoria.PISTOLA).toList();
+
     /** Principal elegida para la clase (o la de inicio). */
     public Armas.Tipo principal(Player p, Clase c) {
         String s = plugin.almacen().de(p).guerraArmas.get(c.name());
@@ -419,7 +423,7 @@ public class ModoGuerra implements ModoJuego, Listener {
 
     public Armas.Tipo secundaria(Player p) {
         String s = plugin.almacen().de(p).guerraArmas.get("SECUNDARIA");
-        for (Armas.Tipo t : ClasesShooter.SECUNDARIAS) if (t.name().equals(s)) return t;
+        for (Armas.Tipo t : PISTOLAS) if (t.name().equals(s)) return t;
         return Armas.Tipo.PISTOLA;
     }
 
@@ -469,7 +473,7 @@ public class ModoGuerra implements ModoJuego, Listener {
         Armas.Tipo sec = secundaria(p);
         m.poner(31, Util.item(sec.material, "<aqua><bold>Pistola", "<white>" + sec.nombre,
                 "<gray>Fusilero y Tirador. Clic: cambiar"), pl -> {
-            var lista = ClasesShooter.SECUNDARIAS;
+            var lista = PISTOLAS;
             Armas.Tipo sig = lista.get((lista.indexOf(secundaria(pl)) + 1) % lista.size());
             plugin.almacen().de(pl).guerraArmas.put("SECUNDARIA", sig.name());
             reequipar(pl, "<green>Pistola: " + sig.nombre, "<gray>Vas a llevar " + sig.nombre + " al reaparecer.");

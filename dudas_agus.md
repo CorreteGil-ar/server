@@ -55,7 +55,11 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
 - **Clases**: dejé 5 clases por defecto (Asalto, Subfusil, Escopetero, Francotirador y Libre) y todas
   se editan. Hay 12 armas con modelo: a las 5 de antes se sumaron AK-47, P90, Vector, M249, M24,
   Remington 870 y Desert Eagle, y después SCAR-H, G36K, MP7, PKM, SVD, Mk 14, AA-12, M1911 y el
-  revólver (21 en total). Faltan el M79 y el RPG-7 como secundarias explosivas del Shooter.
+  revólver, y las secundarias explosivas M79 y RPG-7 (23 en total, todo el arsenal del diseño).
+- **M79 y RPG-7**: van en el lugar de la pistola (solo en el Shooter; en Guerra la secundaria es
+  siempre pistola). Disparan un proyectil con la explosión de las granadas (no rompe bloques y te
+  puede lastimar a vos). La granada del M79 cae en curva y no explota si pega a menos de 5 bloques;
+  el cohete va recto y explota solo a los 3 s. 1 tiro por carga y 3 de reserva.
 - **Tiradores designados** (SVD y Mk 14): como los francotiradores, no pierden daño con la distancia
   y la cabeza vale ×2, pero sin cadencia de cerrojo. Solo la Barrett daña vehículos (antimaterial).
 - **Arsenal nuevo** (valores de la tabla del diseño ÷ 5, como el resto): AK-47 6,8 (patea un 30 % más
