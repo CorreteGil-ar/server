@@ -71,6 +71,8 @@ public class DatosJugador {
     public long almasMancha = 0;
     // Armas: accesorios elegidos en el armero, por tipo de arma (Armas.Tipo -> Accesorios.codigo()).
     public final Map<String, String> accesorios = new HashMap<>();
+    /** Bajas y tiros a la cabeza por arma (Armas.Tipo), para los camuflajes. */
+    public final Map<String, Integer> armaBajas = new HashMap<>(), armaCabezas = new HashMap<>();
 
     public DatosJugador(UUID id) {
         this.id = id;
@@ -162,6 +164,10 @@ public class DatosJugador {
         d.almasMancha = y.getLong("rpg.almasMancha");
         ConfigurationSection acc = y.getConfigurationSection("armas.accesorios");
         if (acc != null) for (String k : acc.getKeys(false)) d.accesorios.put(k, acc.getString(k, ""));
+        ConfigurationSection ab = y.getConfigurationSection("armas.bajas");
+        if (ab != null) for (String k : ab.getKeys(false)) d.armaBajas.put(k, ab.getInt(k));
+        ConfigurationSection ac = y.getConfigurationSection("armas.cabezas");
+        if (ac != null) for (String k : ac.getKeys(false)) d.armaCabezas.put(k, ac.getInt(k));
         ConfigurationSection est = y.getConfigurationSection("estados");
         if (est != null) {
             for (String k : est.getKeys(false)) {
@@ -229,6 +235,8 @@ public class DatosJugador {
         escribirLoc(y, "rpg.mancha", mancha);
         y.set("rpg.almasMancha", almasMancha);
         for (Map.Entry<String, String> en : accesorios.entrySet()) y.set("armas.accesorios." + en.getKey(), en.getValue());
+        for (Map.Entry<String, Integer> en : armaBajas.entrySet()) y.set("armas.bajas." + en.getKey(), en.getValue());
+        for (Map.Entry<String, Integer> en : armaCabezas.entrySet()) y.set("armas.cabezas." + en.getKey(), en.getValue());
         for (Map.Entry<Modo, Estado> en : estados.entrySet()) {
             String base = "estados." + en.getKey().name().toLowerCase();
             Estado e = en.getValue();

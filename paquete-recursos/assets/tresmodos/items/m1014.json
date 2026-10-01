@@ -23,8 +23,71 @@
          "type": "minecraft:composite",
          "models": [
           {
-           "type": "minecraft:model",
-           "model": "tresmodos:item/m1014_ads_punto_rojo"
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 6,
+           "cases": [
+            {
+             "when": "bosque",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_bosque_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "desierto",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_desierto_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "urbano",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_urbano_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "tigre",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_tigre_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "digital",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_digital_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "oro",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_oro_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "diamante",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_diamante_ads_punto_rojo"
+             }
+            },
+            {
+             "when": "atomico",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_atomico_ads_punto_rojo"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_ads_punto_rojo"
+           }
           },
           {
            "type": "minecraft:model",
@@ -109,8 +172,71 @@
          "type": "minecraft:composite",
          "models": [
           {
-           "type": "minecraft:model",
-           "model": "tresmodos:item/m1014_ads_holografica"
+           "type": "minecraft:select",
+           "property": "minecraft:custom_model_data",
+           "index": 6,
+           "cases": [
+            {
+             "when": "bosque",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_bosque_ads_holografica"
+             }
+            },
+            {
+             "when": "desierto",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_desierto_ads_holografica"
+             }
+            },
+            {
+             "when": "urbano",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_urbano_ads_holografica"
+             }
+            },
+            {
+             "when": "tigre",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_tigre_ads_holografica"
+             }
+            },
+            {
+             "when": "digital",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_digital_ads_holografica"
+             }
+            },
+            {
+             "when": "oro",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_oro_ads_holografica"
+             }
+            },
+            {
+             "when": "diamante",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_diamante_ads_holografica"
+             }
+            },
+            {
+             "when": "atomico",
+             "model": {
+              "type": "minecraft:model",
+              "model": "tresmodos:item/m1014_camo_atomico_ads_holografica"
+             }
+            }
+           ],
+           "fallback": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_ads_holografica"
+           }
           },
           {
            "type": "minecraft:model",
@@ -194,8 +320,71 @@
        "type": "minecraft:composite",
        "models": [
         {
-         "type": "minecraft:model",
-         "model": "tresmodos:item/m1014_ads_hierro"
+         "type": "minecraft:select",
+         "property": "minecraft:custom_model_data",
+         "index": 6,
+         "cases": [
+          {
+           "when": "bosque",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_bosque_ads_hierro"
+           }
+          },
+          {
+           "when": "desierto",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_desierto_ads_hierro"
+           }
+          },
+          {
+           "when": "urbano",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_urbano_ads_hierro"
+           }
+          },
+          {
+           "when": "tigre",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_tigre_ads_hierro"
+           }
+          },
+          {
+           "when": "digital",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_digital_ads_hierro"
+           }
+          },
+          {
+           "when": "oro",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_oro_ads_hierro"
+           }
+          },
+          {
+           "when": "diamante",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_diamante_ads_hierro"
+           }
+          },
+          {
+           "when": "atomico",
+           "model": {
+            "type": "minecraft:model",
+            "model": "tresmodos:item/m1014_camo_atomico_ads_hierro"
+           }
+          }
+         ],
+         "fallback": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_ads_hierro"
+         }
         },
         {
          "type": "minecraft:model",
@@ -278,8 +467,71 @@
       "type": "minecraft:composite",
       "models": [
        {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/m1014_fp"
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 6,
+        "cases": [
+         {
+          "when": "bosque",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_bosque_fp"
+          }
+         },
+         {
+          "when": "desierto",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_desierto_fp"
+          }
+         },
+         {
+          "when": "urbano",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_urbano_fp"
+          }
+         },
+         {
+          "when": "tigre",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_tigre_fp"
+          }
+         },
+         {
+          "when": "digital",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_digital_fp"
+          }
+         },
+         {
+          "when": "oro",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_oro_fp"
+          }
+         },
+         {
+          "when": "diamante",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_diamante_fp"
+          }
+         },
+         {
+          "when": "atomico",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/m1014_camo_atomico_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/m1014_fp"
+        }
        },
        {
         "type": "minecraft:select",
@@ -389,8 +641,71 @@
      "type": "minecraft:composite",
      "models": [
       {
-       "type": "minecraft:model",
-       "model": "tresmodos:item/m1014_tp"
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 6,
+       "cases": [
+        {
+         "when": "bosque",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_bosque_tp"
+         }
+        },
+        {
+         "when": "desierto",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_desierto_tp"
+         }
+        },
+        {
+         "when": "urbano",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_urbano_tp"
+         }
+        },
+        {
+         "when": "tigre",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_tigre_tp"
+         }
+        },
+        {
+         "when": "digital",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_digital_tp"
+         }
+        },
+        {
+         "when": "oro",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_oro_tp"
+         }
+        },
+        {
+         "when": "diamante",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_diamante_tp"
+         }
+        },
+        {
+         "when": "atomico",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/m1014_camo_atomico_tp"
+         }
+        }
+       ],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_tp"
+       }
       },
       {
        "type": "minecraft:select",
@@ -495,8 +810,71 @@
    "type": "minecraft:composite",
    "models": [
     {
-     "type": "minecraft:model",
-     "model": "tresmodos:item/m1014_gui"
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 6,
+     "cases": [
+      {
+       "when": "bosque",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_bosque_gui"
+       }
+      },
+      {
+       "when": "desierto",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_desierto_gui"
+       }
+      },
+      {
+       "when": "urbano",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_urbano_gui"
+       }
+      },
+      {
+       "when": "tigre",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_tigre_gui"
+       }
+      },
+      {
+       "when": "digital",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_digital_gui"
+       }
+      },
+      {
+       "when": "oro",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_oro_gui"
+       }
+      },
+      {
+       "when": "diamante",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_diamante_gui"
+       }
+      },
+      {
+       "when": "atomico",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/m1014_camo_atomico_gui"
+       }
+      }
+     ],
+     "fallback": {
+      "type": "minecraft:model",
+      "model": "tresmodos:item/m1014_gui"
+     }
     },
     {
      "type": "minecraft:select",

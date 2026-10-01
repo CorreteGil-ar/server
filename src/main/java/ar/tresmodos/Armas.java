@@ -874,6 +874,32 @@ public class Armas implements Listener {
         ultimoTirar.remove(id);
     }
 
+    /** Tipo por su nombre visible (el que queda en el registro de impactos), o null. */
+    public static Tipo porNombre(String nombre) {
+        for (Tipo t : Tipo.values()) if (t.nombre.equals(nombre)) return t;
+        return null;
+    }
+
+    /**
+     * Suma una baja (y tiro a la cabeza) al arma para los camuflajes y avisa si se desbloqueó uno.
+     */
+    public void contarBaja(Player p, String arma, boolean cabeza) {
+        Tipo t = porNombre(arma);
+        if (t == null) return;
+        DatosJugador d = plugin.almacen().de(p);
+        java.util.Set<Camuflaje> antes = java.util.EnumSet.noneOf(Camuflaje.class);
+        for (Camuflaje c : Camuflaje.values()) if (c.desbloqueado(d, t)) antes.add(c);
+        d.armaBajas.merge(t.name(), 1, Integer::sum);
+        if (cabeza) d.armaCabezas.merge(t.name(), 1, Integer::sum);
+        for (Camuflaje c : Camuflaje.values()) {
+            if (!antes.contains(c) && c.desbloqueado(d, t)) {
+                Util.msg(p, "<gold>Desbloqueaste el camuflaje <bold>" + c.nombre + "</bold> para la " + t.nombre
+                        + "<gold>. Ponelo en <white>/armero<gold>.");
+                p.playSound(p, Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.6f, 1.4f);
+            }
+        }
+    }
+
     public static List<Tipo> todos() {
         return List.of(Tipo.values());
     }

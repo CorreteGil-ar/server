@@ -471,6 +471,7 @@ public class ModoShooter implements ModoJuego, Listener {
         bajasPartida++;
         actualizarContador();
         plugin.almacen().de(asesino).codBajas++;
+        plugin.armas().contarBaja(asesino, arma, cabeza);
         double dist = asesino.getLocation().distance(victima.getLocation());
         anunciar("<red>" + asesino.getName() + " <gray>[" + arma + "] <white>" + victima.getName()
                 + " <dark_gray>" + Math.round(dist) + " m" + (cabeza ? " <gold>✦ headshot" : ""));

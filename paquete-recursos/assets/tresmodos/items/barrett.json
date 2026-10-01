@@ -34,8 +34,71 @@
       "type": "minecraft:composite",
       "models": [
        {
-        "type": "minecraft:model",
-        "model": "tresmodos:item/barrett_fp"
+        "type": "minecraft:select",
+        "property": "minecraft:custom_model_data",
+        "index": 6,
+        "cases": [
+         {
+          "when": "bosque",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_bosque_fp"
+          }
+         },
+         {
+          "when": "desierto",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_desierto_fp"
+          }
+         },
+         {
+          "when": "urbano",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_urbano_fp"
+          }
+         },
+         {
+          "when": "tigre",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_tigre_fp"
+          }
+         },
+         {
+          "when": "digital",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_digital_fp"
+          }
+         },
+         {
+          "when": "oro",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_oro_fp"
+          }
+         },
+         {
+          "when": "diamante",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_diamante_fp"
+          }
+         },
+         {
+          "when": "atomico",
+          "model": {
+           "type": "minecraft:model",
+           "model": "tresmodos:item/barrett_camo_atomico_fp"
+          }
+         }
+        ],
+        "fallback": {
+         "type": "minecraft:model",
+         "model": "tresmodos:item/barrett_fp"
+        }
        },
        {
         "type": "minecraft:select",
@@ -123,8 +186,71 @@
      "type": "minecraft:composite",
      "models": [
       {
-       "type": "minecraft:model",
-       "model": "tresmodos:item/barrett_tp"
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 6,
+       "cases": [
+        {
+         "when": "bosque",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_bosque_tp"
+         }
+        },
+        {
+         "when": "desierto",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_desierto_tp"
+         }
+        },
+        {
+         "when": "urbano",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_urbano_tp"
+         }
+        },
+        {
+         "when": "tigre",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_tigre_tp"
+         }
+        },
+        {
+         "when": "digital",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_digital_tp"
+         }
+        },
+        {
+         "when": "oro",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_oro_tp"
+         }
+        },
+        {
+         "when": "diamante",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_diamante_tp"
+         }
+        },
+        {
+         "when": "atomico",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_camo_atomico_tp"
+         }
+        }
+       ],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_tp"
+       }
       },
       {
        "type": "minecraft:select",
@@ -207,8 +333,71 @@
    "type": "minecraft:composite",
    "models": [
     {
-     "type": "minecraft:model",
-     "model": "tresmodos:item/barrett_gui"
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 6,
+     "cases": [
+      {
+       "when": "bosque",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_bosque_gui"
+       }
+      },
+      {
+       "when": "desierto",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_desierto_gui"
+       }
+      },
+      {
+       "when": "urbano",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_urbano_gui"
+       }
+      },
+      {
+       "when": "tigre",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_tigre_gui"
+       }
+      },
+      {
+       "when": "digital",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_digital_gui"
+       }
+      },
+      {
+       "when": "oro",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_oro_gui"
+       }
+      },
+      {
+       "when": "diamante",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_diamante_gui"
+       }
+      },
+      {
+       "when": "atomico",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_camo_atomico_gui"
+       }
+      }
+     ],
+     "fallback": {
+      "type": "minecraft:model",
+      "model": "tresmodos:item/barrett_gui"
+     }
     },
     {
      "type": "minecraft:select",

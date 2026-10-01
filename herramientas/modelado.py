@@ -476,13 +476,16 @@ def superposiciones(cajas):
     return avisos
 
 
-def exportar(nombre, cajas, variantes, carpeta_pack, densidad=8, namespace="tresmodos", textura=None):
+def exportar(nombre, cajas, variantes, carpeta_pack, densidad=8, namespace="tresmodos", textura=None,
+             solo_textura=False):
     """Escribe la textura del atlas y un modelo por variante.
 
     variantes: dict nombre_variante -> {"orientacion": "fp"|"tp"|"gui",
     "desplazamiento": (x, y, z), "display": {...}, "gui_light": "front"|"side"}.
     textura: nombre del PNG (por defecto, `nombre`); los accesorios lo comparten entre armas.
     Devuelve dict variante -> recurso del modelo ("namespace:item/...").
+    solo_textura: pinta y guarda el atlas sin escribir modelos (camuflajes); devuelve el recurso de
+    la textura.
     """
     for aviso in superposiciones(cajas):
         print(f"  aviso {nombre}: caras superpuestas en {aviso}")
@@ -543,6 +546,8 @@ def exportar(nombre, cajas, variantes, carpeta_pack, densidad=8, namespace="tres
     tex_path = carpeta_pack / "assets" / namespace / "textures" / "item" / f"{textura}.png"
     tex_path.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray((atlas * 255).round().astype(np.uint8), "RGBA").save(tex_path, optimize=True)
+    if solo_textura:
+        return tex_rel
 
     rutas = {}
     for vnombre, cfg in variantes.items():
@@ -595,7 +600,7 @@ def _escribir_item(nombre, definicion, carpeta_pack, namespace):
     ruta.write_text(json.dumps(definicion, indent=1) + "\n", encoding="utf-8")
 
 
-def definicion_arma(nombre, base, ranuras, carpeta_pack, ads=None, namespace="tresmodos"):
+def definicion_arma(nombre, base, ranuras, carpeta_pack, ads=None, namespace="tresmodos", camos=None):
     """Item con el arma base más una ranura por accesorio, según el contexto de dibujo.
 
     base: dict variante -> recurso. ranuras: lista ordenada (índice en los strings de
@@ -608,8 +613,20 @@ def definicion_arma(nombre, base, ranuras, carpeta_pack, ads=None, namespace="tr
     tener esa variante) o {"visor": recurso} (solo la vista a través de la óptica).
     """
 
+    def cuerpo(v):
+        if not camos:
+            return _modelo(base[v])
+        # Camuflaje: séptimo string de custom_model_data (índice 6).
+        return {
+            "type": "minecraft:select",
+            "property": "minecraft:custom_model_data",
+            "index": 6,
+            "cases": [{"when": camo, "model": _modelo(rutas[v])} for camo, rutas in camos.items() if v in rutas],
+            "fallback": _modelo(base[v]),
+        }
+
     def compuesto(v, mira=None):
-        modelos = [_modelo(base[v])]
+        modelos = [cuerpo(v)]
         for i, ranura in enumerate(ranuras):
             defecto = ranura.get("defecto")
             if i == 0 and mira is not None:
@@ -660,12 +677,16 @@ def definicion_arma(nombre, base, ranuras, carpeta_pack, ads=None, namespace="tr
     _escribir_item(nombre, definicion, carpeta_pack, namespace)
 
 
-def modelo_hijo(nombre, padre, display, carpeta_pack, namespace="tresmodos"):
-    """Modelo que hereda geometría y textura de `padre` y solo cambia la transformación."""
+def modelo_hijo(nombre, padre, display, carpeta_pack, namespace="tresmodos", textura=None):
+    """Modelo que hereda geometría y textura de `padre` y solo cambia la transformación (o la textura)."""
     ruta = Path(carpeta_pack) / "assets" / namespace / "models" / "item" / f"{nombre}.json"
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    ruta.write_text(json.dumps({"parent": padre, "display": display}, separators=(",", ":")) + "\n",
-                    encoding="utf-8")
+    datos = {"parent": padre}
+    if display is not None:
+        datos["display"] = display
+    if textura is not None:
+        datos["textures"] = {"0": textura, "particle": textura}
+    ruta.write_text(json.dumps(datos, separators=(",", ":")) + "\n", encoding="utf-8")
     return f"{namespace}:item/{nombre}"
 
 

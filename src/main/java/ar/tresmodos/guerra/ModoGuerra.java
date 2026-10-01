@@ -945,6 +945,7 @@ public class ModoGuerra implements ModoJuego, Listener {
         }
         Equipo ea = equipo(a);
         plugin.almacen().de(a).guerraBajas++;
+        plugin.armas().contarBaja(a, arma, imp != null && imp.cabeza());
         anunciar((ea == null ? "" : ea.color) + a.getName() + " <gray>[" + arma + "] " + (ev == null ? "" : ev.color) + v.getName());
         a.playSound(a, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.6f);
     }

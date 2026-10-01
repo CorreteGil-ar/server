@@ -18,6 +18,7 @@ from pathlib import Path
 
 import numpy as np
 
+import camuflajes
 import equipo
 import hud
 import vehiculos
@@ -184,6 +185,15 @@ def generar_arma(arma, visores):
         ads["opciones"][mira] = {"variante": variante}
     ads["defecto"] = ads["opciones"][arma.mira_defecto or ""]
 
+    # Camuflajes: un atlas por camuflaje y un modelo hijo por variante del cuerpo que solo cambia
+    # la textura (la geometría, la transformación y el apuntado son los del cuerpo).
+    camos = {}
+    for camo in camuflajes.ORDEN:
+        tex = exportar(f"{arma.nombre}_camo_{camo}", camuflajes.repintar(arma.cuerpo, camo), variantes, PACK,
+                       solo_textura=True)
+        camos[camo] = {v: modelo_hijo(f"{arma.nombre}_camo_{camo}_{v}", r, None, PACK, textura=tex)
+                       for v, r in rutas["cuerpo"].items()}
+
     ranuras = []
     for ranura in RANURAS:
         opciones = {v: rutas[v] for v in arma.opciones.get(ranura, [""]) if v and ranura != "cargador"}
@@ -198,7 +208,7 @@ def generar_arma(arma, visores):
         else:
             defecto = None
         ranuras.append({"opciones": opciones, "defecto": defecto})
-    definicion_arma(arma.nombre, rutas["cuerpo"], ranuras, PACK, ads=ads)
+    definicion_arma(arma.nombre, rutas["cuerpo"], ranuras, PACK, ads=ads, camos=camos)
     return {r: arma.opciones.get(r, [""]) for r in RANURAS}
 
 

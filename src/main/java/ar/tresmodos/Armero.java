@@ -62,7 +62,38 @@ public class Armero {
         ranura(m, 15, slot, t.cargadorAmpliado > 0, a.cargadorAmpliado(), "cargador", "Cargador ampliado",
                 t.cargador + " → " + t.cargadorAmpliado + " balas.", x -> x.conCargadorAmpliado(!x.cargadorAmpliado()));
 
+        Camuflaje camo = a.camo() == null ? Camuflaje.NINGUNO : a.camo();
+        m.poner(16, Util.item(camo.icono, "<gold><bold>Camuflaje", camo.nombre, "<yellow>Clic: elegir"), pl -> abrirCamos(pl, slot));
+
         m.poner(22, Util.item(Material.LIME_DYE, "<green><bold>Listo"), Player::closeInventory);
+        m.abrir(p);
+    }
+
+    private void abrirCamos(Player p, int slot) {
+        ItemStack arma = p.getInventory().getItem(slot);
+        Armas.Tipo t = Armas.tipo(arma);
+        if (t == null) {
+            p.closeInventory();
+            return;
+        }
+        DatosJugador d = plugin.almacen().de(p);
+        Camuflaje actual = Armas.accesorios(arma).camo();
+        int bajas = d.armaBajas.getOrDefault(t.name(), 0), cabezas = d.armaCabezas.getOrDefault(t.name(), 0);
+        Menu m = new Menu(3, "<dark_gray>Camuflaje · " + t.nombre);
+        m.poner(4, Util.item(Material.PAPER, "<white><bold>" + t.nombre, "Bajas: " + bajas, "Tiros a la cabeza: " + cabezas), null);
+        int pos = 9;
+        for (Camuflaje c : Camuflaje.values()) {
+            boolean libre = c.desbloqueado(d, t);
+            String marca = c == actual ? " <green>(puesto)" : "";
+            ItemStack ic = Util.item(libre ? c.icono : Material.GRAY_STAINED_GLASS_PANE,
+                    (libre ? "<gold><bold>" : "<dark_gray><bold>") + c.nombre + marca,
+                    libre ? "<yellow>Clic para ponerlo" : "<gray>Se gana con " + c.requisito());
+            m.poner(pos++, ic, libre ? pl -> {
+                cambiar(pl, slot, x -> x.conCamo(c));
+                abrir(pl, slot);
+            } : null);
+        }
+        m.poner(22, Util.item(Material.ARROW, "<white>Volver"), pl -> abrir(pl, slot));
         m.abrir(p);
     }
 
