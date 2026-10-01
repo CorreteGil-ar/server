@@ -127,7 +127,7 @@ public class ModoGta implements ModoJuego, Listener {
 
     @Override
     public void kitInicial(Player p) {
-        p.getInventory().setItem(0, Armas.crear(Armas.Tipo.PISTOLA));
+        p.getInventory().setItem(0, Armas.crear(Armas.Tipo.PISTOLA, plugin.almacen().de(p).accesorios(Armas.Tipo.PISTOLA)));
         p.getInventory().setItem(7, new ItemStack(Material.COOKED_BEEF, 16));
         p.getInventory().setItem(8, celular());
     }
@@ -203,6 +203,8 @@ public class ModoGta implements ModoJuego, Listener {
                     }
                     pl.closeInventory();
                 });
+        m.poner(20, Util.item(Material.SMITHING_TABLE, "<gold><bold>Armero",
+                "Accesorios para tus armas.", "Todos gratis y desbloqueados."), plugin.armero()::abrir);
         m.poner(22, Util.item(Material.OAK_DOOR, "<white>Volver al lobby"), pl -> {
             pl.closeInventory();
             plugin.cambio().cambiar(pl, Modo.LOBBY, false);
@@ -220,7 +222,7 @@ public class ModoGta implements ModoJuego, Listener {
             ItemStack icono = Armas.crear(t);
             icono.lore(List.of(Util.mmItem("<green>" + Util.plata(precio)), Util.mmItem("<gray>Daño " + t.danio
                     + (t.perdigones > 1 ? " x" + t.perdigones : "") + " · cargador " + t.cargador)));
-            m.poner(10 + i, icono, pl -> comprar(pl, precio, Armas.crear(t)));
+            m.poner(10 + i, icono, pl -> comprar(pl, precio, Armas.crear(t, plugin.almacen().de(pl).accesorios(t))));
         }
         m.poner(19, conPrecio(Armas.granadas(3), 600), pl -> comprar(pl, 600, Armas.granadas(3)));
         m.poner(20, conPrecio(new ItemStack(Material.IRON_CHESTPLATE), 800), pl -> comprar(pl, 800, new ItemStack(Material.IRON_CHESTPLATE)));

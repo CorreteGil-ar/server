@@ -56,7 +56,7 @@ public class ModoCod implements ModoJuego, Listener {
         ASALTO("Asalto", Armas.Tipo.M4A1, 2, "Fusil de asalto, buen alcance."),
         SUBFUSIL("Subfusil", Armas.Tipo.MP5, 2, "Rápido y ágil (Velocidad I)."),
         ESCOPETERO("Escopetero", Armas.Tipo.ESCOPETA, 1, "Letal de cerca."),
-        FRANCOTIRADOR("Francotirador", Armas.Tipo.FRANCOTIRADOR, 1, "Un tiro. Shift para apuntar.");
+        FRANCOTIRADOR("Francotirador", Armas.Tipo.FRANCOTIRADOR, 1, "Un tiro. Clic izquierdo para apuntar.");
 
         final String nombre;
         final Armas.Tipo principal;
@@ -149,8 +149,9 @@ public class ModoCod implements ModoJuego, Listener {
         PlayerInventory inv = p.getInventory();
         inv.clear();
         Clase c = clases.getOrDefault(p.getUniqueId(), Clase.ASALTO);
-        inv.setItem(0, Armas.crear(c.principal));
-        inv.setItem(1, Armas.crear(Armas.Tipo.PISTOLA));
+        DatosJugador d = plugin.almacen().de(p);
+        inv.setItem(0, Armas.crear(c.principal, d.accesorios(c.principal)));
+        inv.setItem(1, Armas.crear(Armas.Tipo.PISTOLA, d.accesorios(Armas.Tipo.PISTOLA)));
         inv.setItem(2, Util.marcar(Util.item(Material.IRON_SWORD, "<white><bold>Cuchillo",
                 "Dos golpes. Por la espalda, uno."), Claves.CUCHILLO, "1"));
         if (c.granadas > 0) inv.setItem(3, Armas.granadas(c.granadas));
@@ -177,7 +178,7 @@ public class ModoCod implements ModoJuego, Listener {
 
     @Override
     public void alSalir(Player p) {
-        plugin.armas().quitarZoom(p);
+        plugin.armas().dejarDeApuntar(p);
         proteccion.remove(p.getUniqueId());
     }
 
@@ -217,6 +218,9 @@ public class ModoCod implements ModoJuego, Listener {
                     "Principal: " + c.principal.nombre, "Granadas: " + c.granadas), pl -> elegirClase(pl, c));
             slot += 2;
         }
+        m.poner(20, Util.item(Material.SMITHING_TABLE, "<gold><bold>Armero",
+                "Accesorios del arma principal:", "miras, silenciador, empuñadura,", "láser, linterna y cargador."),
+                pl -> plugin.armero().abrir(pl, 0));
         m.poner(22, Util.item(Material.OAK_DOOR, "<white>Volver al lobby"), pl -> {
             pl.closeInventory();
             plugin.cambio().cambiar(pl, Modo.LOBBY, false);

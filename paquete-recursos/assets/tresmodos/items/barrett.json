@@ -1,0 +1,266 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:display_context",
+  "cases": [
+   {
+    "when": [
+     "firstperson_righthand",
+     "firstperson_lefthand"
+    ],
+    "model": {
+     "type": "minecraft:composite",
+     "models": [
+      {
+       "type": "minecraft:model",
+       "model": "tresmodos:item/barrett_fp"
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 0,
+       "cases": [
+        {
+         "when": "telescopica",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_telescopica_fp"
+         }
+        }
+       ],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_telescopica_fp"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 1,
+       "cases": [
+        {
+         "when": "silenciador",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_silenciador_fp"
+         }
+        }
+       ],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_boca_fp"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 2,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:empty"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 3,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:empty"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 4,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:empty"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 5,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_cargador_normal_fp"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "when": [
+     "thirdperson_righthand",
+     "thirdperson_lefthand"
+    ],
+    "model": {
+     "type": "minecraft:composite",
+     "models": [
+      {
+       "type": "minecraft:model",
+       "model": "tresmodos:item/barrett_tp"
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 0,
+       "cases": [
+        {
+         "when": "telescopica",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_telescopica_tp"
+         }
+        }
+       ],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_telescopica_tp"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 1,
+       "cases": [
+        {
+         "when": "silenciador",
+         "model": {
+          "type": "minecraft:model",
+          "model": "tresmodos:item/barrett_silenciador_tp"
+         }
+        }
+       ],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_boca_tp"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 2,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:empty"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 3,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:empty"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 4,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:empty"
+       }
+      },
+      {
+       "type": "minecraft:select",
+       "property": "minecraft:custom_model_data",
+       "index": 5,
+       "cases": [],
+       "fallback": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_cargador_normal_tp"
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "fallback": {
+   "type": "minecraft:composite",
+   "models": [
+    {
+     "type": "minecraft:model",
+     "model": "tresmodos:item/barrett_gui"
+    },
+    {
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 0,
+     "cases": [
+      {
+       "when": "telescopica",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_telescopica_gui"
+       }
+      }
+     ],
+     "fallback": {
+      "type": "minecraft:model",
+      "model": "tresmodos:item/barrett_telescopica_gui"
+     }
+    },
+    {
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 1,
+     "cases": [
+      {
+       "when": "silenciador",
+       "model": {
+        "type": "minecraft:model",
+        "model": "tresmodos:item/barrett_silenciador_gui"
+       }
+      }
+     ],
+     "fallback": {
+      "type": "minecraft:model",
+      "model": "tresmodos:item/barrett_boca_gui"
+     }
+    },
+    {
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 2,
+     "cases": [],
+     "fallback": {
+      "type": "minecraft:empty"
+     }
+    },
+    {
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 3,
+     "cases": [],
+     "fallback": {
+      "type": "minecraft:empty"
+     }
+    },
+    {
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 4,
+     "cases": [],
+     "fallback": {
+      "type": "minecraft:empty"
+     }
+    },
+    {
+     "type": "minecraft:select",
+     "property": "minecraft:custom_model_data",
+     "index": 5,
+     "cases": [],
+     "fallback": {
+      "type": "minecraft:model",
+      "model": "tresmodos:item/barrett_cargador_normal_gui"
+     }
+    }
+   ]
+  }
+ }
+}

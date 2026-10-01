@@ -6,8 +6,11 @@ esa definición se exportan variantes rotadas (primera persona, tercera persona 
 inventario), así cada contexto usa su propio modelo sin rotaciones en "display".
 
 La textura se pinta por código: cada cara de cada caja recibe una región del
-atlas y un material la pinta (color, ruido, desgaste de bordes y patrones).
+atlas y un material la pinta (color, ruido, volumen, desgaste de bordes y patrones).
+Las piezas redondas (cañones, tubos, miras) se arman con `cilindro`, que superpone
+dos cajas en cruz y las sombrea como un cilindro.
 """
+import itertools
 import json
 import math
 import zlib
@@ -40,6 +43,7 @@ ORIENTACIONES = {
 ADELANTE = np.array([0, 0, -1])
 ARRIBA = np.array([0, 1, 0])
 DERECHA = np.array([1, 0, 0])
+EJES = {"x": np.array([1, 0, 0]), "y": np.array([0, 1, 0]), "z": np.array([0, 0, 1])}
 
 
 def _v(t):
@@ -47,45 +51,85 @@ def _v(t):
 
 
 class Caja:
-    """Caja alineada a los ejes, en coordenadas de modelo (1 unidad = 1/16 de bloque)."""
+    """Caja alineada a los ejes, en coordenadas de modelo (1 unidad = 1/16 de bloque).
 
-    def __init__(self, desde, hasta, material, nombre=""):
+    eje: si la caja es parte de un cilindro, el eje del cilindro ("x", "y" o "z");
+    el material la sombrea redondeada alrededor de ese eje.
+    """
+
+    def __init__(self, desde, hasta, material, nombre="", eje=None):
         a, b = _v(desde), _v(hasta)
         self.desde = np.minimum(a, b)
         self.hasta = np.maximum(a, b)
         self.material = material
         self.nombre = nombre
+        self.eje = EJES[eje] if isinstance(eje, str) else eje
+
+    def mover(self, d):
+        return Caja(self.desde + _v(d), self.hasta + _v(d), self.material, self.nombre, self.eje)
+
+
+def cilindro(eje, centro, radio, desde, hasta, material, nombre=""):
+    """Cilindro aproximado con dos cajas en cruz (sección casi octogonal).
+
+    eje: "x", "y" o "z". centro: coordenadas de los otros dos ejes, en orden (x, y, z)
+    salteando el eje. desde/hasta: extremos sobre el eje.
+    """
+    otros = [k for k in "xyz" if k != eje]
+    ancho, angosto = radio, radio * 0.62
+    cajas = []
+    # La segunda caja es apenas más corta para que sus tapas no coincidan con las de la primera.
+    for (r1, r2), inset in (((ancho, angosto), 0.0), ((angosto, ancho), 0.015)):
+        lo, hi = {}, {}
+        lo[eje], hi[eje] = desde + inset, hasta - inset
+        lo[otros[0]], hi[otros[0]] = centro[0] - r1, centro[0] + r1
+        lo[otros[1]], hi[otros[1]] = centro[1] - r2, centro[1] + r2
+        cajas.append(Caja([lo[k] for k in "xyz"], [hi[k] for k in "xyz"], material, nombre, eje))
+    return cajas
 
 
 class Material:
     """Pinta una región del atlas.
 
     color: RGB base. ruido: desvío del ruido por píxel (0-1). desgaste: aclarado de
-    los bordes superiores. sombra: oscurecido de los bordes inferiores. patrones:
+    los bordes superiores. sombra: oscurecido de los bordes inferiores. volumen:
+    degradé de luz de arriba hacia abajo. alfa: opacidad (vidrios). patrones:
     funciones extra que reciben (region, info).
     """
 
-    def __init__(self, color, ruido=0.035, desgaste=0.10, sombra=0.10, patrones=()):
+    def __init__(self, color, ruido=0.016, desgaste=0.10, sombra=0.10, patrones=(), volumen=0.07, alfa=1.0):
         self.color = np.array(color, dtype=float) / 255.0
         self.ruido = ruido
         self.desgaste = desgaste
         self.sombra = sombra
         self.patrones = patrones
+        self.volumen = volumen
+        self.alfa = alfa
+
+    def con(self, **cambios):
+        """Copia del material con algunos parámetros cambiados."""
+        m = Material.__new__(Material)
+        m.__dict__.update(self.__dict__)
+        for k, v in cambios.items():
+            setattr(m, k, np.array(v, dtype=float) / 255.0 if k == "color" else v)
+        return m
 
     def pintar(self, reg, info):
         h, w = reg.shape[:2]
         rng = np.random.default_rng(info["semilla"])
         base = np.empty((h, w, 3))
         base[:] = self.color
-        # Ruido fino más una variación suave de baja frecuencia (manchas).
+        # Ruido fino más una variación suave de baja frecuencia (manchas del acabado).
         base += rng.normal(0, self.ruido, (h, w, 1))
-        if h > 2 and w > 2:
-            gruesa = rng.normal(0, self.ruido * 0.6, (max(1, h // 3), max(1, w // 3), 1))
-            gruesa = np.kron(gruesa, np.ones((3, 3, 1)))[:h, :w]
-            if gruesa.shape[:2] == (h, w):
-                base += gruesa
+        if h > 3 and w > 3:
+            gruesa = rng.normal(0, self.ruido * 0.7, (h // 4 + 1, w // 4 + 1, 1))
+            base += np.kron(gruesa, np.ones((4, 4, 1)))[:h, :w]
         reg[..., :3] = base
-        reg[..., 3] = 1.0
+        reg[..., 3] = self.alfa
+        if self.volumen:
+            gradiente(reg, info, info["arriba"], self.volumen)
+        if info.get("eje_cil") is not None:
+            redondear(reg, info, info["eje_cil"])
         if self.desgaste:
             borde(reg, info, info["arriba"], +self.desgaste)
         if self.sombra:
@@ -108,6 +152,40 @@ def _eje_en_cara(info, direccion):
     return None, 0
 
 
+def _coordenada(reg, info, direccion):
+    """Matriz (h, w) con la posición de cada píxel a lo largo de `direccion`, de 0 a 1."""
+    eje, signo = _eje_en_cara(info, direccion)
+    if eje is None:
+        return None
+    h, w = reg.shape[:2]
+    n = w if eje == "u" else h
+    t = (np.arange(n) + 0.5) / n
+    if signo < 0:
+        t = 1 - t
+    return np.tile(t, (h, 1)) if eje == "u" else np.tile(t[:, None], (1, w))
+
+
+def gradiente(reg, info, direccion, intensidad):
+    """Más claro hacia `direccion` y más oscuro del lado opuesto (luz cenital)."""
+    t = _coordenada(reg, info, direccion)
+    if t is not None:
+        reg[..., :3] += ((t - 0.55) * 2 * intensidad)[..., None]
+
+
+def redondear(reg, info, eje_cil):
+    """Sombreado de cilindro: brillo en el centro de la cara y bordes más oscuros."""
+    if abs(float(np.dot(info["normal"], eje_cil))) > 0.5:
+        return  # tapa del cilindro
+    otro = np.cross(info["normal"], eje_cil)
+    t = _coordenada(reg, info, otro)
+    if t is None:
+        return
+    reg[..., :3] += (0.10 * np.cos((t - 0.5) * math.pi) - 0.06)[..., None]
+    # Brillo especular fino si la cara mira hacia arriba o al costado.
+    if float(np.dot(info["normal"], info["arriba"])) > 0.5:
+        reg[..., :3] += (0.08 * np.exp(-((t - 0.42) / 0.08) ** 2))[..., None]
+
+
 def borde(reg, info, direccion, delta, ancho=1):
     """Aclara (delta > 0) u oscurece el borde de la región que mira hacia `direccion`."""
     eje, signo = _eje_en_cara(info, direccion)
@@ -122,14 +200,19 @@ def borde(reg, info, direccion, delta, ancho=1):
         reg[filas, :, :3] += delta
 
 
-def rayas(periodo=2, ancho=1, delta=-0.12, direccion=None, solo_normal=None):
+def _cara_es(info, nombre_eje, signo=1):
+    return float(np.dot(info["normal"], info[nombre_eje])) * signo > 0.5
+
+
+def rayas(periodo=2, ancho=1, delta=-0.12, direccion=None, solo_normal=None, signo_normal=1):
     """Rayas perpendiculares a `direccion` (por defecto, el eje del cañón).
 
-    solo_normal: si se indica, solo pinta en las caras cuya normal coincide.
+    solo_normal: si se indica ("arriba", "derecha"...), solo pinta en las caras cuya
+    normal coincide (con signo_normal = -1, en la opuesta).
     """
 
     def patron(reg, info):
-        if solo_normal is not None and float(np.dot(info["normal"], info[solo_normal])) < 0.5:
+        if solo_normal is not None and not _cara_es(info, solo_normal, signo_normal):
             return
         d = info[direccion] if direccion else info["adelante"]
         eje, _ = _eje_en_cara(info, d)
@@ -147,6 +230,41 @@ def rayas(periodo=2, ancho=1, delta=-0.12, direccion=None, solo_normal=None):
     return patron
 
 
+def picatinny(superior="arriba", signo=1, paso=3):
+    """Dientes de riel Picatinny: ranuras transversales con canto iluminado.
+
+    superior: dirección semántica hacia la que mira la cara útil del riel.
+    """
+
+    def patron(reg, info):
+        sup = info[superior] * signo
+        eje, _ = _eje_en_cara(info, info["adelante"])
+        if eje is None:
+            return
+        h, w = reg.shape[:2]
+        n = w if eje == "u" else h
+        mascara = None
+        if float(np.dot(info["normal"], sup)) > 0.5:
+            mascara = np.ones((h, w), bool)
+        elif abs(float(np.dot(info["normal"], sup))) < 0.5:
+            # Costado del riel: los dientes se ven en la mitad cercana a la cara útil.
+            t = _coordenada(reg, info, sup)
+            if t is None:
+                return
+            mascara = t > 0.45
+        if mascara is None:
+            return
+        for i in range(n):
+            fase = i % paso
+            delta = -0.22 if fase == 0 else (0.07 if fase == 1 else 0.0)
+            if eje == "u":
+                reg[mascara[:, i], i, :3] += delta
+            else:
+                reg[i, mascara[i, :], :3] += delta
+
+    return patron
+
+
 def ranuras(largo=4, separacion=2, margen=1, delta=-0.22, solo_lados=True):
     """Ranuras alargadas (tipo M-LOK) a lo largo del eje del cañón, en las caras laterales."""
 
@@ -157,23 +275,22 @@ def ranuras(largo=4, separacion=2, margen=1, delta=-0.22, solo_lados=True):
         if eje is None:
             return
         h, w = reg.shape[:2]
-        largo_px = largo
-        paso = largo_px + separacion
+        paso = largo + separacion
         if eje == "u":
             if h < 3:
                 return
             fila = slice(h // 2 - (1 if h >= 5 else 0), h // 2 + 1)
             x = margen
-            while x + largo_px <= w - margen:
-                reg[fila, x:x + largo_px, :3] += delta
+            while x + largo <= w - margen:
+                reg[fila, x:x + largo, :3] += delta
                 x += paso
         else:
             if w < 3:
                 return
             col = slice(w // 2 - (1 if w >= 5 else 0), w // 2 + 1)
             y = margen
-            while y + largo_px <= h - margen:
-                reg[y:y + largo_px, col, :3] += delta
+            while y + largo <= h - margen:
+                reg[y:y + largo, col, :3] += delta
                 y += paso
 
     return patron
@@ -191,34 +308,80 @@ def punteado(densidad=0.35, delta=-0.10):
     return patron
 
 
-def rectangulo(centro, tam, delta, solo_normal="derecha"):
+def _rect_en_cara(reg, info, centro, tam):
+    """Píxeles de un rectángulo dado en fracciones (adelante, arriba) de la cara."""
+    h, w = reg.shape[:2]
+    ta = _coordenada(reg, info, info["adelante"])
+    tb = _coordenada(reg, info, info["arriba"])
+    if ta is None or tb is None:
+        return None
+    return ((np.abs(ta - centro[0]) <= tam[0] / 2) & (np.abs(tb - centro[1]) <= tam[1] / 2))
+
+
+def rectangulo(centro, tam, delta, solo_normal="derecha", signo_normal=1, color=None):
     """Rectángulo plano pintado en las caras cuya normal coincide con `solo_normal`.
 
-    centro y tam en fracciones (0-1) de la cara, en ejes (adelante, arriba).
+    centro y tam en fracciones (0-1) de la cara, en ejes (adelante, arriba): adelante 1 es
+    el extremo de la boca. Con `color` reemplaza el color en vez de sumar `delta`.
     """
 
     def patron(reg, info):
-        if float(np.dot(info["normal"], info[solo_normal])) < 0.5:
+        if not _cara_es(info, solo_normal, signo_normal):
+            return
+        m = _rect_en_cara(reg, info, centro, tam)
+        if m is None:
+            return
+        if color is not None:
+            reg[m, :3] = np.array(color) / 255.0
+        else:
+            reg[m, :3] += delta
+
+    return patron
+
+
+def puntos(posiciones, solo_normal="derecha", signo_normal=1, delta=-0.25):
+    """Tornillos o pernos: punto oscuro con un brillo arriba. Posiciones en fracciones."""
+
+    def patron(reg, info):
+        if not _cara_es(info, solo_normal, signo_normal):
+            return
+        ta = _coordenada(reg, info, info["adelante"])
+        tb = _coordenada(reg, info, info["arriba"])
+        if ta is None or tb is None:
             return
         h, w = reg.shape[:2]
-        eje_a, signo_a = _eje_en_cara(info, info["adelante"])
-        eje_b, signo_b = _eje_en_cara(info, info["arriba"])
-        if eje_a is None or eje_b is None:
+        for fa, fb in posiciones:
+            d = (ta - fa) ** 2 * w * w + (tb - fb) ** 2 * h * h
+            i = np.unravel_index(np.argmin(d), d.shape)
+            reg[i[0], i[1], :3] += delta
+            arriba = _eje_en_cara(info, info["arriba"])
+            if arriba[0] == "v":
+                j = i[0] + (1 if arriba[1] > 0 else -1)
+                if 0 <= j < h:
+                    reg[j, i[1], :3] += 0.12
+
+    return patron
+
+
+def reticula(color=(255, 40, 30), anillo=True):
+    """Retícula de mira: punto central y, opcional, anillo (holográfica)."""
+
+    def patron(reg, info):
+        if abs(float(np.dot(info["normal"], info["adelante"]))) < 0.5:
             return
-        n_a = w if eje_a == "u" else h
-        n_b = w if eje_b == "u" else h
-        # En la dirección positiva del eje, la fracción 1 cae al final del rango.
-        fa = centro[0] if signo_a > 0 else 1 - centro[0]
-        fb = centro[1] if signo_b > 0 else 1 - centro[1]
-        a0 = int(round((fa - tam[0] / 2) * n_a))
-        a1 = int(round((fa + tam[0] / 2) * n_a))
-        b0 = int(round((fb - tam[1] / 2) * n_b))
-        b1 = int(round((fb + tam[1] / 2) * n_b))
-        a0, b0 = max(a0, 0), max(b0, 0)
-        if eje_a == "u":
-            reg[b0:b1, a0:a1, :3] += delta
-        else:
-            reg[a0:a1, b0:b1, :3] += delta
+        h, w = reg.shape[:2]
+        yy, xx = np.mgrid[0:h, 0:w]
+        cy, cx = (h - 1) / 2, (w - 1) / 2
+        r = np.sqrt((yy - cy) ** 2 + (xx - cx) ** 2)
+        c = np.array(color) / 255.0
+        punto = r <= max(0.6, min(h, w) * 0.06)
+        reg[punto, :3] = c
+        reg[punto, 3] = 1
+        if anillo:
+            radio = min(h, w) * 0.32
+            ar = np.abs(r - radio) <= 0.55
+            reg[ar, :3] = c
+            reg[ar, 3] = 0.95
 
     return patron
 
@@ -230,15 +393,10 @@ def _orientar(cajas, orient, desplazamiento):
     centro = np.array([8.0, 8.0, 8.0])
     salida = []
     for c in cajas:
-        esquinas = [m @ (_v(p) - centro) + centro + desplazamiento
-                    for p in (c.desde, c.hasta)]
-        nueva = Caja(esquinas[0], esquinas[1], c.material, c.nombre)
-        salida.append(nueva)
-    return salida, {
-        "adelante": m @ ADELANTE,
-        "arriba": m @ ARRIBA,
-        "derecha": m @ DERECHA,
-    }
+        esquinas = [m @ (_v(p) - centro) + centro + desplazamiento for p in (c.desde, c.hasta)]
+        eje = None if c.eje is None else m @ c.eje
+        salida.append(Caja(esquinas[0], esquinas[1], c.material, c.nombre, eje))
+    return salida, {"adelante": m @ ADELANTE, "arriba": m @ ARRIBA, "derecha": m @ DERECHA}
 
 
 def _tam_cara(caja, cara, densidad):
@@ -252,79 +410,102 @@ def _tam_cara(caja, cara, densidad):
     return max(1, int(round(ancho * densidad))), max(1, int(round(alto * densidad))), ancho, alto
 
 
-def _empacar(rects, lado):
-    """Empaquetado por estantes. rects: lista de (w, h). Devuelve posiciones o None."""
-    orden = sorted(range(len(rects)), key=lambda i: -rects[i][1])
+def _empacar(rects, ancho):
+    """Empaquetado por estantes con ancho fijo. Devuelve (posiciones, alto usado) o None."""
+    orden = sorted(range(len(rects)), key=lambda i: (-rects[i][1], -rects[i][0]))
     pos = [None] * len(rects)
     x = y = alto_fila = 0
     for i in orden:
         w, h = rects[i]
-        if w > lado:
+        if w > ancho:
             return None
-        if x + w > lado:
+        if x + w > ancho:
             x, y = 0, y + alto_fila
             alto_fila = 0
-        if y + h > lado:
-            return None
         pos[i] = (x, y)
         x += w
         alto_fila = max(alto_fila, h)
-    return pos
+    return pos, y + alto_fila
 
 
-def exportar(nombre, cajas, variantes, carpeta_pack, densidad=6, namespace="tresmodos"):
+def superposiciones(cajas):
+    """Pares de caras coplanares con la misma orientación que se pisan (parpadean en el juego)."""
+    avisos = []
+    for (i, a), (j, b) in itertools.combinations(enumerate(cajas), 2):
+        for k in range(3):
+            o = [x for x in range(3) if x != k]
+            for lado in ("desde", "hasta"):
+                if abs(getattr(a, lado)[k] - getattr(b, lado)[k]) > 1e-6:
+                    continue
+                solape = all(min(a.hasta[x], b.hasta[x]) - max(a.desde[x], b.desde[x]) > 1e-4 for x in o)
+                if solape:
+                    avisos.append(f"{a.nombre or i} y {b.nombre or j} ({'xyz'[k]} {lado})")
+    return avisos
+
+
+def exportar(nombre, cajas, variantes, carpeta_pack, densidad=8, namespace="tresmodos", textura=None):
     """Escribe la textura del atlas y un modelo por variante.
 
     variantes: dict nombre_variante -> {"orientacion": "fp"|"tp"|"gui",
     "desplazamiento": (x, y, z), "display": {...}, "gui_light": "front"|"side"}.
-    Devuelve dict variante -> ruta del modelo ("namespace:item/...").
+    textura: nombre del PNG (por defecto, `nombre`); los accesorios lo comparten entre armas.
+    Devuelve dict variante -> recurso del modelo ("namespace:item/...").
     """
+    for aviso in superposiciones(cajas):
+        print(f"  aviso {nombre}: caras superpuestas en {aviso}")
     carpeta_pack = Path(carpeta_pack)
+    textura = textura or nombre
     preparadas = {}
-    rects = []
-    caras_info = []
+    rects, caras_info = [], []
     for vnombre, cfg in variantes.items():
         orientadas, ejes = _orientar(cajas, cfg["orientacion"], _v(cfg.get("desplazamiento", (0, 0, 0))))
         preparadas[vnombre] = (orientadas, ejes)
         for idx, c in enumerate(orientadas):
-            for cara, (normal, u, v) in CARAS.items():
+            for cara, (normal, _, _) in CARAS.items():
                 w, h, ancho, alto = _tam_cara(c, cara, densidad)
                 if ancho <= 1e-6 or alto <= 1e-6:
                     continue
-                # Semilla estable por caja y cara semántica, igual en todas las variantes.
                 n = _v(normal)
-                semantica = ("adelante" if np.dot(n, ejes["adelante"]) > 0.5 else
-                             "atras" if np.dot(n, ejes["adelante"]) < -0.5 else
-                             "arriba" if np.dot(n, ejes["arriba"]) > 0.5 else
-                             "abajo" if np.dot(n, ejes["arriba"]) < -0.5 else
-                             "derecha" if np.dot(n, ejes["derecha"]) > 0.5 else "izquierda")
-                semilla = zlib.crc32(f"{nombre}/{idx}/{semantica}".encode())
+                semantica = next(nom for nom, vec, s in (
+                    ("adelante", ejes["adelante"], 1), ("atras", ejes["adelante"], -1),
+                    ("arriba", ejes["arriba"], 1), ("abajo", ejes["arriba"], -1),
+                    ("derecha", ejes["derecha"], 1), ("izquierda", ejes["derecha"], -1))
+                    if np.dot(n, vec) * s > 0.5)
+                semilla = zlib.crc32(f"{textura}/{idx}/{semantica}".encode())
                 rects.append((w, h))
                 caras_info.append((vnombre, idx, cara, semilla))
 
-    lado = 16
-    while True:
-        pos = _empacar(rects, lado)
-        if pos is not None:
-            break
-        lado *= 2
-        if lado > 1024:
-            raise ValueError("El atlas no entra en 1024 px")
+    mejor = None
+    for ancho in (16, 32, 64, 128, 256, 512, 1024):
+        r = _empacar(rects, ancho)
+        if r is None:
+            continue
+        pos, usado = r
+        alto = 16
+        while alto < usado:
+            alto *= 2
+        if alto > 1024:
+            continue
+        clave = (ancho * alto, abs(math.log2(ancho / alto)))
+        if mejor is None or clave < mejor[0]:
+            mejor = (clave, ancho, alto, pos)
+    if mejor is None:
+        raise ValueError(f"{nombre}: el atlas no entra en 1024 px")
+    _, tex_w, tex_h, pos = mejor
 
-    atlas = np.zeros((lado, lado, 4))
+    atlas = np.zeros((tex_h, tex_w, 4))
     uvs = {}
     for (w, h), (x, y), (vnombre, idx, cara, semilla) in zip(rects, pos, caras_info):
         orientadas, ejes = preparadas[vnombre]
         c = orientadas[idx]
         normal, u, v = (_v(t) for t in CARAS[cara])
-        info = {"normal": normal, "u": u, "v": v, "semilla": semilla, **ejes}
+        info = {"normal": normal, "u": u, "v": v, "semilla": semilla, "eje_cil": c.eje, **ejes}
         c.material.pintar(atlas[y:y + h, x:x + w], info)
-        f = 16.0 / lado
-        uvs[(vnombre, idx, cara)] = [round(x * f, 4), round(y * f, 4),
-                                     round((x + w) * f, 4), round((y + h) * f, 4)]
+        uvs[(vnombre, idx, cara)] = [round(x * 16 / tex_w, 4), round(y * 16 / tex_h, 4),
+                                     round((x + w) * 16 / tex_w, 4), round((y + h) * 16 / tex_h, 4)]
 
-    tex_rel = f"{namespace}:item/{nombre}"
-    tex_path = carpeta_pack / "assets" / namespace / "textures" / "item" / f"{nombre}.png"
+    tex_rel = f"{namespace}:item/{textura}"
+    tex_path = carpeta_pack / "assets" / namespace / "textures" / "item" / f"{textura}.png"
     tex_path.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray((atlas * 255).round().astype(np.uint8), "RGBA").save(tex_path, optimize=True)
 
@@ -333,13 +514,11 @@ def exportar(nombre, cajas, variantes, carpeta_pack, densidad=6, namespace="tres
         orientadas, _ = preparadas[vnombre]
         elementos = []
         for idx, c in enumerate(orientadas):
-            caras = {}
-            for cara in CARAS:
-                if (vnombre, idx, cara) in uvs:
-                    caras[cara] = {"uv": uvs[(vnombre, idx, cara)], "texture": "#0"}
+            caras = {cara: {"uv": uvs[(vnombre, idx, cara)], "texture": "#0"}
+                     for cara in CARAS if (vnombre, idx, cara) in uvs}
             for p in (*c.desde, *c.hasta):
                 if p < -16 or p > 32:
-                    raise ValueError(f"{nombre}/{vnombre}: la caja {c.nombre!r} sale del rango -16..32")
+                    raise ValueError(f"{nombre}/{vnombre}: la caja {c.nombre!r} sale del rango -16..32 ({p:.2f})")
             elementos.append({
                 "name": c.nombre or f"caja{idx}",
                 "from": [round(float(t), 4) for t in c.desde],
@@ -355,28 +534,59 @@ def exportar(nombre, cajas, variantes, carpeta_pack, densidad=6, namespace="tres
         arch = f"{nombre}_{vnombre}" if vnombre else nombre
         ruta = carpeta_pack / "assets" / namespace / "models" / "item" / f"{arch}.json"
         ruta.parent.mkdir(parents=True, exist_ok=True)
-        ruta.write_text(json.dumps(modelo, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+        ruta.write_text(json.dumps(modelo, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
         rutas[vnombre] = f"{namespace}:item/{arch}"
     return rutas
 
 
-def definicion_item(nombre, rutas, carpeta_pack, namespace="tresmodos"):
-    """Escribe assets/<ns>/items/<nombre>.json eligiendo el modelo según el contexto."""
-    casos = []
-    if "fp" in rutas:
-        casos.append({"when": ["firstperson_righthand", "firstperson_lefthand"],
-                      "model": {"type": "minecraft:model", "model": rutas["fp"]}})
-    if "tp" in rutas:
-        casos.append({"when": ["thirdperson_righthand", "thirdperson_lefthand"],
-                      "model": {"type": "minecraft:model", "model": rutas["tp"]}})
-    definicion = {
-        "model": {
-            "type": "minecraft:select",
-            "property": "minecraft:display_context",
-            "cases": casos,
-            "fallback": {"type": "minecraft:model", "model": rutas["gui"]},
-        }
-    }
+# ---------------------------------------------------------------- definiciones de ítems
+
+CONTEXTOS = {
+    "fp": ["firstperson_righthand", "firstperson_lefthand"],
+    "tp": ["thirdperson_righthand", "thirdperson_lefthand"],
+}
+
+
+def _modelo(recurso):
+    return {"type": "minecraft:model", "model": recurso}
+
+
+def _escribir_item(nombre, definicion, carpeta_pack, namespace):
     ruta = Path(carpeta_pack) / "assets" / namespace / "items" / f"{nombre}.json"
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    ruta.write_text(json.dumps(definicion, indent=2) + "\n", encoding="utf-8")
+    ruta.write_text(json.dumps(definicion, indent=1) + "\n", encoding="utf-8")
+
+
+def definicion_arma(nombre, base, ranuras, carpeta_pack, namespace="tresmodos"):
+    """Item con el arma base más una ranura por accesorio, según el contexto de dibujo.
+
+    base: dict variante -> recurso. ranuras: lista ordenada (índice en los strings de
+    custom_model_data) de dicts {"opciones": {valor: rutas}, "defecto": rutas | None}.
+    """
+
+    def compuesto(v):
+        modelos = [_modelo(base[v])]
+        for i, ranura in enumerate(ranuras):
+            defecto = ranura.get("defecto")
+            modelos.append({
+                "type": "minecraft:select",
+                "property": "minecraft:custom_model_data",
+                "index": i,
+                "cases": [{"when": valor, "model": _modelo(rutas[v])}
+                          for valor, rutas in ranura["opciones"].items()],
+                "fallback": _modelo(defecto[v]) if defecto else {"type": "minecraft:empty"},
+            })
+        return {"type": "minecraft:composite", "models": modelos}
+
+    definicion = {"model": {
+        "type": "minecraft:select",
+        "property": "minecraft:display_context",
+        "cases": [{"when": CONTEXTOS[v], "model": compuesto(v)} for v in ("fp", "tp")],
+        "fallback": compuesto("gui"),
+    }}
+    _escribir_item(nombre, definicion, carpeta_pack, namespace)
+
+
+def definicion_simple(nombre, recurso, carpeta_pack, namespace="tresmodos"):
+    """Item que siempre usa el mismo modelo (íconos de menú)."""
+    _escribir_item(nombre, {"model": _modelo(recurso)}, carpeta_pack, namespace)

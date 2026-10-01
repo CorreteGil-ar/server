@@ -44,6 +44,11 @@ public class Comandos implements CommandExecutor, TabCompleter {
                 if (Modo.de(p.getWorld()) == Modo.GTA) plugin.gta().abrirCelular(p);
                 else Util.msg(p, "<red>El celular es del modo GTA.");
             }
+            case "armero" -> {
+                Modo m = Modo.de(p.getWorld());
+                if (m == Modo.GTA || m == Modo.COD) plugin.armero().abrir(p);
+                else Util.msg(p, "<red>El armero se usa en los modos con armas (GTA y COD).");
+            }
             default -> { return false; }
         }
         return true;

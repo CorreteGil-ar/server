@@ -71,8 +71,12 @@ def quads(modelo):
             yield np.array(esquinas), np.array(uvs), datos["texture"], normal
 
 
-def renderizar(recurso, modo, ancho=960, alto=540, fondo=None):
-    modelo, texturas = cargar(recurso)
+def renderizar(recursos, modo, ancho=960, alto=540, fondo=None):
+    """Dibuja uno o varios modelos superpuestos (arma + accesorios), como el modelo compuesto."""
+    if isinstance(recursos, str):
+        recursos = [recursos]
+    cargados = [cargar(r) for r in recursos]
+    modelo = cargados[0][0]
     img = np.zeros((alto, ancho, 3))
     if modo == "fp":
         # Cielo arriba, piso abajo, para juzgar la posición del arma.
@@ -114,7 +118,8 @@ def renderizar(recurso, modo, ancho=960, alto=540, fondo=None):
 
     luz = np.array([0.35, 0.85, 0.45])
     luz /= np.linalg.norm(luz)
-    for esquinas, uvs, tex_id, normal in quads(modelo):
+    todos = [(q, tx) for m, tx in cargados for q in quads(m)]
+    for (esquinas, uvs, tex_id, normal), texturas in todos:
         tex = texturas[tex_id]
         th, tw = tex.shape[:2]
         vista = np.array([a_vista(p) for p in esquinas])

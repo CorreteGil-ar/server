@@ -20,6 +20,7 @@ public final class TresModos extends JavaPlugin {
     private CambioModo cambio;
     private Armas armas;
     private PaqueteRecursos paquete;
+    private Armero armero;
     private Lobby lobby;
     private ModoGta gta;
     private ModoCod cod;
@@ -38,6 +39,7 @@ public final class TresModos extends JavaPlugin {
         cambio = new CambioModo(this);
         armas = new Armas(this);
         paquete = new PaqueteRecursos(this);
+        armero = new Armero(this);
         lobby = new Lobby(this);
         gta = new ModoGta(this);
         cod = new ModoCod(this);
@@ -58,7 +60,7 @@ public final class TresModos extends JavaPlugin {
         pm.registerEvents(rpg, this);
 
         Comandos comandos = new Comandos(this);
-        for (String c : new String[]{"modo", "lobby", "clase", "celular", "tm"}) {
+        for (String c : new String[]{"modo", "lobby", "clase", "celular", "armero", "tm"}) {
             var cmd = getCommand(c);
             if (cmd != null) {
                 cmd.setExecutor(comandos);
@@ -118,6 +120,7 @@ public final class TresModos extends JavaPlugin {
     public CambioModo cambio() { return cambio; }
     public Armas armas() { return armas; }
     public PaqueteRecursos paquete() { return paquete; }
+    public Armero armero() { return armero; }
     public Lobby lobby() { return lobby; }
     public ModoGta gta() { return gta; }
     public ModoCod cod() { return cod; }

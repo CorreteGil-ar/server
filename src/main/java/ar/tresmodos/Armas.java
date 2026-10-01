@@ -1,9 +1,11 @@
 package ar.tresmodos;
 
+import ar.tresmodos.Accesorios.Mira;
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,20 +22,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,37 +49,63 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-/** Armas de disparo instantáneo compartidas por GTA y COD: cargador, recarga, headshots y granadas. */
+/**
+ * Armas de disparo instantáneo compartidas por GTA y COD: fuego automático por cadencia real,
+ * apuntado con zoom según la óptica, accesorios, cargador, recarga, headshots y granadas.
+ */
 public class Armas implements Listener {
 
+    public enum Disparo { AUTOMATICO, SEMI }
+
+    /**
+     * Armas disponibles. Los accesorios admitidos tienen que coincidir con herramientas/armas.py
+     * (el paquete de recursos solo trae modelos para esas combinaciones).
+     */
     public enum Tipo {
-        //            nombre           material             daño cad alc  carg rec perd disp   modelo
-        PISTOLA("Pistola M9", Material.IRON_HOE, 4.5, 5, 45, 12, 30, 1, 0.025, null),
-        MP5("MP5", Material.STONE_HOE, 3.5, 2, 35, 30, 40, 1, 0.045, null),
-        M4A1("M4A1", Material.DIAMOND_HOE, 5.0, 3, 70, 30, 45, 1, 0.020, "m4a1"),
-        ESCOPETA("M1014", Material.GOLDEN_HOE, 3.0, 14, 18, 8, 60, 8, 0.120, null),
-        FRANCOTIRADOR("Barrett .50", Material.NETHERITE_HOE, 30.0, 30, 150, 5, 70, 1, 0.000, null);
+        PISTOLA("Beretta M9", Material.IRON_HOE, 4.5, 360, Disparo.SEMI, 45, 15, 20, 30, 1, 0.025, "m9",
+                List.of(Mira.HIERRO), true, false, true, true),
+        MP5("H&K MP5", Material.STONE_HOE, 3.5, 800, Disparo.AUTOMATICO, 35, 30, 40, 40, 1, 0.045, "mp5",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
+        M4A1("Colt M4A1", Material.DIAMOND_HOE, 5.0, 800, Disparo.AUTOMATICO, 70, 30, 40, 45, 1, 0.020, "m4a1",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
+        ESCOPETA("Benelli M1014", Material.GOLDEN_HOE, 3.0, 180, Disparo.SEMI, 18, 7, 9, 60, 8, 0.120, "m1014",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA), false, false, true, true),
+        FRANCOTIRADOR("Barrett M82A1", Material.NETHERITE_HOE, 30.0, 60, Disparo.SEMI, 150, 10, 0, 70, 1, 0.000, "barrett",
+                List.of(Mira.TELESCOPICA), true, false, false, false);
 
         public final String nombre;
         public final Material material;
         public final double danio;
-        public final int cadencia, alcance, cargador, recarga, perdigones;
+        /** Disparos por minuto (en semiautomáticas, el máximo con clics seguidos). */
+        public final int rpm;
+        public final Disparo disparo;
+        public final int alcance, cargador, cargadorAmpliado, recarga, perdigones;
         public final double dispersion;
-        /** Modelo del paquete de recursos ("tresmodos:" + modelo), o null si todavía se ve como la azada. */
+        /** Modelo del paquete de recursos ("tresmodos:" + modelo). */
         public final String modelo;
+        public final List<Mira> miras;
+        public final boolean admiteSilenciador, admiteEmpunadura, admiteLaser, admiteLinterna;
 
-        Tipo(String nombre, Material material, double danio, int cadencia, int alcance, int cargador,
-             int recarga, int perdigones, double dispersion, String modelo) {
+        Tipo(String nombre, Material material, double danio, int rpm, Disparo disparo, int alcance, int cargador,
+             int cargadorAmpliado, int recarga, int perdigones, double dispersion, String modelo, List<Mira> miras,
+             boolean admiteSilenciador, boolean admiteEmpunadura, boolean admiteLaser, boolean admiteLinterna) {
             this.nombre = nombre;
             this.material = material;
             this.danio = danio;
-            this.cadencia = cadencia;
+            this.rpm = rpm;
+            this.disparo = disparo;
             this.alcance = alcance;
             this.cargador = cargador;
+            this.cargadorAmpliado = cargadorAmpliado;
             this.recarga = recarga;
             this.perdigones = perdigones;
             this.dispersion = dispersion;
             this.modelo = modelo;
+            this.miras = miras;
+            this.admiteSilenciador = admiteSilenciador;
+            this.admiteEmpunadura = admiteEmpunadura;
+            this.admiteLaser = admiteLaser;
+            this.admiteLinterna = admiteLinterna;
         }
     }
 
@@ -85,30 +117,67 @@ public class Armas implements Listener {
     private final TresModos plugin;
     private final Random rnd = new Random();
     private final Map<UUID, Integer> ultimoDisparo = new HashMap<>();
+    /** Tick hasta el que se considera apretado el gatillo (el cliente repite el clic cada 4 ticks). */
+    private final Map<UUID, Integer> gatilloHasta = new HashMap<>();
+    private final Map<UUID, Double> acumulado = new HashMap<>();
     private final Map<UUID, Recarga> recargando = new HashMap<>();
-    private final Set<UUID> conZoom = new HashSet<>();
+    private final Set<UUID> apuntando = new HashSet<>();
+    private final Set<UUID> conLinterna = new HashSet<>();
+    private final Map<UUID, Integer> ultimoTirar = new HashMap<>();
     private final Map<UUID, Impacto> impactos = new HashMap<>();
+    /**
+     * Balas de cada arma (por id del ítem). Se llevan en memoria para no tocar el ítem en cada
+     * disparo: cambiar el ítem que está en la mano hace que el cliente repita la animación de
+     * agarrarlo. Se escriben en el ítem al recargar, al cambiar de arma y al guardar.
+     */
+    private final Map<String, Integer> municion = new HashMap<>();
     /** true mientras se aplica daño de bala: los listeners de melee lo usan para ignorarlo. */
     public static boolean aplicandoBala = false;
 
     public Armas(TresModos plugin) {
         this.plugin = plugin;
+        Bukkit.getScheduler().runTaskTimer(plugin, this::tickGatillos, 1, 1);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tickRecargas, 2, 2);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::tickAccesorios, 2, 2);
     }
 
     // ------------------------------------------------------------------ ítems
 
     public static ItemStack crear(Tipo t) {
-        ItemStack it = Util.item(t.material, "<white><bold>" + t.nombre,
-                "Daño " + t.danio + (t.perdigones > 1 ? " x" + t.perdigones : "") + " · Cargador " + t.cargador,
-                "Clic derecho: disparar", "Q: recargar" + (t == Tipo.FRANCOTIRADOR ? " · Shift: mira" : ""));
+        return crear(t, Accesorios.NINGUNO);
+    }
+
+    public static ItemStack crear(Tipo t, Accesorios a) {
+        ItemStack it = new ItemStack(t.material);
         ItemMeta meta = it.getItemMeta();
         meta.getPersistentDataContainer().set(Claves.ARMA, PersistentDataType.STRING, t.name());
-        meta.getPersistentDataContainer().set(Claves.BALAS, PersistentDataType.INTEGER, t.cargador);
+        meta.getPersistentDataContainer().set(Claves.ARMA_ID, PersistentDataType.STRING, UUID.randomUUID().toString());
         meta.setUnbreakable(true);
-        if (t.modelo != null) meta.setItemModel(new NamespacedKey("tresmodos", t.modelo));
+        meta.setItemModel(new NamespacedKey("tresmodos", t.modelo));
         it.setItemMeta(meta);
+        Accesorios validos = a.validar(t);
+        aplicarAccesorios(it, t, validos);
+        setBalasItem(it, capacidad(t, validos));
         return it;
+    }
+
+    /** Monta los accesorios en el ítem: datos, modelo y descripción. */
+    static void aplicarAccesorios(ItemStack it, Tipo t, Accesorios a) {
+        ItemMeta meta = it.getItemMeta();
+        meta.getPersistentDataContainer().set(Claves.ACCESORIOS, PersistentDataType.STRING, a.codigo());
+        CustomModelDataComponent cmd = meta.getCustomModelDataComponent();
+        cmd.setStrings(a.cadenasModelo());
+        meta.setCustomModelDataComponent(cmd);
+        meta.displayName(Util.mmItem("<white><bold>" + t.nombre));
+        List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
+        lore.add(Util.mmItem("<gray>Daño " + t.danio + (t.perdigones > 1 ? " x" + t.perdigones : "")
+                + " · " + t.rpm + " disp/min · Cargador " + capacidad(t, a)));
+        lore.add(Util.mmItem("<gray>" + (t.disparo == Disparo.AUTOMATICO ? "Automática" : "Semiautomática")
+                + " · Clic der: disparar · Clic izq: apuntar"));
+        lore.add(Util.mmItem("<gray>Q: recargar · /armero: accesorios"));
+        for (String linea : a.resumen()) lore.add(Util.mmItem("<dark_aqua>• " + linea));
+        meta.lore(lore);
+        it.setItemMeta(meta);
     }
 
     public static ItemStack granadas(int cantidad) {
@@ -127,15 +196,66 @@ public class Armas implements Listener {
         }
     }
 
-    private static int balas(ItemStack it) {
+    public static Accesorios accesorios(ItemStack it) {
+        return Accesorios.de(Util.marca(it, Claves.ACCESORIOS));
+    }
+
+    public static int capacidad(Tipo t, Accesorios a) {
+        return a.cargadorAmpliado() && t.cargadorAmpliado > 0 ? t.cargadorAmpliado : t.cargador;
+    }
+
+    private static int balasItem(ItemStack it) {
         Integer b = it.getItemMeta().getPersistentDataContainer().get(Claves.BALAS, PersistentDataType.INTEGER);
         return b == null ? 0 : b;
     }
 
-    private static void setBalas(ItemStack it, int n) {
+    private static void setBalasItem(ItemStack it, int n) {
         ItemMeta meta = it.getItemMeta();
         meta.getPersistentDataContainer().set(Claves.BALAS, PersistentDataType.INTEGER, n);
         it.setItemMeta(meta);
+    }
+
+    private int balas(ItemStack it) {
+        String id = Util.marca(it, Claves.ARMA_ID);
+        if (id == null) return balasItem(it);
+        return municion.computeIfAbsent(id, k -> balasItem(it));
+    }
+
+    private void setBalas(ItemStack it, int n) {
+        String id = Util.marca(it, Claves.ARMA_ID);
+        if (id == null) setBalasItem(it, n);
+        else municion.put(id, n);
+    }
+
+    /** Escribe en el ítem las balas que se llevan en memoria. */
+    private void persistir(ItemStack it) {
+        String id = Util.marca(it, Claves.ARMA_ID);
+        Integer n = id == null ? null : municion.get(id);
+        if (n != null && n != balasItem(it)) setBalasItem(it, n);
+    }
+
+    /** Pasa al ítem las balas de todas las armas del inventario (antes de guardarlo). */
+    public void sincronizar(Player p) {
+        for (ItemStack it : p.getInventory().getContents()) {
+            if (it != null && tipo(it) != null) persistir(it);
+        }
+    }
+
+    /** Cambia los accesorios de un arma del inventario y la deja con las balas que entren. */
+    public void cambiarAccesorios(Player p, int slot, Accesorios nuevos) {
+        ItemStack it = p.getInventory().getItem(slot);
+        Tipo t = tipo(it);
+        if (t == null) return;
+        Accesorios a = nuevos.validar(t);
+        int balas = Math.min(balas(it), capacidad(t, a));
+        aplicarAccesorios(it, t, a);
+        setBalas(it, balas);
+        persistir(it);
+        p.getInventory().setItem(slot, it);
+        if (slot == p.getInventory().getHeldItemSlot()) {
+            recargando.remove(p.getUniqueId());
+            dejarDeApuntar(p);
+        }
     }
 
     private boolean mundoConArmas(Player p) {
@@ -143,80 +263,139 @@ public class Armas implements Listener {
         return m == Modo.GTA || m == Modo.COD;
     }
 
-    // ------------------------------------------------------------------ disparo
+    // ------------------------------------------------------------------ gatillo y disparo
 
     @EventHandler(priority = EventPriority.HIGH)
     public void alInteractuar(PlayerInteractEvent e) {
         if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Player p = e.getPlayer();
         ItemStack it = p.getInventory().getItemInMainHand();
         Tipo t = tipo(it);
         if (t == null) return;
-        e.setCancelled(true); // evita arar la tierra con la azada
-        if (!mundoConArmas(p)) return;
-        if (plugin.cod().bloqueaDisparo(p)) return;
-        disparar(p, it, t);
+        Action a = e.getAction();
+        if (a == Action.RIGHT_CLICK_AIR || a == Action.RIGHT_CLICK_BLOCK) {
+            e.setCancelled(true); // evita arar la tierra con la azada
+            if (!mundoConArmas(p) || plugin.cod().bloqueaDisparo(p)) return;
+            apretarGatillo(p, it, t);
+        } else if (a == Action.LEFT_CLICK_AIR || a == Action.LEFT_CLICK_BLOCK) {
+            if (!mundoConArmas(p)) return;
+            e.setCancelled(true);
+            alternarApuntado(p, it);
+        }
     }
 
-    private void disparar(Player p, ItemStack it, Tipo t) {
+    private void apretarGatillo(Player p, ItemStack it, Tipo t) {
         UUID id = p.getUniqueId();
         int ahora = Bukkit.getCurrentTick();
-        Integer ult = ultimoDisparo.get(id);
-        if (ult != null && ahora - ult < t.cadencia) return;
-        if (recargando.containsKey(id)) return;
+        if (t.disparo == Disparo.AUTOMATICO) {
+            boolean yaApretado = gatilloHasta.getOrDefault(id, -1) >= ahora;
+            gatilloHasta.put(id, ahora + 5);
+            if (!yaApretado) {
+                acumulado.put(id, 0.0);
+                disparar(p, it, t);
+            }
+        } else {
+            Integer ult = ultimoDisparo.get(id);
+            if (ult != null && ahora - ult < 1200.0 / t.rpm) return;
+            disparar(p, it, t);
+        }
+    }
+
+    /** Fuego automático: mientras el gatillo siga apretado, dispara según la cadencia del arma. */
+    private void tickGatillos() {
+        int ahora = Bukkit.getCurrentTick();
+        Iterator<Map.Entry<UUID, Integer>> itr = gatilloHasta.entrySet().iterator();
+        while (itr.hasNext()) {
+            Map.Entry<UUID, Integer> en = itr.next();
+            Player p = Bukkit.getPlayer(en.getKey());
+            ItemStack it = p == null ? null : p.getInventory().getItemInMainHand();
+            Tipo t = it == null ? null : tipo(it);
+            if (p == null || en.getValue() < ahora || t == null || t.disparo != Disparo.AUTOMATICO || !mundoConArmas(p)) {
+                acumulado.remove(en.getKey());
+                itr.remove();
+                continue;
+            }
+            double acc = acumulado.getOrDefault(en.getKey(), 0.0) + t.rpm / 1200.0;
+            while (acc >= 1) {
+                acc -= 1;
+                if (!disparar(p, it, t)) {
+                    acc = 0;
+                    break;
+                }
+            }
+            acumulado.put(en.getKey(), acc);
+        }
+    }
+
+    /** Dispara una vez. Devuelve false si no pudo (sin balas o recargando). */
+    private boolean disparar(Player p, ItemStack it, Tipo t) {
+        UUID id = p.getUniqueId();
+        if (recargando.containsKey(id)) return false;
         int balas = balas(it);
         if (balas <= 0) {
             p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 0.6f, 1.6f);
             recargar(p, it, t);
-            return;
+            return false;
         }
-        ultimoDisparo.put(id, ahora);
+        ultimoDisparo.put(id, Bukkit.getCurrentTick());
         setBalas(it, balas - 1);
+
+        Accesorios acc = accesorios(it);
+        boolean apunta = apuntando.contains(id);
+        double disp = t.dispersion;
+        if (t == Tipo.FRANCOTIRADOR) {
+            disp = apunta ? 0.0 : 0.09;
+        } else if (apunta) {
+            disp *= 0.25;
+        } else {
+            if (acc.laser()) disp *= 0.7;
+            if (p.isSneaking()) disp *= 0.6;
+        }
+        if (acc.empunadura()) disp *= 0.75;
+        if (p.isSprinting()) disp *= 1.8;
+        if (!((Entity) p).isOnGround()) disp *= 1.5;
+        double alcance = t.alcance * (acc.silenciador() ? 0.85 : 1.0);
 
         Location ojo = p.getEyeLocation();
         Vector dir = ojo.getDirection();
-        double disp = t.dispersion;
-        if (t == Tipo.FRANCOTIRADOR) disp = conZoom.contains(id) ? 0.0 : 0.09;
-        else if (p.isSneaking()) disp *= 0.5;
-        if (p.isSprinting()) disp *= 1.8;
-        if (!((Entity) p).isOnGround()) disp *= 1.5;
-
         World w = p.getWorld();
         for (int i = 0; i < t.perdigones; i++) {
             Vector d = dir.clone().add(new Vector(rnd.nextGaussian() * disp, rnd.nextGaussian() * disp,
                     rnd.nextGaussian() * disp)).normalize();
-            RayTraceResult r = w.rayTrace(ojo, d, t.alcance, FluidCollisionMode.NEVER, true, 0.15,
+            RayTraceResult r = w.rayTrace(ojo, d, alcance, FluidCollisionMode.NEVER, true, 0.15,
                     ent -> blancoValido(p, ent));
-            double distancia = t.alcance;
+            double distancia = alcance;
             if (r != null) {
                 distancia = r.getHitPosition().distance(ojo.toVector());
                 Location punto = r.getHitPosition().toLocation(w);
                 if (r.getHitEntity() instanceof LivingEntity le) {
-                    impactar(p, le, t, r.getHitPosition(), distancia);
+                    impactar(p, le, t, r.getHitPosition(), distancia, alcance);
                 } else if (r.getHitBlock() != null) {
                     w.spawnParticle(Particle.BLOCK, punto, 5, 0.05, 0.05, 0.05, 0, r.getHitBlock().getBlockData());
                 }
             }
             trazador(ojo, d, distancia, t);
         }
-        sonidoDisparo(p, t);
-        w.spawnParticle(Particle.SMOKE, ojo.clone().add(dir.clone().multiply(0.9)), 2, 0.02, 0.02, 0.02, 0.01);
+        sonidoDisparo(p, t, acc.silenciador());
+        if (!acc.silenciador()) {
+            w.spawnParticle(Particle.SMOKE, ojo.clone().add(dir.clone().multiply(0.9)), 2, 0.02, 0.02, 0.02, 0.01);
+        }
         mostrarBalas(p, it, t);
         if (balas - 1 <= 0) recargar(p, it, t);
+        return true;
     }
 
     private boolean blancoValido(Player tirador, Entity ent) {
         if (ent == tirador || !(ent instanceof LivingEntity le) || le.isDead()) return false;
         if (ent instanceof ArmorStand) return false;
-        if (ent instanceof Player op && (op.getGameMode() == org.bukkit.GameMode.SPECTATOR)) return false;
+        if (ent instanceof Player op && (op.getGameMode() == GameMode.SPECTATOR)) return false;
         if (ent instanceof AbstractHorse && ent.getPersistentDataContainer().has(Claves.AUTO_DUENO)) return false;
         return true;
     }
 
-    private void impactar(Player tirador, LivingEntity blanco, Tipo t, Vector punto, double distancia) {
+    private void impactar(Player tirador, LivingEntity blanco, Tipo t, Vector punto, double distancia, double alcance) {
         double danio = t.danio;
-        if (t != Tipo.FRANCOTIRADOR && distancia > t.alcance * 0.6) danio *= 0.7;
+        if (t != Tipo.FRANCOTIRADOR && distancia > alcance * 0.6) danio *= 0.7;
         boolean cabeza = punto.getY() >= blanco.getEyeLocation().getY() - 0.3;
         if (cabeza) danio *= (t == Tipo.FRANCOTIRADOR ? 1.3 : 1.8);
         impactos.put(blanco.getUniqueId(), new Impacto(tirador.getUniqueId(), t.nombre, cabeza, Bukkit.getCurrentTick()));
@@ -244,9 +423,15 @@ public class Armas implements Listener {
         }
     }
 
-    private void sonidoDisparo(Player p, Tipo t) {
+    private void sonidoDisparo(Player p, Tipo t, boolean silenciado) {
         Location l = p.getLocation();
         World w = p.getWorld();
+        if (silenciado) {
+            // Con silenciador: chasquido corto que se oye poco más allá del tirador.
+            w.playSound(l, Sound.ENTITY_ARROW_SHOOT, 0.45f, 1.7f);
+            w.playSound(l, Sound.BLOCK_IRON_TRAPDOOR_CLOSE, 0.20f, 2.0f);
+            return;
+        }
         switch (t) {
             case PISTOLA -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.2f, 1.6f);
             case MP5 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.95f);
@@ -261,19 +446,83 @@ public class Armas implements Listener {
 
     public void mostrarBalas(Player p, ItemStack it, Tipo t) {
         int b = balas(it);
-        String color = b == 0 ? "<red>" : b <= t.cargador / 4 ? "<yellow>" : "<white>";
-        Util.barra(p, "<gray>" + t.nombre + "  " + Hud.ICONO_BALA + " " + color + "<bold>" + b + "</bold><gray> / " + t.cargador);
+        int cap = capacidad(t, accesorios(it));
+        String color = b == 0 ? "<red>" : b <= cap / 4 ? "<yellow>" : "<white>";
+        Util.barra(p, "<gray>" + t.nombre + "  " + Hud.ICONO_BALA + " " + color + "<bold>" + b + "</bold><gray> / " + cap);
+    }
+
+    // ------------------------------------------------------------------ apuntado (ADS)
+
+    private void alternarApuntado(Player p, ItemStack it) {
+        UUID id = p.getUniqueId();
+        // Al tirar el arma con Q el cliente también agita el brazo: no lo tomamos como clic.
+        if (Bukkit.getCurrentTick() - ultimoTirar.getOrDefault(id, -100) <= 3) return;
+        if (apuntando.contains(id)) {
+            dejarDeApuntar(p);
+            return;
+        }
+        if (recargando.containsKey(id) || p.isSprinting()) return;
+        Mira mira = accesorios(it).mira();
+        apuntando.add(id);
+        // La lentitud cierra el campo visual: es el zoom de la óptica (y te frena al apuntar).
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, PotionEffect.INFINITE_DURATION, mira.zoom,
+                false, false, false));
+        p.playSound(p, Sound.ITEM_ARMOR_EQUIP_GENERIC, 0.5f, 1.6f);
+    }
+
+    public void dejarDeApuntar(Player p) {
+        if (apuntando.remove(p.getUniqueId())) p.removePotionEffect(PotionEffectType.SLOWNESS);
+    }
+
+    @EventHandler
+    public void alCorrer(PlayerToggleSprintEvent e) {
+        if (e.isSprinting()) dejarDeApuntar(e.getPlayer());
+    }
+
+    // ------------------------------------------------------------------ láser y linterna
+
+    private void tickAccesorios() {
+        int ahora = Bukkit.getCurrentTick();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            UUID id = p.getUniqueId();
+            ItemStack it = p.getInventory().getItemInMainHand();
+            Tipo t = tipo(it);
+            Accesorios a = t != null && mundoConArmas(p) ? accesorios(it) : null;
+
+            // Linterna: visión nocturna mientras el arma esté en la mano.
+            if (a != null && a.linterna()) {
+                if (conLinterna.add(id) || ahora % 100 == 0) {
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 400, 0, false, false, false));
+                }
+            } else if (conLinterna.remove(id)) {
+                p.removePotionEffect(PotionEffectType.NIGHT_VISION);
+            }
+
+            // Láser: punto rojo donde apunta el arma, visible para todos.
+            if (a != null && a.laser() && !p.isSprinting() && !recargando.containsKey(id)) {
+                Location ojo = p.getEyeLocation();
+                RayTraceResult r = p.getWorld().rayTrace(ojo, ojo.getDirection(), 60, FluidCollisionMode.NEVER, true,
+                        0.1, ent -> blancoValido(p, ent));
+                if (r != null) {
+                    Location punto = r.getHitPosition().toLocation(p.getWorld())
+                            .subtract(ojo.getDirection().multiply(0.05));
+                    p.getWorld().spawnParticle(Particle.DUST, punto, 1, 0, 0, 0, 0,
+                            new Particle.DustOptions(Color.fromRGB(255, 20, 20), 0.6f));
+                }
+            }
+        }
     }
 
     // ------------------------------------------------------------------ recarga
 
     public void recargar(Player p, ItemStack it, Tipo t) {
         UUID id = p.getUniqueId();
-        if (recargando.containsKey(id) || balas(it) >= t.cargador) return;
+        if (recargando.containsKey(id) || balas(it) >= capacidad(t, accesorios(it))) return;
         int ahora = Bukkit.getCurrentTick();
         recargando.put(id, new Recarga(p.getInventory().getHeldItemSlot(), t, ahora, ahora + t.recarga));
+        gatilloHasta.remove(id);
         p.playSound(p, Sound.ITEM_CROSSBOW_LOADING_START, 0.8f, 1.2f);
-        quitarZoom(p);
+        dejarDeApuntar(p);
     }
 
     private void tickRecargas() {
@@ -293,7 +542,8 @@ public class Armas implements Listener {
                 continue;
             }
             if (ahora >= r.fin()) {
-                setBalas(it, r.tipo().cargador);
+                setBalas(it, capacidad(r.tipo(), accesorios(it)));
+                persistir(it);
                 p.playSound(p, Sound.ITEM_CROSSBOW_LOADING_END, 0.8f, 1.3f);
                 mostrarBalas(p, it, r.tipo());
                 itr.remove();
@@ -312,6 +562,7 @@ public class Armas implements Listener {
         Tipo t = tipo(it);
         if (t == null || !mundoConArmas(p)) return;
         e.setCancelled(true);
+        ultimoTirar.put(p.getUniqueId(), Bukkit.getCurrentTick());
         // Después de cancelar, el ítem vuelve a la mano: recargamos el que está en la mano.
         Bukkit.getScheduler().runTask(plugin, () -> {
             ItemStack mano = p.getInventory().getItemInMainHand();
@@ -323,30 +574,29 @@ public class Armas implements Listener {
     @EventHandler
     public void alCambiarSlot(PlayerItemHeldEvent e) {
         Player p = e.getPlayer();
-        quitarZoom(p);
+        dejarDeApuntar(p);
         recargando.remove(p.getUniqueId());
+        gatilloHasta.remove(p.getUniqueId());
+        ItemStack anterior = p.getInventory().getItem(e.getPreviousSlot());
+        if (anterior != null && tipo(anterior) != null) persistir(anterior);
         ItemStack it = p.getInventory().getItem(e.getNewSlot());
         Tipo t = tipo(it);
         if (t != null && mundoConArmas(p)) mostrarBalas(p, it, t);
     }
 
-    // ------------------------------------------------------------------ mira del francotirador
-
     @EventHandler
-    public void alAgacharse(PlayerToggleSneakEvent e) {
-        Player p = e.getPlayer();
-        if (!mundoConArmas(p)) return;
-        if (e.isSneaking() && tipo(p.getInventory().getItemInMainHand()) == Tipo.FRANCOTIRADOR
-                && !recargando.containsKey(p.getUniqueId())) {
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, PotionEffect.INFINITE_DURATION, 6, false, false, false));
-            conZoom.add(p.getUniqueId());
-        } else {
-            quitarZoom(p);
-        }
+    public void alSalirServer(PlayerQuitEvent e) {
+        olvidar(e.getPlayer().getUniqueId());
     }
 
-    public void quitarZoom(Player p) {
-        if (conZoom.remove(p.getUniqueId())) p.removePotionEffect(PotionEffectType.SLOWNESS);
+    @EventHandler
+    public void alMorir(PlayerDeathEvent e) {
+        // Al morir se pierden los efectos (zoom, visión nocturna): se reinicia el estado del arma.
+        UUID id = e.getPlayer().getUniqueId();
+        apuntando.remove(id);
+        conLinterna.remove(id);
+        recargando.remove(id);
+        gatilloHasta.remove(id);
     }
 
     // ------------------------------------------------------------------ granadas y explosiones
@@ -394,7 +644,11 @@ public class Armas implements Listener {
         impactos.remove(id);
         recargando.remove(id);
         ultimoDisparo.remove(id);
-        conZoom.remove(id);
+        gatilloHasta.remove(id);
+        acumulado.remove(id);
+        apuntando.remove(id);
+        conLinterna.remove(id);
+        ultimoTirar.remove(id);
     }
 
     public static List<Tipo> todos() {

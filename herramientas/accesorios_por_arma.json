@@ -1,0 +1,128 @@
+{
+ "m4a1": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "m9": {
+  "mira": [
+   ""
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "mp5": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "m1014": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica"
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "barrett": {
+  "mira": [
+   "telescopica"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
+ }
+}
