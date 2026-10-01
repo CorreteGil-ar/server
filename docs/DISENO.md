@@ -57,9 +57,9 @@ Minecraft sin mods impone límites. Cada mecánica lleva una marca:
 
 | Modo | 4 jugadores | 6 jugadores |
 |---|---|---|
-| Shooter | Meta de 20 bajas | Meta de 30 bajas |
-| Guerra | 2 vs 2, vehículos con un 25 % más de tiempo de reaparición | 3 vs 3 |
-| RPG | Jefes con vida base ×1,9 | Jefes con vida base ×2,5 (+30 % por jugador extra en la arena) |
+| Shooter | Meta de 20 bajas ✅ | Meta de 30 bajas ✅ |
+| Guerra | 2 vs 2, vehículos con un 25 % más de tiempo de reaparición ✅ | 3 vs 3 |
+| RPG | Jefes con vida base ×1,9 ✅ | Jefes con vida base ×2,5 (+30 % por jugador extra en la arena) ✅ |
 
 ---
 

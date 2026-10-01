@@ -1319,7 +1319,9 @@ public class Vehiculos implements Listener {
         }
         if (a != null) {
             deAparicion.remove(a);
-            esperan.put(a, Bukkit.getCurrentTick() + v.tipo.reaparicion * 20);
+            // Con 2 contra 2 (o menos) los vehículos tardan un 25 % más en volver.
+            double factor = mundo() != null && mundo().getPlayers().size() <= 4 ? 1.25 : 1.0;
+            esperan.put(a, Bukkit.getCurrentTick() + (int) Math.round(v.tipo.reaparicion * 20 * factor));
         }
     }
 
