@@ -22,6 +22,19 @@ jobs:
       - name: Compilar con Maven
         run: mvn -B -ntp package
 
+      # Temporal: muestra la API de GameRule y ParticleBuilder de Paper 26.3 para migrar lo obsoleto.
+      - name: Consultar API (temporal)
+        run: |
+          mvn -B -ntp -q dependency:get -Dtransitive=false \
+            -Dartifact=io.papermc.paper:paper-api:26.3.build.140-beta:jar:sources \
+            -DremoteRepositories=papermc::default::https://repo.papermc.io/repository/maven-public/
+          F=$(find ~/.m2 -name 'paper-api-26.3*-sources.jar' | head -1)
+          mkdir -p /tmp/api && cd /tmp/api && unzip -q -o "$F" 'org/bukkit/GameRule*.java' 'org/bukkit/GameRules*.java' \
+            'com/destroystokyo/paper/ParticleBuilder.java' 'io/papermc/paper/world/*' 2>/dev/null || true
+          find /tmp/api -name '*.java' | sort
+          for f in $(find /tmp/api -name 'GameRule*.java'); do echo "===== $f"; grep -n "public static final\|@Deprecated\|@deprecated\|forRemoval\|getByName\|getKey\|class \|interface " "$f" | head -400; done
+          echo "===== ParticleBuilder"; grep -n -B6 "public ParticleBuilder extra\|public ParticleBuilder speed\|public ParticleBuilder offset(" /tmp/api/com/destroystokyo/paper/ParticleBuilder.java | head -80
+
       - name: Validar y empaquetar el paquete de recursos
         run: python3 herramientas/armar_paquete.py
 
