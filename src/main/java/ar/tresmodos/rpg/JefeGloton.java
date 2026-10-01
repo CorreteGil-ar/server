@@ -47,6 +47,11 @@ public class JefeGloton extends Jefe {
     }
 
     @Override
+    protected void vestir() {
+        adorno("fauces_gloton", 0, 1.95f, 1.7f, 1.4f);
+    }
+
+    @Override
     protected void pensar(int ahora) {
         if (tragado != null) {
             if (!tragado.isOnline() || tragado.isDead()) {

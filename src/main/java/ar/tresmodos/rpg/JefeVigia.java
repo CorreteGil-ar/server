@@ -51,7 +51,17 @@ public class JefeVigia extends Jefe {
     }
 
     @Override
+    protected void vestir() {
+        adorno("cola_vigia", 0, 3.0f, -0.35f, 1.6f);
+    }
+
+    @Override
     protected void pensar(int ahora) {
+        // La cola se mece (también la de las copias).
+        if ((ahora / 2) % 10 == 0) {
+            float a = (float) Math.toRadians(((ahora / 20) % 2 == 0) ? 14 : -14);
+            for (Adorno c : adornos) girar(c, new org.joml.Quaternionf().rotateY(a));
+        }
         // Las huellas del real.
         cuerpo.getWorld().spawnParticle(Particle.DUST, cuerpo.getLocation().add(0, 0.05, 0), 2, 0.2, 0, 0.2, 0,
                 new Particle.DustOptions(Color.fromRGB(230, 230, 230), 1.4f));
@@ -121,6 +131,7 @@ public class JefeVigia extends Jefe {
             if (t != null) x.setTarget(t);
         });
         copias.add(e.getUniqueId());
+        adorno(e, "cola_vigia", 0, 3.0f, -0.35f, 1.6f);
     }
 
     @Override

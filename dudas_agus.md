@@ -186,6 +186,14 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   (tensar, cargar, embestir) dependen de él. Las armas que ya tenías en el inventario toman el modelo
   nuevo al entrar al RPG. **Para probar en el juego**: que la mano agarre el puño (en las armas de
   asta larga, como la alabarda y la guadaña, el agarre queda en la mitad del asta).
+- **Aspecto de enemigos y jefes** (`herramientas/criaturas.py`): no reemplacé los mobs (perderían
+  sus animaciones de caminar y atacar). Los Huecos, arqueros, caballeros caídos, ahogados y vástagos
+  llevan cascos propios en la ranura de la cabeza (capucha, capacete, yelmo de cubo, yelmo de buzo,
+  máscara de hueso) y armas del RPG en la mano. Los jefes suman piezas que los siguen: las fauces del
+  Glotón, el abdomen con púas de la Tejedora, la cola del Vigía (también en sus copias), la corona y
+  la Espada del Abismo del Caballero, y las alas (plegadas en la fase 1, baten después) y los
+  tentáculos del Durmiente. **Para probar en el juego**: el lugar exacto de cada pieza sobre el mob
+  (son números en cada `vestir()`), y que los cascos queden bien en la cabeza.
 - **Estructuras de las zonas** (`ConstructorZonas`): se construyen una sola vez, la primera vez que
   arranca el server con esta versión (una zona por segundo; en el log queda cuánto tardó cada una).
   Quedan registradas en `plugins/TresModos/rpg-estructuras.yml`; si se borra ese archivo, se vuelven a

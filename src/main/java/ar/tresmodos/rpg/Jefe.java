@@ -85,6 +85,8 @@ public abstract class Jefe {
         barra.name(Util.mm("<dark_red>" + nombre()));
         barra.color(colorBarra());
         barra.progress(1f);
+        quitarAdornos();
+        vestir();
     }
 
     /** Suma vida si entra otro jugador durante el muro de niebla (mantiene el porcentaje). */
@@ -101,6 +103,7 @@ public abstract class Jefe {
     public void quitar() {
         if (cuerpo != null && cuerpo.isValid()) cuerpo.remove();
         cuerpo = null;
+        quitarAdornos();
         limpiarExtra();
         if (barra != null) for (Player p : Bukkit.getOnlinePlayers()) p.hideBossBar(barra);
     }
@@ -121,8 +124,88 @@ public abstract class Jefe {
         return false;
     }
 
+    // ------------------------------------------------------------------ adornos (modelos que siguen al cuerpo)
+
+    /** Pieza del paquete que acompaña al cuerpo: posición local (x a la izquierda, y arriba, z adelante). */
+    protected static final class Adorno {
+        final org.bukkit.entity.ItemDisplay display;
+        final LivingEntity duenio;
+        final org.joml.Vector3f lugar;
+        final float escala;
+        org.joml.Quaternionf giro = new org.joml.Quaternionf();
+
+        Adorno(org.bukkit.entity.ItemDisplay display, LivingEntity duenio, org.joml.Vector3f lugar, float escala) {
+            this.display = display;
+            this.duenio = duenio;
+            this.lugar = lugar;
+            this.escala = escala;
+        }
+    }
+
+    protected final List<Adorno> adornos = new java.util.ArrayList<>();
+
+    protected Adorno adorno(String modelo, float x, float y, float z, float escala) {
+        return adorno(cuerpo, modelo, x, y, z, escala);
+    }
+
+    /** Adorno de otra entidad del jefe (copias, crías): se va con ella. */
+    protected Adorno adorno(LivingEntity duenio, String modelo, float x, float y, float z, float escala) {
+        Location l = duenio.getLocation();
+        l.setPitch(0);
+        org.bukkit.entity.ItemDisplay d = l.getWorld().spawn(l, org.bukkit.entity.ItemDisplay.class, it -> {
+            it.setItemStack(TipoEnemigo.modelo(org.bukkit.Material.PAPER, modelo));
+            it.setPersistent(false);
+            it.setTeleportDuration(2);
+            it.setInterpolationDuration(4);
+            it.setBrightness(null);
+        });
+        Adorno a = new Adorno(d, duenio, new org.joml.Vector3f(x, y, z), escala);
+        aplicar(a);
+        adornos.add(a);
+        return a;
+    }
+
+    /** Cambia el giro de un adorno (alas que baten, cola que se mece); se interpola en 4 ticks. */
+    protected void girar(Adorno a, org.joml.Quaternionf giro) {
+        a.giro = giro;
+        aplicar(a);
+    }
+
+    private void aplicar(Adorno a) {
+        a.display.setInterpolationDelay(0);
+        a.display.setTransformation(new org.bukkit.util.Transformation(new org.joml.Vector3f(a.lugar), a.giro,
+                new org.joml.Vector3f(a.escala, a.escala, a.escala), new org.joml.Quaternionf()));
+    }
+
+    private void moverAdornos() {
+        for (java.util.Iterator<Adorno> it = adornos.iterator(); it.hasNext(); ) {
+            Adorno a = it.next();
+            if (!a.duenio.isValid() || a.duenio.isDead() || !a.display.isValid()) {
+                a.display.remove();
+                it.remove();
+                continue;
+            }
+            Location l = a.duenio.getLocation();
+            l.setYaw(a.duenio.getBodyYaw());
+            l.setPitch(0);
+            a.display.teleport(l);
+        }
+    }
+
+    private void quitarAdornos() {
+        for (Adorno a : adornos) a.display.remove();
+        adornos.clear();
+    }
+
+    /** Lo que cada jefe se pone encima al aparecer (por defecto, nada). */
+    protected void vestir() {}
+
     public void tick(int ahora) {
-        if (!vivo()) return;
+        if (!vivo()) {
+            quitarAdornos();
+            return;
+        }
+        moverAdornos();
         double max = cuerpo.getAttribute(Attribute.MAX_HEALTH).getValue();
         float prog = (float) Math.max(0, Math.min(1, cuerpo.getHealth() / max));
         barra.progress(prog);

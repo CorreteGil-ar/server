@@ -60,6 +60,11 @@ public class JefeTejedora extends Jefe {
     }
 
     @Override
+    protected void vestir() {
+        adorno("caparazon_tejedora", 0, 1.45f, -0.5f, 2.6f);
+    }
+
+    @Override
     protected void pensar(int ahora) {
         if (colgada) {
             cuerpo.teleport(colgadaEn);

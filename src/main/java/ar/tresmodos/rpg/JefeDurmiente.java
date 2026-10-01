@@ -57,8 +57,35 @@ public class JefeDurmiente extends Jefe {
         });
     }
 
+    private Adorno alaDer, alaIzq;
+
+    @Override
+    protected void vestir() {
+        adorno("tentaculos_durmiente", 0, 3.75f, 0.75f, 1.4f);
+        alaDer = adorno("ala_der", -0.45f, 3.9f, -0.6f, 2.0f);
+        alaIzq = adorno("ala_izq", 0.45f, 3.9f, -0.6f, 2.0f);
+        plegarAlas(true);
+    }
+
+    /** En la fase 1 las alas van plegadas sobre la espalda; después se abren y baten. */
+    private void plegarAlas(boolean plegadas) {
+        if (alaDer == null) return;
+        float y = (float) Math.toRadians(plegadas ? 70 : 10);
+        girar(alaDer, new org.joml.Quaternionf().rotateY(-y));
+        girar(alaIzq, new org.joml.Quaternionf().rotateY(y));
+    }
+
+    private void batir(boolean arriba) {
+        if (alaDer == null) return;
+        float z = (float) Math.toRadians(arriba ? 28 : -12);
+        float y = (float) Math.toRadians(10);
+        girar(alaDer, new org.joml.Quaternionf().rotateY(-y).rotateZ(-z));
+        girar(alaIzq, new org.joml.Quaternionf().rotateY(y).rotateZ(z));
+    }
+
     @Override
     protected void pensar(int ahora) {
+        if (fase >= 2 && (ahora / 2) % 4 == 0) batir((ahora / 8) % 2 == 0);
         if (cuerpo instanceof Warden w) for (Player p : arena.participantes()) w.setAnger(p, 150);
         if (fase == 1 && vidaFrac() < 0.6) {
             cambiarFase(2, "<dark_aqua>Las alas se despliegan");

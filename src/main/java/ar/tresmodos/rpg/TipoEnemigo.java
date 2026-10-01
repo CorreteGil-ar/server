@@ -28,18 +28,18 @@ public enum TipoEnemigo {
         Zombie z = (Zombie) e;
         z.setAdult();
         z.setShouldBurnInDay(false);
-        oxidado(z.getEquipment(), Material.STONE_SWORD);
+        oxidado(z.getEquipment(), modelo(Material.STONE_SWORD, "rpg_espada_corta"), "capucha_hueca");
     }),
     HUECO_LANCERO("Hueco lancero", Zombie.class, 32, 5, 45, 1, e -> {
         Zombie z = (Zombie) e;
         z.setAdult();
         z.setShouldBurnInDay(false);
-        oxidado(z.getEquipment(), Material.IRON_SPEAR);
+        oxidado(z.getEquipment(), new ItemStack(Material.IRON_SPEAR), "yelmo_lancero");
     }),
     HUECO_ARQUERO("Hueco arquero", Skeleton.class, 24, 3, 45, 1, e -> {
         Skeleton s = (Skeleton) e;
         s.setShouldBurnInDay(false);
-        oxidado(s.getEquipment(), Material.BOW);
+        oxidado(s.getEquipment(), new ItemStack(Material.BOW), "capucha_arquero");
     }),
     PERRO("Perro de la plaga", Wolf.class, 16, 3, 25, 3, e -> {
         Wolf w = (Wolf) e;
@@ -66,10 +66,10 @@ public enum TipoEnemigo {
     }),
     CABALLERO("Caballero caído", WitherSkeleton.class, 60, 7, 200, 1, e -> {
         EntityEquipment eq = e.getEquipment();
-        eq.setHelmet(new ItemStack(Material.IRON_HELMET));
+        eq.setHelmet(modelo(Material.PAPER, "yelmo_caido"));
         eq.setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
         eq.setLeggings(new ItemStack(Material.CHAINMAIL_LEGGINGS));
-        eq.setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+        eq.setItemInMainHand(modelo(Material.IRON_SWORD, "rpg_espada_bastarda"));
         eq.setItemInOffHand(new ItemStack(Material.SHIELD));
         sinBotin(eq);
         escala(e, 0.85);
@@ -84,9 +84,14 @@ public enum TipoEnemigo {
         d.setAdult();
         d.setShouldBurnInDay(false);
         d.getEquipment().setItemInMainHand(new ItemStack(Math.random() < 0.5 ? Material.TRIDENT : Material.IRON_SPEAR));
+        d.getEquipment().setHelmet(modelo(Material.PAPER, "yelmo_ahogado"));
         sinBotin(d.getEquipment());
     }),
-    VASTAGO("Vástago del Durmiente", Evoker.class, 90, 6, 600, 1, e -> escala(e, 1.2));
+    VASTAGO("Vástago del Durmiente", Evoker.class, 90, 6, 600, 1, e -> {
+        escala(e, 1.2);
+        e.getEquipment().setHelmet(modelo(Material.PAPER, "mascara_vastago"));
+        sinBotin(e.getEquipment());
+    });
 
     public final String nombre;
     public final Class<? extends LivingEntity> clase;
@@ -131,14 +136,23 @@ public enum TipoEnemigo {
         base(e, Attribute.SCALE, s);
     }
 
-    private static void oxidado(EntityEquipment eq, Material arma) {
-        eq.setHelmet(new ItemStack(Math.random() < 0.6 ? Material.CHAINMAIL_HELMET : Material.LEATHER_HELMET));
+    /** Ítem con modelo propio del paquete (cascos de herramientas/criaturas.py, armas de rpg.py). */
+    static ItemStack modelo(Material m, String modelo) {
+        ItemStack it = new ItemStack(m);
+        org.bukkit.inventory.meta.ItemMeta meta = it.getItemMeta();
+        meta.setItemModel(new org.bukkit.NamespacedKey("tresmodos", modelo));
+        it.setItemMeta(meta);
+        return it;
+    }
+
+    private static void oxidado(EntityEquipment eq, ItemStack arma, String casco) {
+        eq.setHelmet(modelo(Material.PAPER, casco));
         ItemStack pecho = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta m = (LeatherArmorMeta) pecho.getItemMeta();
         m.setColor(Color.fromRGB(92, 64, 44));
         pecho.setItemMeta(m);
         eq.setChestplate(pecho);
-        eq.setItemInMainHand(new ItemStack(arma));
+        eq.setItemInMainHand(arma);
         sinBotin(eq);
     }
 

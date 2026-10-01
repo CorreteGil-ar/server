@@ -51,8 +51,8 @@ public class JefeCaballero extends Jefe {
             TipoEnemigo.base(s, Attribute.ARMOR, 12);
             TipoEnemigo.base(s, Attribute.MOVEMENT_SPEED, 0.27);
             var eq = s.getEquipment();
-            eq.setItemInMainHand(new ItemStack(Material.NETHERITE_SWORD));
-            eq.setHelmet(new ItemStack(Material.NETHERITE_HELMET));
+            eq.setItemInMainHand(TipoEnemigo.modelo(Material.NETHERITE_SWORD, "rpg_espada_abismo"));
+            eq.setHelmet(TipoEnemigo.modelo(Material.PAPER, "yelmo_abismo"));
             eq.setChestplate(new ItemStack(Material.NETHERITE_CHESTPLATE));
             eq.setItemInMainHandDropChance(0f);
             eq.setHelmetDropChance(0f);
