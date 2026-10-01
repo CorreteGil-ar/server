@@ -1174,12 +1174,12 @@ public class Vehiculos implements Listener {
         if (tirador != null && modo.equipo(tirador) == v.equipo) return;
         double d = switch (v.tipo.blindaje) {
             case PESADO, MEDIO -> 0;
-            case LIGERO -> t == Armas.Tipo.FRANCOTIRADOR ? 25 : 0.6;
-            case NINGUNO -> t == Armas.Tipo.FRANCOTIRADOR ? 25 : 1.5;
+            case LIGERO -> t.francotirador() ? 25 : 0.6;
+            case NINGUNO -> t.francotirador() ? 25 : 1.5;
         };
         Vector p = new Vector(v.x, v.y + 1, v.z);
         mundo().spawnParticle(Particle.CRIT, p.getX(), p.getY(), p.getZ(), 2, 0.4, 0.4, 0.4, 0.1);
-        if (d > 0) daniar(v, d, tirador, t.nombre, dir, false, t == Armas.Tipo.FRANCOTIRADOR);
+        if (d > 0) daniar(v, d, tirador, t.nombre, dir, false, t.francotirador());
         else mundo().playSound(p.toLocation(mundo()), Sound.BLOCK_ANVIL_LAND, 0.3f, 2f);
     }
 

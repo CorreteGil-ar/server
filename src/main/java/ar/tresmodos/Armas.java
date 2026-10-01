@@ -67,19 +67,46 @@ public class Armas implements Listener {
      * Armas disponibles. Los accesorios admitidos tienen que coincidir con herramientas/armas.py
      * (el paquete de recursos solo trae modelos para esas combinaciones).
      */
+    /** Familia del arma: define el retroceso, el sonido, la caída de daño y el slot. */
+    public enum Categoria {
+        PISTOLA(1.6), SUBFUSIL(0.55), FUSIL(0.7), AMETRALLADORA(0.85), ESCOPETA(3.6), FRANCOTIRADOR(6.5);
+
+        /** Grados que sube la mira con cada disparo (antes de empuñadura, apuntado, etc.). */
+        public final double retroceso;
+
+        Categoria(double retroceso) {
+            this.retroceso = retroceso;
+        }
+    }
+
     public enum Tipo {
-        PISTOLA("Beretta M9", Material.IRON_HOE, 6.0, 360, Disparo.SEMI, 45, 15, 20, 30, 1, 0.025, "m9",
+        PISTOLA("Beretta M9", Categoria.PISTOLA, Material.IRON_HOE, 6.0, 360, Disparo.SEMI, 45, 15, 20, 30, 1, 0.025, "m9",
                 List.of(Mira.HIERRO), true, false, true, true),
-        MP5("H&K MP5", Material.STONE_HOE, 4.4, 800, Disparo.AUTOMATICO, 35, 30, 40, 40, 1, 0.045, "mp5",
+        DEAGLE("Desert Eagle", Categoria.PISTOLA, Material.IRON_HOE, 11.0, 150, Disparo.SEMI, 50, 7, 10, 36, 1, 0.030, "deagle",
+                List.of(Mira.HIERRO), false, false, true, true),
+        MP5("H&K MP5", Categoria.SUBFUSIL, Material.STONE_HOE, 4.4, 800, Disparo.AUTOMATICO, 35, 30, 40, 40, 1, 0.045, "mp5",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
-        M4A1("Colt M4A1", Material.DIAMOND_HOE, 5.2, 800, Disparo.AUTOMATICO, 70, 30, 40, 45, 1, 0.020, "m4a1",
+        P90("FN P90", Categoria.SUBFUSIL, Material.STONE_HOE, 3.8, 900, Disparo.AUTOMATICO, 32, 50, 0, 52, 1, 0.050, "p90",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA), true, false, true, true),
+        VECTOR("KRISS Vector", Categoria.SUBFUSIL, Material.STONE_HOE, 3.6, 1140, Disparo.AUTOMATICO, 26, 25, 33, 38, 1, 0.050, "vector",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA), true, true, true, true),
+        M4A1("Colt M4A1", Categoria.FUSIL, Material.DIAMOND_HOE, 5.2, 800, Disparo.AUTOMATICO, 70, 30, 40, 45, 1, 0.020, "m4a1",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
-        ESCOPETA("Benelli M1014", Material.GOLDEN_HOE, 2.8, 180, Disparo.SEMI, 18, 7, 9, 60, 8, 0.120, "m1014",
+        AK47("AK-47", Categoria.FUSIL, Material.WOODEN_HOE, 6.8, 600, Disparo.AUTOMATICO, 65, 30, 40, 46, 1, 0.026, "ak47",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), true, true, true, true),
+        M249("M249 SAW", Categoria.AMETRALLADORA, Material.DIAMOND_HOE, 5.6, 780, Disparo.AUTOMATICO, 70, 100, 0, 110, 1, 0.045, "m249",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA, Mira.ACOG), false, true, false, false),
+        ESCOPETA("Benelli M1014", Categoria.ESCOPETA, Material.GOLDEN_HOE, 2.8, 180, Disparo.SEMI, 18, 7, 9, 60, 8, 0.120, "m1014",
                 List.of(Mira.HIERRO, Mira.PUNTO_ROJO, Mira.HOLOGRAFICA), false, false, true, true),
-        FRANCOTIRADOR("Barrett M82A1", Material.NETHERITE_HOE, 24.0, 60, Disparo.SEMI, 150, 10, 0, 70, 1, 0.000, "barrett",
+        REMINGTON("Remington 870", Categoria.ESCOPETA, Material.GOLDEN_HOE, 3.6, 72, Disparo.SEMI, 20, 6, 0, 72, 8, 0.110, "r870",
+                List.of(Mira.HIERRO, Mira.PUNTO_ROJO), false, false, true, true),
+        FRANCOTIRADOR("Barrett M82A1", Categoria.FRANCOTIRADOR, Material.NETHERITE_HOE, 24.0, 60, Disparo.SEMI, 150, 10, 0, 70, 1, 0.000, "barrett",
+                List.of(Mira.TELESCOPICA), true, false, false, false),
+        M24("Remington M24", Categoria.FRANCOTIRADOR, Material.NETHERITE_HOE, 20.0, 48, Disparo.SEMI, 130, 5, 0, 60, 1, 0.000, "m24",
                 List.of(Mira.TELESCOPICA), true, false, false, false);
 
         public final String nombre;
+        public final Categoria categoria;
         public final Material material;
         public final double danio;
         /** Disparos por minuto (en semiautomáticas, el máximo con clics seguidos). */
@@ -94,10 +121,12 @@ public class Armas implements Listener {
         /** Va en el slot de la secundaria (pistolas). */
         public final boolean secundaria;
 
-        Tipo(String nombre, Material material, double danio, int rpm, Disparo disparo, int alcance, int cargador,
-             int cargadorAmpliado, int recarga, int perdigones, double dispersion, String modelo, List<Mira> miras,
-             boolean admiteSilenciador, boolean admiteEmpunadura, boolean admiteLaser, boolean admiteLinterna) {
+        Tipo(String nombre, Categoria categoria, Material material, double danio, int rpm, Disparo disparo, int alcance,
+             int cargador, int cargadorAmpliado, int recarga, int perdigones, double dispersion, String modelo,
+             List<Mira> miras, boolean admiteSilenciador, boolean admiteEmpunadura, boolean admiteLaser,
+             boolean admiteLinterna) {
             this.nombre = nombre;
+            this.categoria = categoria;
             this.material = material;
             this.danio = danio;
             this.rpm = rpm;
@@ -114,7 +143,11 @@ public class Armas implements Listener {
             this.admiteEmpunadura = admiteEmpunadura;
             this.admiteLaser = admiteLaser;
             this.admiteLinterna = admiteLinterna;
-            this.secundaria = material == Material.IRON_HOE;
+            this.secundaria = categoria == Categoria.PISTOLA;
+        }
+
+        public boolean francotirador() {
+            return categoria == Categoria.FRANCOTIRADOR;
         }
     }
 
@@ -417,7 +450,7 @@ public class Armas implements Listener {
         Accesorios acc = accesorios(it);
         boolean apunta = apuntando.containsKey(id);
         double disp = t.dispersion;
-        if (t == Tipo.FRANCOTIRADOR) {
+        if (t.francotirador()) {
             disp = apunta ? 0.0 : 0.09;
         } else if (apunta) {
             disp *= 0.25;
@@ -515,13 +548,11 @@ public class Armas implements Listener {
      * el giro (rotación relativa), así no pelea con el mouse del jugador.
      */
     private void retroceso(Player p, Tipo t, boolean apunta, Accesorios acc) {
-        double vertical = switch (t) {
-            case PISTOLA -> 1.6;
-            case MP5 -> 0.55;
-            case M4A1 -> 0.7;
-            case ESCOPETA -> 3.6;
-            case FRANCOTIRADOR -> 6.5;
-        };
+        double vertical = t.categoria.retroceso;
+        // La Desert Eagle patea el doble que una 9 mm; el bombeo de la 870 un poco más que la semi.
+        if (t == Tipo.DEAGLE || t == Tipo.REMINGTON) vertical *= t == Tipo.DEAGLE ? 2.0 : 1.15;
+        else if (t == Tipo.AK47) vertical *= 1.3;
+        else if (t == Tipo.VECTOR) vertical *= 0.7;
         if (apunta) vertical *= 0.65;
         if (p.isSneaking()) vertical *= 0.8;
         if (acc.empunadura()) vertical *= 0.7;
@@ -548,9 +579,9 @@ public class Armas implements Listener {
         }
         double danio = t.danio * factor;
         // Pierde daño pasado el alcance efectivo (el 60 % del máximo).
-        if (t != Tipo.FRANCOTIRADOR && distancia > alcance * 0.6) danio *= 0.7;
+        if (!t.francotirador() && distancia > alcance * 0.6) danio *= 0.7;
         boolean piernas = punto.getY() < blanco.getLocation().getY() + blanco.getHeight() * 0.42;
-        if (cabeza) danio *= t == Tipo.FRANCOTIRADOR ? 2.0 : 1.5;
+        if (cabeza) danio *= t.francotirador() ? 2.0 : 1.5;
         else if (piernas) danio *= 0.8;
         danioDirecto(blanco, danio, tirador, t.nombre, cabeza);
         Hud.marcador(tirador, blanco.isDead());
@@ -563,7 +594,7 @@ public class Armas implements Listener {
     private void trazador(Location ojo, Vector d, double distancia, Tipo t) {
         World w = ojo.getWorld();
         Particle.DustOptions polvo = new Particle.DustOptions(
-                t == Tipo.FRANCOTIRADOR ? Color.WHITE : Color.fromRGB(200, 190, 150), t == Tipo.FRANCOTIRADOR ? 0.8f : 0.45f);
+                t.francotirador() ? Color.WHITE : Color.fromRGB(200, 190, 150), t.francotirador() ? 0.8f : 0.45f);
         double paso = Math.max(0.6, distancia / 40.0);
         for (double s = 1.0; s < distancia; s += paso) {
             w.spawnParticle(Particle.DUST, ojo.clone().add(d.clone().multiply(s)), 1, 0, 0, 0, 0, polvo);
@@ -580,13 +611,37 @@ public class Armas implements Listener {
             return;
         }
         switch (t) {
-            case PISTOLA -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.2f, 1.6f);
-            case MP5 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.95f);
-            case M4A1 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.3f, 1.45f);
-            case ESCOPETA -> w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 1.8f);
-            case FRANCOTIRADOR -> {
-                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.4f, 0.9f);
-                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.6f, 0.6f);
+            case DEAGLE -> {
+                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 1.1f);
+                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.35f, 2.0f);
+            }
+            case P90, VECTOR -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.9f, 2.0f);
+            case AK47 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 1.25f);
+            case M249 -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.4f, 1.35f);
+            case REMINGTON -> {
+                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.6f);
+                // Bombeo: corredera atrás y adelante.
+                Bukkit.getScheduler().runTaskLater(plugin, () ->
+                        w.playSound(l, Sound.BLOCK_PISTON_CONTRACT, 0.5f, 1.9f), 6);
+            }
+            case M24 -> {
+                w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.3f, 1.0f);
+                w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5f, 0.7f);
+                // Cerrojo.
+                Bukkit.getScheduler().runTaskLater(plugin, () ->
+                        w.playSound(l, Sound.BLOCK_IRON_TRAPDOOR_OPEN, 0.5f, 1.5f), 14);
+            }
+            default -> {
+                switch (t.categoria) {
+                    case PISTOLA -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.2f, 1.6f);
+                    case SUBFUSIL -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.95f);
+                    case FUSIL, AMETRALLADORA -> w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.3f, 1.45f);
+                    case ESCOPETA -> w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 1.8f);
+                    case FRANCOTIRADOR -> {
+                        w.playSound(l, Sound.ENTITY_GENERIC_EXPLODE, 1.4f, 0.9f);
+                        w.playSound(l, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.6f, 0.6f);
+                    }
+                }
             }
         }
     }

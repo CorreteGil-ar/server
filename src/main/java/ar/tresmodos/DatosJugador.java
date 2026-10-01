@@ -40,6 +40,8 @@ public class DatosJugador {
     // Guerra
     public int guerraBajas, guerraMuertes, guerraCapturas, guerraVictorias, guerraRevividos;
     public String guerraClase;
+    /** Arma principal elegida en cada clase de Guerra (Clase -> Armas.Tipo). */
+    public final Map<String, String> guerraArmas = new HashMap<>();
     // Shooter (histórico y clases personalizadas)
     public int codBajas, codMuertes, shooterVictorias, shooterBombas;
     /** Las 5 clases personalizadas (ClasesShooter.Clase.codigo()); vacío = la clase por defecto. */
@@ -129,6 +131,8 @@ public class DatosJugador {
         d.guerraVictorias = y.getInt("guerra.victorias");
         d.guerraRevividos = y.getInt("guerra.revividos");
         d.guerraClase = y.getString("guerra.clase");
+        var ga = y.getConfigurationSection("guerra.armas");
+        if (ga != null) for (String k : ga.getKeys(false)) d.guerraArmas.put(k, ga.getString(k));
         d.codBajas = y.getInt("shooter.bajas", y.getInt("cod.bajas"));
         d.codMuertes = y.getInt("shooter.muertes", y.getInt("cod.muertes"));
         d.shooterVictorias = y.getInt("shooter.victorias");
@@ -202,6 +206,7 @@ public class DatosJugador {
         y.set("guerra.victorias", guerraVictorias);
         y.set("guerra.revividos", guerraRevividos);
         y.set("guerra.clase", guerraClase);
+        for (Map.Entry<String, String> en : guerraArmas.entrySet()) y.set("guerra.armas." + en.getKey(), en.getValue());
         y.set("shooter.bajas", codBajas);
         y.set("shooter.muertes", codMuertes);
         y.set("shooter.victorias", shooterVictorias);

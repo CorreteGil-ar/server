@@ -483,4 +483,401 @@ def barrett():
     )
 
 
-ARMAS = {"m4a1": m4a1, "m9": m9, "mp5": mp5, "m1014": m1014, "barrett": barrett}
+# ---------------------------------------------------------------- AK-47
+
+def ak47():
+    """AK-47 (AKM): 880 mm, madera, cargador curvo de 30. 1 unidad = 2,5 cm."""
+    acero = Material((44, 45, 47), desgaste=0.16, sombra=0.08, patrones=[
+        rectangulo((0.45, 0.55), (0.30, 0.30), 0, color=(20, 20, 21)),
+        puntos([(0.85, 0.35), (0.15, 0.35)], solo_normal="derecha"),
+        puntos([(0.85, 0.35), (0.15, 0.35)], solo_normal="derecha", signo_normal=-1)])
+    tapa = Material((40, 41, 43), desgaste=0.18, sombra=0.06, patrones=[rayas(periodo=4, ancho=1, delta=-0.05)])
+    madera = Material(MADERA, desgaste=0.12, sombra=0.12, patrones=[rayas(periodo=3, ancho=1, delta=-0.05, direccion="adelante")])
+    madera_osc = madera.con(color=(86, 54, 30))
+    canon = Material(ACERO, desgaste=0.08)
+    negro = Material(NEGRO, desgaste=0.14, sombra=0.06)
+    cargador = Material((150, 72, 34), desgaste=0.10, sombra=0.10, patrones=[
+        rayas(periodo=4, ancho=1, delta=-0.08, direccion="adelante", solo_normal="derecha"),
+        rayas(periodo=4, ancho=1, delta=-0.08, direccion="adelante", solo_normal="derecha", signo_normal=-1)])
+    cuerpo = [
+        *cilindro("z", (8, 10), 0.32, -15.0, -6.0, canon, "canon"),
+        C(7.50, 9.40, -13.8, 8.50, 10.60, -12.8, negro, "base_guion"),
+        C(7.70, 10.60, -13.6, 7.85, 11.95, -13.0, negro, "oreja_izq"),
+        C(8.15, 10.60, -13.6, 8.30, 11.95, -13.0, negro, "oreja_der"),
+        C(7.93, 10.60, -13.4, 8.07, 11.95, -13.2, negro, "guion"),
+        C(7.55, 10.30, -9.6, 8.45, 11.30, -8.6, negro, "bloque_gases"),
+        *cilindro("z", (8, 10.95), 0.36, -8.6, -6.2, negro, "tubo_gases"),
+        C(7.25, 8.80, -6.4, 8.75, 10.40, -0.6, madera, "guardamanos_inf"),
+        C(7.45, 10.40, -6.2, 8.55, 11.55, -1.0, madera_osc, "guardamanos_sup"),
+        C(7.35, 8.60, -0.6, 8.65, 10.90, 9.0, acero, "receptor"),
+        C(7.45, 10.90, 0.6, 8.55, 11.30, 9.0, tapa, "tapa_cierre"),
+        C(8.65, 10.20, 1.6, 9.20, 10.55, 2.4, negro, "manija_carga"),
+        C(8.65, 9.20, 4.6, 8.82, 9.90, 6.8, negro, "selector"),
+        C(7.75, 6.90, 4.0, 8.25, 7.10, 6.6, negro, "guardamonte"),
+        C(7.75, 7.10, 4.0, 8.25, 8.60, 4.25, negro, "guardamonte_frente"),
+        C(7.92, 7.40, 5.0, 8.08, 8.60, 5.2, negro, "disparador"),
+        C(7.45, 7.10, 6.8, 8.55, 8.60, 8.2, madera_osc, "empunadura_1"),
+        C(7.45, 5.70, 7.2, 8.55, 7.10, 8.6, madera_osc, "empunadura_2"),
+        C(7.45, 4.40, 7.6, 8.55, 5.70, 9.0, madera_osc, "empunadura_3"),
+        C(7.30, 8.00, 9.0, 8.70, 10.60, 13.0, madera, "culata_1"),
+        C(7.25, 7.20, 13.0, 8.75, 10.40, 17.0, madera, "culata_2"),
+        C(7.20, 6.80, 17.0, 8.80, 10.30, 18.2, madera_osc, "culata_talon"),
+    ]
+    boca = [*cilindro("z", (8, 10), 0.38, -16.4, -15.0, negro, "compensador")]
+    mira_hierro = [
+        C(7.55, 10.90, -1.0, 8.45, 11.60, 0.4, negro, "alza_base"),
+        C(7.55, 11.60, -0.6, 7.86, 12.15, 0.4, negro, "alza_izq"),
+        C(8.14, 11.60, -0.6, 8.45, 12.15, 0.4, negro, "alza_der"),
+    ]
+    mira_plegada = [C(7.55, 10.90, -1.0, 8.45, 11.30, 0.4, negro, "alza_baja")]
+    normal = [
+        C(7.50, 6.60, 1.3, 8.50, 8.60, 3.9, cargador, "cargador_1"),
+        C(7.50, 4.80, 0.8, 8.50, 6.60, 3.5, cargador, "cargador_2"),
+        C(7.50, 3.20, -0.2, 8.50, 4.80, 2.7, cargador, "cargador_3"),
+        C(7.45, 2.80, -0.5, 8.55, 3.20, 2.4, negro, "cargador_base"),
+    ]
+    ampliado = normal[:3] + [
+        C(7.50, 1.80, -1.2, 8.50, 3.20, 1.9, cargador, "cargador_4"),
+        C(7.45, 1.40, -1.6, 8.55, 1.80, 1.6, negro, "cargador_base"),
+    ]
+    return Arma(
+        nombre="ak47", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": ampliado},
+        mira_hierro=mira_hierro, mira_plegada=mira_plegada, boca=boca,
+        montajes={
+            "optica": {"pos": (8, 11.30, 4.0), "lado": "arriba"},
+            "boca": {"pos": (8, 10, -15.0), "lado": "arriba"},
+            "inferior": {"pos": (8, 8.80, -3.6), "lado": "abajo"},
+            "laser": {"pos": (8, 11.55, -3.8), "lado": "arriba"},
+            "linterna": {"pos": (7.25, 9.6, -3.8), "lado": "izquierda"},
+        },
+        opciones={"mira": ["", "punto_rojo", "holografica", "acog"], "boca": ["", "silenciador"],
+                  "bajo": ["", "empunadura"], "laser": ["", "laser"], "linterna": ["", "linterna"],
+                  "cargador": ["", "ampliado"]},
+        linea_hierro={"y": 11.95, "z": 0.4},
+        config={
+            "fp": {"translation": [-5.5, 3.4, 2.0], "scale": 0.99},
+            "tp": {"agarre": (8, 6.5, 7.6), "translation": [0, 0, 0.5], "scale": 0.58},
+            "gui": {"scale": 0.45},
+            "ads": {"hierro": 0.15, "optica": 0.24},
+        },
+    )
+
+
+# ---------------------------------------------------------------- FN P90
+
+def p90():
+    """FN P90: 500 mm bullpup, cargador translúcido de 50 encima. 1 unidad = 2,0 cm."""
+    cuerpo_m = Material((44, 46, 44), desgaste=0.10, sombra=0.10, patrones=[punteado(0.15, -0.04)])
+    negro = Material(NEGRO, desgaste=0.12, sombra=0.06)
+    riel = negro.con(patrones=[picatinny("arriba")])
+    canon = Material(ACERO, desgaste=0.06)
+    cargador = Material((150, 120, 70), ruido=0.01, desgaste=0.04, sombra=0.04, alfa=0.85,
+                        patrones=[rayas(periodo=2, ancho=1, delta=-0.10, direccion="adelante", solo_normal="arriba")])
+    cuerpo = [
+        *cilindro("z", (8, 9.4), 0.26, -12.0, -9.0, canon, "canon"),
+        C(7.30, 8.40, -9.4, 8.70, 10.40, -5.6, cuerpo_m, "frente"),
+        C(7.20, 6.20, -6.4, 8.80, 8.40, -2.2, cuerpo_m, "agarre_frontal"),
+        C(7.35, 6.20, -2.2, 8.65, 6.80, 1.8, cuerpo_m, "puente_pulgar"),
+        C(7.20, 6.20, 1.8, 8.80, 9.80, 11.6, cuerpo_m, "culata"),
+        C(7.10, 8.40, -5.6, 8.90, 9.80, 1.8, cuerpo_m, "cuerpo"),
+        C(7.40, 9.80, -3.0, 8.60, 10.60, 4.6, negro, "receptor"),
+        C(7.58, 10.60, -2.4, 8.42, 10.90, 4.2, riel, "riel"),
+        C(7.25, 5.80, 11.6, 8.75, 9.80, 12.8, negro, "cantonera"),
+        C(7.92, 7.40, -1.0, 8.08, 8.40, -0.8, negro, "disparador"),
+    ]
+    normal = [C(7.25, 9.80, 4.6, 8.75, 10.80, 12.2, cargador, "cargador")]
+    mira_hierro = [
+        C(7.50, 10.90, 2.6, 8.50, 11.30, 3.8, negro, "mira_base"),
+        C(7.50, 11.30, 2.6, 7.75, 12.00, 3.8, negro, "anillo_izq"),
+        C(8.25, 11.30, 2.6, 8.50, 12.00, 3.8, negro, "anillo_der"),
+        C(7.75, 11.85, 2.6, 8.25, 12.00, 3.8, negro, "anillo_sup"),
+        C(7.95, 11.30, 2.9, 8.05, 11.65, 3.1, Material((220, 40, 30), ruido=0, volumen=0), "punto"),
+    ]
+    return Arma(
+        nombre="p90", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": normal},
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
+        montajes={
+            "optica": {"pos": (8, 10.90, 0.6), "lado": "arriba"},
+            "boca": {"pos": (8, 9.4, -12.0), "lado": "arriba"},
+            "laser": {"pos": (8.80, 7.6, -4.4), "lado": "derecha"},
+            "linterna": {"pos": (7.20, 7.6, -4.4), "lado": "izquierda"},
+        },
+        opciones={"mira": ["", "punto_rojo", "holografica"], "boca": ["", "silenciador"], "bajo": [""],
+                  "laser": ["", "laser"], "linterna": ["", "linterna"], "cargador": [""]},
+        silenciador="subfusil",
+        linea_hierro={"y": 11.50, "z": 3.8},
+        config={
+            "fp": {"translation": [-5.0, 3.0, -3.0], "scale": 0.94},
+            "tp": {"agarre": (8, 7.0, 3.0), "translation": [0, 0, 0.5], "scale": 0.52},
+            "gui": {"scale": 0.55},
+            "ads": {"hierro": 0.16, "optica": 0.24},
+        },
+    )
+
+
+# ---------------------------------------------------------------- KRISS Vector
+
+def vector():
+    """KRISS Vector: 620 mm, mentón angular delante del gatillo y culata plegable. 1 unidad = 2,0 cm."""
+    negro = Material(NEGRO, desgaste=0.12, sombra=0.08)
+    cuerpo_m = Material((40, 42, 44), desgaste=0.12, sombra=0.10, patrones=[
+        rectangulo((0.5, 0.5), (0.5, 0.3), -0.06, solo_normal="derecha"),
+        rectangulo((0.5, 0.5), (0.5, 0.3), -0.06, solo_normal="derecha", signo_normal=-1)])
+    riel = negro.con(patrones=[picatinny("arriba")])
+    canon = Material(ACERO, desgaste=0.06)
+    cargador = Material((36, 36, 38), desgaste=0.10, sombra=0.08)
+    empunadura = Material(POLIMERO, desgaste=0.05, sombra=0.10, patrones=[punteado(0.40, -0.08)])
+    cuerpo = [
+        *cilindro("z", (8, 10), 0.30, -12.6, -7.0, canon, "canon"),
+        C(7.30, 9.20, -7.4, 8.70, 10.90, 6.0, cuerpo_m, "receptor"),
+        C(7.58, 10.90, -7.0, 8.42, 11.20, 5.6, riel, "riel"),
+        C(7.20, 6.40, -6.8, 8.80, 9.20, -1.4, cuerpo_m, "menton"),
+        C(7.25, 5.60, -6.2, 8.75, 6.40, -3.6, cuerpo_m, "menton_bajo"),
+        C(7.75, 7.00, -1.4, 8.25, 7.20, 1.8, negro, "guardamonte"),
+        C(7.92, 7.40, -0.6, 8.08, 9.20, -0.4, negro, "disparador"),
+        C(7.40, 7.20, 1.6, 8.60, 9.20, 3.0, empunadura, "empunadura_1"),
+        C(7.40, 5.60, 2.0, 8.60, 7.20, 3.4, empunadura, "empunadura_2"),
+        C(7.40, 4.40, 2.4, 8.60, 5.60, 3.8, empunadura, "empunadura_3"),
+        C(7.40, 9.40, 6.0, 8.60, 10.40, 14.0, negro, "culata_brazo"),
+        C(7.30, 7.60, 13.2, 8.70, 10.60, 14.6, negro, "culata_placa"),
+        C(8.70, 9.80, -5.4, 9.10, 10.30, -4.2, negro, "manija_carga"),
+    ]
+    normal = [
+        C(7.50, 3.20, -5.8, 8.50, 5.60, -4.0, cargador, "cargador"),
+        C(7.45, 2.90, -5.9, 8.55, 3.20, -3.9, negro, "cargador_base"),
+    ]
+    ampliado = [
+        C(7.50, 1.60, -5.8, 8.50, 5.60, -4.0, cargador, "cargador"),
+        C(7.45, 1.30, -5.9, 8.55, 1.60, -3.9, negro, "cargador_base"),
+    ]
+    mira_hierro = [
+        C(7.65, 11.20, -6.4, 8.35, 11.95, -5.8, negro, "guion"),
+        C(7.60, 11.20, 4.6, 8.40, 11.70, 5.4, negro, "alza_base"),
+        C(7.60, 11.70, 4.8, 7.82, 12.10, 5.2, negro, "alza_izq"),
+        C(8.18, 11.70, 4.8, 8.40, 12.10, 5.2, negro, "alza_der"),
+    ]
+    return Arma(
+        nombre="vector", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": ampliado},
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
+        montajes={
+            "optica": {"pos": (8, 11.20, 1.0), "lado": "arriba"},
+            "boca": {"pos": (8, 10, -12.6), "lado": "arriba"},
+            "inferior": {"pos": (8, 9.20, -9.2), "lado": "abajo"},
+            "laser": {"pos": (8.70, 10.0, -4.0), "lado": "derecha"},
+            "linterna": {"pos": (7.30, 10.0, -4.0), "lado": "izquierda"},
+        },
+        opciones={"mira": ["", "punto_rojo", "holografica"], "boca": ["", "silenciador"],
+                  "bajo": ["", "empunadura"], "laser": ["", "laser"], "linterna": ["", "linterna"],
+                  "cargador": ["", "ampliado"]},
+        silenciador="subfusil",
+        linea_hierro={"y": 11.95, "z": 5.4},
+        config={
+            "fp": {"translation": [-5.0, 3.2, -3.0], "scale": 0.94},
+            "tp": {"agarre": (8, 6.0, 2.6), "translation": [0, 0, 0.5], "scale": 0.52},
+            "gui": {"scale": 0.55},
+            "ads": {"hierro": 0.15, "optica": 0.24},
+        },
+    )
+
+
+# ---------------------------------------------------------------- M249 SAW
+
+def m249():
+    """FN M249 SAW: 1040 mm, caja de cinta de 100 a la izquierda y bípode. 1 unidad = 3,0 cm."""
+    negro = Material(NEGRO, desgaste=0.14, sombra=0.08)
+    receptor = Material((42, 44, 42), desgaste=0.14, sombra=0.08, patrones=[
+        puntos([(0.2, 0.3), (0.5, 0.3), (0.8, 0.3)], solo_normal="derecha"),
+        puntos([(0.2, 0.3), (0.5, 0.3), (0.8, 0.3)], solo_normal="derecha", signo_normal=-1)])
+    riel = negro.con(patrones=[picatinny("arriba")])
+    canon = Material(ACERO, desgaste=0.08, patrones=[rayas(periodo=3, ancho=1, delta=-0.05)])
+    caja = Material((78, 82, 56), desgaste=0.10, sombra=0.10, patrones=[rayas(periodo=6, ancho=1, delta=-0.06)])
+    empunadura = Material(POLIMERO, desgaste=0.05, sombra=0.10, patrones=[punteado(0.40, -0.08)])
+    cuerpo = [
+        *cilindro("z", (8, 10), 0.36, -15.0, -4.0, canon, "canon"),
+        *cilindro("z", (8, 8.95), 0.30, -10.0, -3.0, negro, "tubo_gases"),
+        C(7.55, 10.30, -14.0, 8.45, 11.40, -13.2, negro, "base_guion"),
+        C(7.92, 11.40, -13.8, 8.08, 12.30, -13.4, negro, "guion"),
+        C(7.80, 10.40, -7.6, 8.20, 11.60, -7.0, negro, "manija_pie"),
+        C(7.70, 11.60, -9.4, 8.30, 11.90, -5.2, negro, "manija"),
+        C(7.20, 8.30, -4.0, 8.80, 10.20, -0.6, negro, "guardamanos"),
+        C(7.10, 8.20, -0.6, 8.90, 10.60, 9.0, receptor, "receptor"),
+        C(7.20, 10.60, 0.2, 8.80, 11.40, 7.2, receptor, "tapa_alimentador"),
+        C(7.58, 11.40, 0.8, 8.42, 11.70, 6.8, riel, "riel"),
+        C(6.40, 9.10, 0.6, 7.10, 10.00, 2.4, negro, "boca_alimentacion"),
+        C(7.75, 6.90, 4.4, 8.25, 7.10, 6.8, negro, "guardamonte"),
+        C(7.92, 7.30, 5.2, 8.08, 8.20, 5.4, negro, "disparador"),
+        C(7.40, 7.10, 6.6, 8.60, 8.20, 8.0, empunadura, "empunadura_1"),
+        C(7.40, 5.60, 7.0, 8.60, 7.10, 8.4, empunadura, "empunadura_2"),
+        C(7.40, 4.40, 7.4, 8.60, 5.60, 8.8, empunadura, "empunadura_3"),
+        C(7.30, 7.60, 9.0, 8.70, 10.40, 16.0, negro, "culata"),
+        C(7.20, 7.20, 16.0, 8.80, 10.60, 16.8, Material(GOMA), "cantonera"),
+        *cilindro("z", (7.55, 8.50), 0.16, -11.5, -4.6, negro, "bipode_izq"),
+        *cilindro("z", (8.45, 8.50), 0.16, -11.5, -4.6, negro, "bipode_der"),
+    ]
+    normal = [
+        C(4.60, 5.20, 0.4, 7.10, 8.80, 4.6, caja, "caja_cinta"),
+        C(4.60, 8.80, 1.2, 7.10, 9.10, 3.8, negro, "tapa_caja"),
+    ]
+    mira_hierro = [
+        C(7.55, 11.70, 5.6, 8.45, 12.05, 6.8, negro, "alza_base"),
+        C(7.55, 12.05, 6.2, 7.78, 12.60, 6.8, negro, "alza_izq"),
+        C(8.22, 12.05, 6.2, 8.45, 12.60, 6.8, negro, "alza_der"),
+    ]
+    return Arma(
+        nombre="m249", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": normal},
+        mira_hierro=mira_hierro, mira_plegada=[], boca=[],
+        montajes={
+            "optica": {"pos": (8, 11.70, 3.2), "lado": "arriba"},
+            "boca": {"pos": (8, 10, -15.0), "lado": "arriba"},
+            "inferior": {"pos": (8, 8.30, -2.4), "lado": "abajo"},
+        },
+        opciones={"mira": ["", "punto_rojo", "holografica", "acog"], "boca": [""], "bajo": ["", "empunadura"],
+                  "laser": [""], "linterna": [""], "cargador": [""]},
+        linea_hierro={"y": 12.30, "z": 6.8},
+        config={
+            "fp": {"translation": [-5.5, 3.0, 1.0], "scale": 0.95},
+            "tp": {"agarre": (8, 6.0, 7.8), "translation": [0, 0, 0.5], "scale": 0.62},
+            "gui": {"scale": 0.40},
+            "ads": {"hierro": 0.15, "optica": 0.24},
+        },
+    )
+
+
+# ---------------------------------------------------------------- Remington M24
+
+def m24():
+    """Remington M24 SWS: 1092 mm, cerrojo, culata verde de fibra. 1 unidad = 3,2 cm."""
+    verde = Material((72, 80, 56), desgaste=0.10, sombra=0.10, patrones=[punteado(0.30, -0.05)])
+    negro = Material(NEGRO, desgaste=0.16, sombra=0.06)
+    canon = Material(ACERO, desgaste=0.08)
+    cuerpo = [
+        *cilindro("z", (8, 10.2), 0.34, -15.0, -1.0, canon, "canon"),
+        C(7.25, 8.40, -9.0, 8.75, 9.95, 1.0, verde, "guardamanos"),
+        C(7.30, 7.90, 1.0, 8.70, 9.95, 7.4, verde, "accion_culata"),
+        *cilindro("z", (8, 10.25), 0.62, 0.0, 6.6, negro, "receptor"),
+        C(8.55, 10.00, 5.4, 9.30, 10.30, 5.8, negro, "palanca_cerrojo"),
+        *cilindro("x", (10.15, 5.6), 0.26, 9.30, 9.90, negro, "bola_cerrojo"),
+        C(7.75, 6.90, 3.6, 8.25, 7.10, 6.2, negro, "guardamonte"),
+        C(7.92, 7.30, 4.6, 8.08, 7.90, 4.8, negro, "disparador"),
+        C(7.35, 6.40, 7.0, 8.65, 8.80, 9.6, verde, "garganta"),
+        C(7.30, 7.40, 9.6, 8.70, 10.10, 16.4, verde, "culata"),
+        C(7.40, 10.10, 10.4, 8.60, 10.60, 14.0, verde, "carrillera"),
+        C(7.25, 6.80, 16.4, 8.75, 10.40, 17.2, Material(GOMA), "cantonera"),
+    ]
+    normal = [C(7.50, 7.60, 2.2, 8.50, 7.90, 4.4, negro, "chapa_cargador")]
+    return Arma(
+        nombre="m24", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": normal},
+        mira_hierro=[], mira_plegada=[], boca=[],
+        montajes={
+            "optica": {"pos": (8, 10.87, 3.4), "lado": "arriba"},
+            "boca": {"pos": (8, 10.2, -15.0), "lado": "arriba"},
+        },
+        opciones={"mira": ["telescopica"], "boca": ["", "silenciador"], "bajo": [""],
+                  "laser": [""], "linterna": [""], "cargador": [""]},
+        silenciador="francotirador", mira_defecto="telescopica",
+        config={
+            "fp": {"translation": [-5.5, 2.6, 0.0], "scale": 0.92},
+            "tp": {"agarre": (8, 6.5, 8.2), "translation": [0, 0, 0.5], "scale": 0.68},
+            "gui": {"scale": 0.36},
+        },
+    )
+
+
+# ---------------------------------------------------------------- Remington 870
+
+def r870():
+    """Remington 870 de bombeo: 1000 mm, guardamanos de madera y tubo de cargador. 1 unidad = 2,8 cm."""
+    madera = Material(MADERA, desgaste=0.12, sombra=0.12, patrones=[rayas(periodo=3, ancho=1, delta=-0.05, direccion="adelante")])
+    bombeo = madera.con(patrones=[rayas(periodo=2, ancho=1, delta=-0.15)])
+    negro = Material(NEGRO, desgaste=0.18, sombra=0.06)
+    canon = Material(ACERO, desgaste=0.10)
+    cuerpo = [
+        *cilindro("z", (8, 10.4), 0.36, -15.0, -1.0, canon, "canon"),
+        *cilindro("z", (8, 9.35), 0.40, -12.6, -1.0, negro, "tubo_cargador"),
+        C(7.20, 8.50, -9.6, 8.80, 9.95, -4.0, bombeo, "bombeo"),
+        C(7.35, 8.40, -1.0, 8.65, 10.95, 6.0, negro, "receptor"),
+        C(7.80, 10.76, -14.9, 8.20, 11.15, -14.5, Material((222, 200, 120)), "punto_mira"),
+        C(7.75, 6.90, 3.0, 8.25, 7.10, 5.6, negro, "guardamonte"),
+        C(7.75, 7.10, 3.0, 8.25, 8.40, 3.25, negro, "guardamonte_frente"),
+        C(7.92, 7.40, 4.0, 8.08, 8.40, 4.2, negro, "disparador"),
+        C(7.35, 7.40, 6.0, 8.65, 9.80, 8.6, madera, "garganta"),
+        C(7.35, 6.20, 7.4, 8.65, 7.40, 9.0, madera, "puño"),
+        C(7.30, 7.00, 8.6, 8.70, 10.20, 17.0, madera, "culata"),
+        C(7.25, 6.60, 17.0, 8.75, 10.40, 17.8, Material(GOMA), "cantonera"),
+    ]
+    normal = [*cilindro("z", (8, 9.35), 0.44, -13.2, -12.6, negro, "tapa_cargador")]
+    return Arma(
+        nombre="r870", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": normal},
+        mira_hierro=[], mira_plegada=[], boca=[],
+        montajes={
+            "optica": {"pos": (8, 10.95, 2.4), "lado": "arriba"},
+            "boca": {"pos": (8, 10.4, -15.0), "lado": "arriba"},
+            "laser": {"pos": (8, 8.50, -6.8), "lado": "abajo"},
+            "linterna": {"pos": (8.80, 9.2, -6.8), "lado": "derecha"},
+        },
+        opciones={"mira": ["", "punto_rojo"], "boca": [""], "bajo": [""],
+                  "laser": ["", "laser"], "linterna": ["", "linterna"], "cargador": [""]},
+        linea_hierro={"y": 11.15, "z": 6.0},
+        config={
+            "fp": {"translation": [-5.5, 3.2, 1.0], "scale": 0.96},
+            "tp": {"agarre": (8, 6.5, 7.8), "translation": [0, 0, 0.5], "scale": 0.60},
+            "gui": {"scale": 0.42},
+            "ads": {"hierro": 0.15, "optica": 0.24},
+        },
+    )
+
+
+# ---------------------------------------------------------------- Desert Eagle
+
+def deagle():
+    """IMI Desert Eagle .50 AE: 270 mm, cañón triangular con riel. 1 unidad = 1,6 cm."""
+    plata = Material((168, 170, 172), desgaste=0.18, sombra=0.08)
+    estrias = plata.con(patrones=[
+        rayas(periodo=2, ancho=1, delta=-0.12, direccion="adelante", solo_normal="derecha"),
+        rayas(periodo=2, ancho=1, delta=-0.12, direccion="adelante", solo_normal="derecha", signo_normal=-1)])
+    negro = Material(NEGRO, desgaste=0.14, sombra=0.06)
+    goma = Material(GOMA, desgaste=0.04, sombra=0.10, patrones=[punteado(0.45, -0.10)])
+    riel = plata.con(patrones=[picatinny("arriba")])
+    cuerpo = [
+        C(7.10, 9.20, -7.0, 8.90, 11.30, 2.0, plata, "canon_cuerpo"),
+        C(7.40, 11.30, -7.0, 8.60, 11.55, 1.6, riel, "riel"),
+        C(7.20, 9.30, 2.0, 8.80, 11.20, 6.0, plata, "corredera"),
+        C(7.20, 9.30, 6.0, 8.80, 11.20, 8.6, estrias, "corredera_estrias"),
+        C(7.86, 11.55, -6.6, 8.14, 12.05, -6.0, negro, "guion"),
+        C(7.50, 11.20, 7.6, 7.80, 11.80, 8.4, negro, "alza_izq"),
+        C(8.20, 11.20, 7.6, 8.50, 11.80, 8.4, negro, "alza_der"),
+        C(7.25, 8.20, -3.6, 8.75, 9.30, 7.0, plata, "armazon"),
+        C(7.40, 6.30, 0.6, 8.60, 6.60, 3.8, plata, "guardamonte"),
+        C(7.40, 6.60, 0.6, 8.60, 8.20, 0.95, plata, "guardamonte_frente"),
+        C(7.88, 6.90, 2.3, 8.12, 8.20, 2.65, negro, "disparador"),
+        C(7.15, 3.00, 3.8, 8.85, 8.20, 7.8, goma, "empunadura"),
+        C(7.80, 9.80, 8.6, 8.20, 11.00, 9.1, negro, "martillo"),
+    ]
+    normal = [C(7.30, 2.50, 4.0, 8.70, 3.00, 7.6, negro, "base_cargador")]
+    ampliado = [
+        C(7.35, 1.30, 4.1, 8.65, 3.00, 7.5, Material((70, 72, 75), desgaste=0.12), "cargador_extendido"),
+        C(7.30, 1.00, 4.0, 8.70, 1.30, 7.6, negro, "base_cargador"),
+    ]
+    return Arma(
+        nombre="deagle", cuerpo=cuerpo, cargador={"normal": normal, "ampliado": ampliado},
+        mira_hierro=[], mira_plegada=[], boca=[],
+        montajes={
+            "boca": {"pos": (8, 10.3, -7.0), "lado": "arriba"},
+            "laser": {"pos": (8, 8.20, -2.2), "lado": "abajo"},
+            "linterna": {"pos": (8, 8.20, -2.2), "lado": "abajo"},
+        },
+        opciones={"mira": [""], "boca": [""], "bajo": [""], "laser": ["", "laser"], "linterna": ["", "linterna"],
+                  "cargador": ["", "ampliado"]},
+        silenciador="pistola",
+        linea_hierro={"y": 12.05, "z": 8.4},
+        config={
+            "fp": {"translation": [-4.5, 2.8, 1.0], "scale": 0.98},
+            "tp": {"agarre": (8, 5.5, 5.8), "translation": [0, 0, 0.5], "scale": 0.44},
+            "gui": {"scale": 0.75},
+            "ads": {"hierro": 0.18},
+        },
+    )
+
+
+ARMAS = {"m4a1": m4a1, "m9": m9, "mp5": mp5, "m1014": m1014, "barrett": barrett,
+         "ak47": ak47, "p90": p90, "vector": vector, "m249": m249, "m24": m24, "r870": r870, "deagle": deagle}

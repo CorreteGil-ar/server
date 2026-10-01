@@ -124,5 +124,176 @@
   "cargador": [
    ""
   ]
+ },
+ "ak47": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "p90": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "vector": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
+ },
+ "m249": {
+  "mira": [
+   "",
+   "punto_rojo",
+   "holografica",
+   "acog"
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   "",
+   "empunadura"
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "m24": {
+  "mira": [
+   "telescopica"
+  ],
+  "boca": [
+   "",
+   "silenciador"
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   ""
+  ],
+  "linterna": [
+   ""
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "r870": {
+  "mira": [
+   "",
+   "punto_rojo"
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   ""
+  ]
+ },
+ "deagle": {
+  "mira": [
+   ""
+  ],
+  "boca": [
+   ""
+  ],
+  "bajo": [
+   ""
+  ],
+  "laser": [
+   "",
+   "laser"
+  ],
+  "linterna": [
+   "",
+   "linterna"
+  ],
+  "cargador": [
+   "",
+   "ampliado"
+  ]
  }
 }

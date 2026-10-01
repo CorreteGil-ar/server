@@ -141,6 +141,8 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
 | RPG-7 | Lanzacohetes | 150 en el centro, radio 3 | 1 tiro | 1 | 3,5 s | 60 | Secundaria explosiva |
 | Cuchillo de combate | Cuerpo a cuerpo | 55; por la espalda mata | — | — | — | 2,5 | Siempre equipado (F) |
 
+Con modelo y en el juego ✅: M4A1, AK-47, MP5, KRISS Vector, P90, M249 SAW, Barrett M82A1, M24, Benelli M4 (M1014), Remington 870, Beretta M9 y Desert Eagle. El resto de la tabla (SCAR-H, G36K, MP7, PKM, SVD, Mk 14, AA-12, M1911, Revólver, M79 y RPG-7 como secundaria) queda para más adelante.
+
 ### 1.6 Accesorios y camuflajes
 
 - **Accesorios**: todos desbloqueados desde el principio; se eligen en el armero (`/armero`, el libro de clases o el celular de GTA) y quedan guardados por arma. El modelo del arma cambia según lo que tenga puesto ✅ (implementado).
@@ -149,7 +151,7 @@ Valores iniciales con 100 de vida. "Disp/s" son disparos por segundo; el alcance
   - Empuñadura vertical: −25 % de dispersión.
   - Láser: −30 % de dispersión sin apuntar y un punto rojo visible para todos.
   - Linterna: visión nocturna mientras el arma está en la mano.
-  - Cargador ampliado: más balas (M4A1 y MP5 40, M9 20, M1014 9).
+  - Cargador ampliado: más balas (M4A1, AK-47 y MP5 40, Vector 33, M9 20, Desert Eagle 10, M1014 9).
 - **Camuflajes**: Bosque, Desierto, Urbano, Tigre y Digital; los de desafío son Oro, Diamante y Atómico (verde brillante) ✅. Se ganan con bajas y headshots de esa arma.
 
 ### 1.7 Equipamiento
@@ -255,10 +257,10 @@ Usa el mismo sistema de armas y movilidad del Shooter (deslizarse, cuerpo a tier
 
 | Clase | Principal | Secundaria y equipo | Rol |
 |---|---|---|---|
-| Fusilero | M4A1 / AK-47 / SCAR-H | Pistola, granadas, granada antitanque (se pega al vehículo), humo, botiquín | Combate de infantería, revive |
+| Fusilero | M4A1 / AK-47 / M249 ✅ (SCAR-H pendiente) | Pistola, granadas, granada antitanque (se pega al vehículo), humo, botiquín | Combate de infantería, revive |
 | Antitanque | Carabina (G36K) | RPG-7 (sin guía), AT4 (descartable, un solo tiro fuerte), Javelin (fija un blanco terrestre en 2 s y ataca desde arriba), minas antitanque | Cazar tanques |
 | Ingeniero | Subfusil | Llave de reparación, C4 (hasta 3 cargas con detonador), Stinger (fija aviones y helicópteros en 2 s) | Reparar, demoler, antiaéreo |
-| Tirador | M24 / SVD / Barrett M82A1 (antimaterial: daña vehículos ligeros y helicópteros) | Pistola, binoculares (marca blancos para el equipo por 10 s), claymore | Reconocimiento, cubrir la bandera |
+| Tirador | M24 / Barrett M82A1 ✅ (antimaterial: daña vehículos ligeros y helicópteros; SVD pendiente) | Pistola, binoculares (marca blancos para el equipo por 10 s), claymore | Reconocimiento, cubrir la bandera |
 
 **A pie contra vehículos**:
 - **Cajas de munición** en el pueblo, el bosque y las trincheras: recargan cohetes, C4, minas y granadas ✅.

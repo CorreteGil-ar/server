@@ -29,8 +29,17 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
   - *Flecha del minimapa*: la dirección del cursor sale de la fórmula de vanilla; si apunta al revés,
     hay que sumar 8 en `Minimapa.cursor`.
 - **Clases**: dejé 5 clases por defecto (Asalto, Subfusil, Escopetero, Francotirador y Libre) y todas
-  se editan. Por ahora las armas disponibles son las 5 que tienen modelo; el resto del arsenal del
-  diseño (AK-47, SCAR-H, M249, etc.) necesita modelos nuevos.
+  se editan. Hay 12 armas con modelo: a las 5 de antes se sumaron AK-47, P90, Vector, M249, M24,
+  Remington 870 y Desert Eagle. Faltan SCAR-H, G36K, MP7, PKM, SVD, Mk 14, AA-12, M1911 y el revólver.
+- **Arsenal nuevo** (valores de la tabla del diseño ÷ 5, como el resto): AK-47 6,8 (patea un 30 % más
+  que la M4), P90 3,8 con 50 balas sin cargador ampliado, Vector 3,6 a 1140 disp/min (patea menos),
+  M249 5,6 con caja de 100 (5,5 s de recarga; sin silenciador, láser ni linterna), M24 20 de cerrojo
+  (5 balas, un tiro al torso con 100 de vida), Remington 870 8 × 3,6 de bombeo y Desert Eagle 11
+  (patea el doble que la M9). La recarga de las escopetas es de golpe, no cartucho por cartucho.
+  **[revisar]** si las querés bloqueadas por nivel (hoy está todo libre, como los accesorios).
+- **Tamaño del paquete**: con 12 armas, 8 camuflajes cada una y los vehículos, el zip pesa ~18 MB
+  (antes ~10). El cliente lo baja una vez y lo guarda; si molesta, se pueden sacar camuflajes del
+  apuntado (son la mitad de los modelos).
 - **Daño**: pasé los daños a la escala del diseño (100 de vida = 20 corazones): M4A1 26, MP5 22,
   M9 30, M1014 14 por perdigón y Barrett 120. Cabeza ×1,5 (×2 la Barrett) y piernas ×0,8.
 - **Cuchillo**: ahora va siempre con F (cuchillazo rápido), así que saqué el ítem de cuchillo del
@@ -154,9 +163,10 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
 - **Explosiones que rompen**: el HE, los cohetes, el C4, las bombas, las minas y las granadas
   antitanque rompen bloques en todo el mapa menos en las bases. Así se pueden volar los puentes
   y abrir paredes del pueblo.
-- **Infantería**: usa las 5 armas que hoy tienen modelo. La carabina G36K del Antitanque es una MP5
-  y el Fusilero lleva M4A1. **[revisar]** si querés que el arsenal nuevo (AK-47, SCAR-H, SVD, etc.)
-  llegue primero a Guerra.
+- **Infantería**: cada clase elige su principal en `/clase` (fila de abajo): Fusilero M4A1, AK-47
+  o M249; Antitanque MP5 o P90 (la G36K del diseño todavía no tiene modelo); Ingeniero MP5, Vector,
+  P90, Remington 870 o M1014; Tirador Barrett o M24. La pistola (M9 o Desert Eagle) también se
+  elige ahí. **[revisar]** si preferís que cada equipo tenga su arsenal (Rojo con AK-47, etc.).
 - **Vehículos**:
   - Controles:
     - **Clic derecho mantenido**: el arma automática (ametralladora o cañón).

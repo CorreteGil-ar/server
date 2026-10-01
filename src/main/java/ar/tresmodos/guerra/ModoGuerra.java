@@ -110,18 +110,25 @@ public class ModoGuerra implements ModoJuego, Listener {
     }
 
     public enum Clase {
-        FUSILERO("Fusilero", "Infantería: revive y cura. M4A1, granadas, granada antitanque y botiquín.", Material.IRON_SWORD),
-        ANTITANQUE("Antitanque", "Caza tanques: carabina, RPG-7, AT4 y minas antitanque.", Material.FIRE_CHARGE),
-        INGENIERO("Ingeniero", "Repara, demuele y derriba aviones: subfusil, llave, C4 y Stinger.", Material.ANVIL),
-        TIRADOR("Tirador", "Reconocimiento: Barrett M82A1, binoculares y claymore.", Material.SPYGLASS);
+        FUSILERO("Fusilero", "Infantería: revive y cura. Fusil, granadas, granada antitanque y botiquín.", Material.IRON_SWORD,
+                List.of(Armas.Tipo.M4A1, Armas.Tipo.AK47, Armas.Tipo.M249)),
+        ANTITANQUE("Antitanque", "Caza tanques: carabina, RPG-7, AT4 y minas antitanque.", Material.FIRE_CHARGE,
+                List.of(Armas.Tipo.MP5, Armas.Tipo.P90)),
+        INGENIERO("Ingeniero", "Repara, demuele y derriba aviones: subfusil, llave, C4 y Stinger.", Material.ANVIL,
+                List.of(Armas.Tipo.MP5, Armas.Tipo.VECTOR, Armas.Tipo.P90, Armas.Tipo.REMINGTON, Armas.Tipo.ESCOPETA)),
+        TIRADOR("Tirador", "Reconocimiento: fusil de precisión, binoculares y claymore.", Material.SPYGLASS,
+                List.of(Armas.Tipo.FRANCOTIRADOR, Armas.Tipo.M24));
 
         public final String nombre, desc;
         public final Material icono;
+        /** Principales que puede llevar (la primera es la de inicio). */
+        public final List<Armas.Tipo> armas;
 
-        Clase(String nombre, String desc, Material icono) {
+        Clase(String nombre, String desc, Material icono, List<Armas.Tipo> armas) {
             this.nombre = nombre;
             this.desc = desc;
             this.icono = icono;
+            this.armas = armas;
         }
     }
 
@@ -370,36 +377,49 @@ public class ModoGuerra implements ModoJuego, Listener {
         var eq = plugin.shooter().equipamiento();
         switch (c) {
             case FUSILERO -> {
-                inv.setItem(0, arma(Armas.Tipo.M4A1, p));
-                inv.setItem(1, arma(Armas.Tipo.PISTOLA, p));
+                inv.setItem(0, arma(principal(p, c), p));
+                inv.setItem(1, arma(secundaria(p), p));
                 inv.setItem(2, eq.letal(ClasesShooter.Letal.FRAG, 2));
                 inv.setItem(3, eq.tactico(ClasesShooter.Tactico.HUMO, 1));
                 inv.setItem(4, ArmaGuerra.GRANADA_AT.crear(1));
                 inv.setItem(5, ArmaGuerra.BOTIQUIN.crear(1));
             }
             case ANTITANQUE -> {
-                inv.setItem(0, arma(Armas.Tipo.MP5, p));
+                inv.setItem(0, arma(principal(p, c), p));
                 inv.setItem(1, ArmaGuerra.RPG7.crear(3));
                 inv.setItem(2, ArmaGuerra.AT4.crear(1));
                 inv.setItem(3, ArmaGuerra.JAVELIN.crear(2));
                 inv.setItem(4, ArmaGuerra.MINA_AT.crear(2));
             }
             case INGENIERO -> {
-                inv.setItem(0, arma(Armas.Tipo.MP5, p));
+                inv.setItem(0, arma(principal(p, c), p));
                 inv.setItem(1, ArmaGuerra.LLAVE.crear(1));
                 inv.setItem(2, ArmaGuerra.C4.crear(3));
                 inv.setItem(3, ArmaGuerra.DETONADOR.crear(1));
                 inv.setItem(4, ArmaGuerra.STINGER.crear(2));
             }
             case TIRADOR -> {
-                inv.setItem(0, arma(Armas.Tipo.FRANCOTIRADOR, p));
-                inv.setItem(1, arma(Armas.Tipo.PISTOLA, p));
+                inv.setItem(0, arma(principal(p, c), p));
+                inv.setItem(1, arma(secundaria(p), p));
                 inv.setItem(2, ArmaGuerra.BINOCULARES.crear(1));
                 inv.setItem(3, eq.letal(ClasesShooter.Letal.CLAYMORE, 1));
             }
         }
         inv.setItem(8, libro());
         plugin.armas().rellenarReservas(p);
+    }
+
+    /** Principal elegida para la clase (o la de inicio). */
+    public Armas.Tipo principal(Player p, Clase c) {
+        String s = plugin.almacen().de(p).guerraArmas.get(c.name());
+        for (Armas.Tipo t : c.armas) if (t.name().equals(s)) return t;
+        return c.armas.getFirst();
+    }
+
+    public Armas.Tipo secundaria(Player p) {
+        String s = plugin.almacen().de(p).guerraArmas.get("SECUNDARIA");
+        for (Armas.Tipo t : ClasesShooter.SECUNDARIAS) if (t.name().equals(s)) return t;
+        return Armas.Tipo.PISTOLA;
     }
 
     private ItemStack arma(Armas.Tipo t, Player p) {
@@ -424,7 +444,7 @@ public class ModoGuerra implements ModoJuego, Listener {
     }
 
     public void abrirClases(Player p) {
-        Menu m = new Menu(3, "<dark_gray>Clase de infantería");
+        Menu m = new Menu(4, "<dark_gray>Clase de infantería");
         Clase actual = clase(p);
         int slot = 10;
         for (Clase c : Clase.values()) {
@@ -432,18 +452,41 @@ public class ModoGuerra implements ModoJuego, Listener {
                     "", c == actual ? "<green>Elegida" : "<yellow>Clic para elegir"), pl -> {
                 plugin.almacen().de(pl).guerraClase = c.name();
                 pl.closeInventory();
-                Equipo e = equipo(pl);
-                boolean enBase = e != null && pl.getLocation().distanceSquared(bunker(e)) < 30 * 30;
-                if (enBase && pl.getGameMode() == GameMode.ADVENTURE && !caido(pl) && !esPortador(pl)) {
-                    darEquipo(pl);
-                    Util.barra(pl, "<green>Ahora sos " + c.nombre);
-                } else {
-                    Util.barra(pl, "<gray>Vas a ser " + c.nombre + " al reaparecer.");
-                }
+                reequipar(pl, "<green>Ahora sos " + c.nombre, "<gray>Vas a ser " + c.nombre + " al reaparecer.");
+            });
+            Armas.Tipo t = principal(p, c);
+            m.poner(slot + 9, Util.item(t.material, "<aqua><bold>Principal", "<white>" + t.nombre,
+                    "<gray>" + (c.armas.size() > 1 ? "Clic: cambiar (" + c.armas.size() + " opciones)" : "Única opción")), pl -> {
+                if (c.armas.size() < 2) return;
+                Armas.Tipo sig = c.armas.get((c.armas.indexOf(principal(pl, c)) + 1) % c.armas.size());
+                plugin.almacen().de(pl).guerraArmas.put(c.name(), sig.name());
+                if (c == clase(pl)) reequipar(pl, "<green>Principal: " + sig.nombre, "<gray>Vas a llevar " + sig.nombre + " al reaparecer.");
+                abrirClases(pl);
             });
             slot += 2;
         }
+        Armas.Tipo sec = secundaria(p);
+        m.poner(31, Util.item(sec.material, "<aqua><bold>Pistola", "<white>" + sec.nombre,
+                "<gray>Fusilero y Tirador. Clic: cambiar"), pl -> {
+            var lista = ClasesShooter.SECUNDARIAS;
+            Armas.Tipo sig = lista.get((lista.indexOf(secundaria(pl)) + 1) % lista.size());
+            plugin.almacen().de(pl).guerraArmas.put("SECUNDARIA", sig.name());
+            reequipar(pl, "<green>Pistola: " + sig.nombre, "<gray>Vas a llevar " + sig.nombre + " al reaparecer.");
+            abrirClases(pl);
+        });
         m.abrir(p);
+    }
+
+    /** En la base (y de pie, sin la bandera) cambia el equipo al instante; si no, al reaparecer. */
+    private void reequipar(Player pl, String ahora, String despues) {
+        Equipo e = equipo(pl);
+        boolean enBase = e != null && pl.getLocation().distanceSquared(bunker(e)) < 30 * 30;
+        if (enBase && pl.getGameMode() == GameMode.ADVENTURE && !caido(pl) && !esPortador(pl)) {
+            darEquipo(pl);
+            Util.barra(pl, ahora);
+        } else {
+            Util.barra(pl, despues);
+        }
     }
 
     // ------------------------------------------------------------------ partida
