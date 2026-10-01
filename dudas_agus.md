@@ -164,6 +164,12 @@ Cada una dice qué hice mientras tanto. Las marcadas como **[revisar]** también
 
   El **Ciclo+** conserva todo (nivel, equipo y árbol); suben los enemigos y las almas.
 
+- **Modelos de las armas del RPG** (`herramientas/rpg.py`): 15 armas con modelo 3D propio. Se modelan
+  verticales y usan las transformaciones de mano de una espada de vanilla con 45° más de giro, así se
+  agarran igual. Arco largo, ballesta y lanzas siguen con el modelo de vanilla porque sus animaciones
+  (tensar, cargar, embestir) dependen de él. Las armas que ya tenías en el inventario toman el modelo
+  nuevo al entrar al RPG. **Para probar en el juego**: que la mano agarre el puño (en las armas de
+  asta larga, como la alabarda y la guadaña, el agarre queda en la mitad del asta).
 - **Estructuras de las zonas** (`ConstructorZonas`): se construyen una sola vez, la primera vez que
   arranca el server con esta versión (una zona por segundo; en el log queda cuánto tardó cada una).
   Quedan registradas en `plugins/TresModos/rpg-estructuras.yml`; si se borra ese archivo, se vuelven a

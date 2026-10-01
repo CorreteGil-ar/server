@@ -287,6 +287,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
 
     @Override
     public void alEntrar(Player p, boolean primeraVez) {
+        for (ItemStack it : p.getInventory().getContents()) if (it != null) ArmaRpg.actualizarModelo(it);
         if (!mundo().getWorldBorder().isInside(p.getLocation())) p.teleport(respawn(p));
         aguante.put(p.getUniqueId(), aguanteMax(p));
         eter.put(p.getUniqueId(), eterMax(p));
@@ -294,7 +295,7 @@ public class ModoRpg implements ModoJuego, Listener, ObjetosRpg.ModoRpgHook {
         DatosJugador d = datos(p);
         if (primeraVez || d.clase == null) {
             Util.titulo(p, "<gold><bold>LAS TIERRAS CENICIENTAS", "<gray>Morir cuesta caro", 800, 3500, 1000);
-            Util.msg(p, "<gold>RPG: <gray>la barra de experiencia es tu <green>aguante<gray> y la barra de arriba, tu "
+            Util.msg(p, "<gold>RPG: <gray>arriba tenés tu <red>vida<gray>, tu <green>aguante<gray> y tu "
                     + "<aqua>éter<gray>. <white>F<gray> rueda (según el peso que cargues), <white>Q<gray> con el arma usa la "
                     + "habilidad de tu clase y <white>Shift+Q<gray> la definitiva. Clic derecho a una <gold>hoguera<gray> para "
                     + "descansar y subir de nivel. Si morís, tus almas quedan donde caíste.");

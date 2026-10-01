@@ -137,6 +137,9 @@ public enum ArmaRpg {
 
     // ------------------------------------------------------------------ ítems
 
+    private static final java.util.Set<ArmaRpg> CON_MODELO = java.util.EnumSet.complementOf(
+            java.util.EnumSet.of(ARCO_LARGO, BALLESTA, LANZA, LANZA_FARO));
+
     public static final NamespacedKey CLAVE_DANIO = new NamespacedKey("tresmodos", "rpg_danio");
     public static final NamespacedKey CLAVE_VELOCIDAD = new NamespacedKey("tresmodos", "rpg_velocidad");
 
@@ -146,6 +149,8 @@ public enum ArmaRpg {
         meta.getPersistentDataContainer().set(Claves.ARMA_RPG, PersistentDataType.STRING, name());
         meta.getPersistentDataContainer().set(Claves.MEJORA, PersistentDataType.INTEGER, mejora);
         meta.setUnbreakable(true);
+        // Modelo propio del paquete (herramientas/rpg.py); arcos, ballestas y lanzas quedan con el de vanilla.
+        if (CON_MODELO.contains(this)) meta.setItemModel(new org.bukkit.NamespacedKey("tresmodos", "rpg_" + name().toLowerCase()));
         double d = danio * (1 + 0.08 * mejora);
         if (material != Material.BOW && material != Material.CROSSBOW) {
             meta.removeAttributeModifier(Attribute.ATTACK_DAMAGE);
@@ -180,6 +185,17 @@ public enum ArmaRpg {
         meta.lore(lore);
         it.setItemMeta(meta);
         return it;
+    }
+
+    /** Pone el modelo propio a un arma creada antes de que existiera (inventarios viejos). */
+    public static void actualizarModelo(ItemStack it) {
+        ArmaRpg a = de(it);
+        if (a == null || !CON_MODELO.contains(a)) return;
+        ItemMeta meta = it.getItemMeta();
+        org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey("tresmodos", "rpg_" + a.name().toLowerCase());
+        if (k.equals(meta.getItemModel())) return;
+        meta.setItemModel(k);
+        it.setItemMeta(meta);
     }
 
     public static ArmaRpg de(ItemStack it) {

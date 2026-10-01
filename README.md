@@ -23,7 +23,7 @@ src/main/java/ar/tresmodos/   código del plugin (lobby, armas, movilidad, cambi
   mundo/                      mapas (Pueblo Atómico y Valle de Hierro) y sus generadores
 src/main/resources/           plugin.yml (comandos y permisos) y config.yml
 paquete-recursos/             paquete de recursos: modelos, texturas y fuente del HUD
-herramientas/                 generador de modelos y texturas (armas, equipo, vehículos, HUD), vista previa y empaquetado
+herramientas/                 generador de modelos y texturas (armas, equipo, vehículos, armas del RPG, HUD), vista previa y empaquetado
 docs/DISENO.md                diseño de los modos
 pom.xml                       build de Maven
 instalar.sh                   instala Paper + plugin como servicio systemd (Ubuntu 24.04)
